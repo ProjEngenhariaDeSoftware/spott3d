@@ -10,18 +10,22 @@ import { Actions } from 'react-native-router-flux';
 export default class Home extends Component {
   render() {
     return (
-      <View>
-        <View style={styles.spotted}>
-          <Button title="Spotteds" onPress={Actions.start} />
+      <View style={styles.container}>
+        <View style={styles.column}>
+          <View style={styles.spotted}>
+            <Button title="spotted" />
+          </View>
+          <View style={styles.news}>
+            <Button title="notícias" />
+          </View>
         </View>
-        <View style={styles.spotted}>
-          <Button title="Notícias" />
-        </View>
-        <View style={styles.spotted}>
-          <Button title="Avisos" />
-        </View>
-        <View style={styles.spotted}>
-          <Button title="Entretenimento" />
+        <View style={styles.column}>
+          <View style={styles.notice}>
+            <Button title="avisos" />
+          </View>
+          <View style={styles.entertainment}>
+            <Button title="entretenimento" />
+          </View>
         </View>
       </View>
     )
@@ -31,20 +35,34 @@ export default class Home extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
   },
-  title: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-    color: '#333333'
+  column: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   spotted: {
-    marginBottom: 10,
-    marginLeft: 10,
-    marginTop: 10,
-    marginRight: 10,
+    flex: 1,
+    backgroundColor: '#ffda76',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  news: {
+    flex: 1,
+    backgroundColor: '#e88d60',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  entertainment: {
+    flex: 1,
+    backgroundColor: '#d14de8',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notice: {
+    flex: 1,
+    backgroundColor: '#ff6585',
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 })
