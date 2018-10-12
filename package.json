@@ -10,6 +10,7 @@
     "react": "16.4.1",
     "react-native": "0.56.1",
     "react-native-elements": "^1.0.0-beta6",
+    "react-native-material-bottom-navigation": "^1.0.1",
     "react-native-router-flux": "^4.0.5"
   },
   "devDependencies": {

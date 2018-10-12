@@ -13,18 +13,42 @@ export default class Home extends Component {
       <View style={styles.container}>
         <View style={styles.column}>
           <View style={styles.spotted}>
-            <Button title="spotted" />
+            <View style={styles.circleOut}>
+              <View style={styles.circle}>
+                <Text style={styles.title}>
+                  spotteds
+                </Text>
+              </View>
+            </View>
           </View>
           <View style={styles.news}>
-            <Button title="notícias" />
+            <View style={styles.circleOut}>
+              <View style={styles.circle}>
+                <Text style={styles.title}>
+                  notícias
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
         <View style={styles.column}>
           <View style={styles.notice}>
-            <Button title="avisos" />
+            <View style={styles.circleOut}>
+              <View style={styles.circle}>
+                <Text style={styles.title}>
+                  avisos
+                </Text>
+              </View>
+            </View>
           </View>
           <View style={styles.entertainment}>
-            <Button title="entretenimento" />
+            <View style={styles.circleOut}>
+              <View style={styles.circle}>
+                <Text style={styles.title}>
+                  entret
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </View>
@@ -43,26 +67,46 @@ const styles = StyleSheet.create({
   },
   spotted: {
     flex: 1,
-    backgroundColor: '#ffda76',
+    backgroundColor: '#aaaabb',
     justifyContent: 'center',
     alignItems: 'center',
   },
   news: {
     flex: 1,
-    backgroundColor: '#e88d60',
+    backgroundColor: '#aaddee',
     justifyContent: 'center',
     alignItems: 'center',
   },
   entertainment: {
     flex: 1,
-    backgroundColor: '#d14de8',
+    backgroundColor: '#aabbaa',
     justifyContent: 'center',
     alignItems: 'center',
   },
   notice: {
     flex: 1,
-    backgroundColor: '#ff6585',
+    backgroundColor: '#aaddaa',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  circleOut: {
+    width: 137,
+    height: 137,
+    borderRadius: 137 / 2,
+    backgroundColor: 'gray',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  circle: {
+    width: 130,
+    height: 130,
+    borderRadius: 130 / 2,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 20,
+    fontStyle: 'italic',
   }
 })

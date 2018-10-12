@@ -1,6 +1,6 @@
 /** @format */
 import React, { Component } from 'react';
-import { AppRegistry, View } from 'react-native';
+import { AppRegistry, View, StyleSheet } from 'react-native';
 import { Router, Scene } from 'react-native-router-flux';
 
 
@@ -12,23 +12,32 @@ import Navbar from './src/components/navbar';
 export default class Spotted extends Component {
   render() {
     return (
-      <Router>
-        <Scene key="root">
-          <Scene
-            key="start"
-            component={Start}
-            title="Bem-vindo"
-            initial={true}
-          />
-          <Scene
-            key="home"
-            component={Home}
-            title="Página inicial"
-          />
-        </Scene>
-      </Router>
+      <View style={styles.container}>
+        <Router>
+          <Scene key="root">
+            <Scene
+              key="start"
+              component={Start}
+              title="Bem-vindo"
+              initial={true}
+            />
+            <Scene
+              key="home"
+              component={Home}
+              title="Página inicial"
+              hideNavBar={true}
+            />
+          </Scene>
+        </Router>
+        <Navbar></Navbar>
+      </View>
     )
   }
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})
 
 AppRegistry.registerComponent('spotted', () => Spotted);
