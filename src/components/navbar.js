@@ -1,65 +1,42 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, Icon } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import BottomNavigation, { FullTab } from 'react-native-material-bottom-navigation';
+import * as React from 'react';
+import { BottomNavigation, Text } from 'react-native-paper';
 
-export default class Navbar extends Component {
-  tabs = [
-    {
-      key: 'games',
-      icon: 'gamepad-variant',
-      label: 'Games',
-      barColor: '#388E3C',
-      pressColor: 'rgba(255, 255, 255, 0.16)'
-    },
-    {
-      key: 'movies-tv',
-      icon: 'movie',
-      label: 'Movies & TV',
-      barColor: '#B71C1C',
-      pressColor: 'rgba(255, 255, 255, 0.16)'
-    },
-    {
-      key: 'music',
-      icon: 'music-note',
-      label: 'Music',
-      barColor: '#E64A19',
-      pressColor: 'rgba(255, 255, 255, 0.16)'
-    }
-  ]
+import ScreenSpotted from '../components/Spotted';
+import ScreenBusca from '../components/Busca';
+import ScreenEventos from '../components/Eventos';
+import ScreenEntrete from '../components/Entretenimentos';
+import ScreenPerfil from '../components/Perfil';
 
-  renderIcon = iconName => ({ isActive }) => {
-    return <Icon size={24} color="white" name={iconName} />
-  }
 
-  renderTab = ({ tab, isActive }) => {
-    return (
-      <FullTab
-        key={tab.key}
-        isActive={isActive}
-        label={tab.label}
-        renderIcon={this.renderIcon}
-      />
-    )
-  }
+export default class Navbar extends React.Component {
+  state = {
+    index: 0,
+    routes: [
+      { key: 'spotted', title: 'Spotteds', icon: 'favorite-border', color: '#b52848' },
+      { key: 'buscar', title: 'Buscar', icon: 'search', color: '#adadb1' },
+      { key: 'eventos', title: 'Eventos', icon: 'event', color: '#738A98' },
+      { key: 'diversos', title: 'Diversos', icon: 'movie-filter', color: '#179e8a' },
+      { key: 'perfil', title: 'Perfil', icon: 'face', color: '#0086a7' },
+    ],
+  };
 
-  renderBadge = badgeCount => {
-    return <Badge>{badgeCount}</Badge>
-  }
+  _handleIndexChange = index => this.setState({ index });
 
+  _renderScene = BottomNavigation.SceneMap({
+    spotted: ScreenSpotted,
+    buscar: ScreenBusca,
+    eventos: ScreenEventos,
+    diversos: ScreenEntrete,
+    perfil: ScreenPerfil,
+  });
 
   render() {
     return (
-      <View>
-        <BottomNavigation
-          renderTab={this.renderTab}
-          tabs={this.tabs}
-        />
-      </View>
-    )
+      <BottomNavigation
+        navigationState={this.state}
+        onIndexChange={this._handleIndexChange}
+        renderScene={this._renderScene}
+      />
+    );
   }
 }
-
-const styles = StyleSheet.create({
-
-})

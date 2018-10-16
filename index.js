@@ -27,9 +27,13 @@ export default class Spotted extends Component {
               title="Página inicial"
               hideNavBar={true}
             />
+            <View
+              key="aplicacoes"
+              component={Navbar}
+              hideNavBar={true}
+            />
           </Scene>
         </Router>
-        <Navbar></Navbar>
       </View>
     )
   }

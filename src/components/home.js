@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Button
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 
@@ -15,7 +14,7 @@ export default class Home extends Component {
           <View style={styles.spotted}>
             <View style={styles.circleOut}>
               <View style={styles.circle}>
-                <Text style={styles.title}>
+                <Text style={styles.title} onPress={Actions.aplicacoes}>
                   spotteds
                 </Text>
               </View>
@@ -24,7 +23,7 @@ export default class Home extends Component {
           <View style={styles.news}>
             <View style={styles.circleOut}>
               <View style={styles.circle}>
-                <Text style={styles.title}>
+                <Text style={styles.title} onPress={Actions.aplicacoes}>
                   notícias
                 </Text>
               </View>
@@ -35,7 +34,7 @@ export default class Home extends Component {
           <View style={styles.notice}>
             <View style={styles.circleOut}>
               <View style={styles.circle}>
-                <Text style={styles.title}>
+                <Text style={styles.title} onPress={Actions.aplicacoes}>
                   avisos
                 </Text>
               </View>
@@ -44,7 +43,7 @@ export default class Home extends Component {
           <View style={styles.entertainment}>
             <View style={styles.circleOut}>
               <View style={styles.circle}>
-                <Text style={styles.title}>
+                <Text style={styles.title} onPress={Actions.aplicacoes}>
                   entret
                 </Text>
               </View>
@@ -67,25 +66,25 @@ const styles = StyleSheet.create({
   },
   spotted: {
     flex: 1,
-    backgroundColor: '#aaaabb',
+    backgroundColor: '#EC5D73',
     justifyContent: 'center',
     alignItems: 'center',
   },
   news: {
     flex: 1,
-    backgroundColor: '#aaddee',
+    backgroundColor: '#00B6D9',
     justifyContent: 'center',
     alignItems: 'center',
   },
   entertainment: {
     flex: 1,
-    backgroundColor: '#aabbaa',
+    backgroundColor: '#5AD0BA',
     justifyContent: 'center',
     alignItems: 'center',
   },
   notice: {
     flex: 1,
-    backgroundColor: '#aaddaa',
+    backgroundColor: '#738A98',
     justifyContent: 'center',
     alignItems: 'center',
   },
