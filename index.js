@@ -4,9 +4,9 @@ import { AppRegistry, View, StyleSheet } from 'react-native';
 import { Router, Scene } from 'react-native-router-flux';
 
 
-import Start from './src/components/start';
-import Home from './src/components/home';
-import Navbar from './src/components/navbar';
+import Start from './src/components/Start';
+import Home from './src/components/Home';
+import Navbar from './src/components/Navbar';
 
 
 export default class Spotted extends Component {

@@ -6,12 +6,12 @@ import {
 } from 'react-native';
 
 
-export default class App extends Component {
+export default class Warnings extends Component {
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Eventos Acadêmicos
+          Avisos
         </Text>
       </View>
     );
@@ -23,11 +23,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#738A98',
+    backgroundColor: '#DFDFE3',
   },
   welcome: {
     fontSize: 40,
-    color: '#fff',
     textAlign: 'center',
     margin: 10,
   },

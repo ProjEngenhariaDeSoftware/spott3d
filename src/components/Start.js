@@ -24,11 +24,11 @@ export default class Start extends Component {
     return (
       <View style={styles.container}>
         <Icon.Button style={styles.button} name="google" backgroundColor="#ff0000" onPress={Actions.home}>
-        Logar com o Google
+          Logar com o Google
         </Icon.Button>
         <Text> </Text>
         <Icon.Button style={styles.button} name="facebook" backgroundColor="#3b5998" onPress={Actions.home}>
-        Logar com o Facebook
+          Logar com o Facebook
         </Icon.Button>
       </View>
     )
@@ -50,13 +50,13 @@ const styles = StyleSheet.create({
     color: '#333333',
   },
   button: {
-  width: 300,
-  textAlign: 'center',
-  borderRadius: 45,
-  marginLeft:0,
-  marginRight: 0,
-  marginBottom: 0,
-  marginTop: 0,
+    width: 300,
+    textAlign: 'center',
+    borderRadius: 45,
+    marginLeft: 0,
+    marginRight: 0,
+    marginBottom: 0,
+    marginTop: 0,
   }
 
 })

@@ -20,18 +20,18 @@ export default class Home extends Component {
               </View>
             </View>
           </View>
-          <View style={styles.news}>
+          <View style={styles.event}>
             <View style={styles.circleOut}>
               <View style={styles.circle}>
                 <Text style={styles.title} onPress={Actions.aplicacoes}>
-                  notícias
+                  eventos
                 </Text>
               </View>
             </View>
           </View>
         </View>
         <View style={styles.column}>
-          <View style={styles.notice}>
+          <View style={styles.warnings}>
             <View style={styles.circleOut}>
               <View style={styles.circle}>
                 <Text style={styles.title} onPress={Actions.aplicacoes}>
@@ -70,21 +70,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  news: {
-    flex: 1,
-    backgroundColor: '#00B6D9',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  entertainment: {
+  event: {
     flex: 1,
     backgroundColor: '#5AD0BA',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  notice: {
+  entertainment: {
     flex: 1,
-    backgroundColor: '#738A98',
+    backgroundColor: '#00B6D9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  warnings: {
+    flex: 1,
+    backgroundColor: '#CDDAE3',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     width: 137,
     height: 137,
     borderRadius: 137 / 2,
-    backgroundColor: 'gray',
+    backgroundColor: '#DFDFE3',
     justifyContent: 'center',
     alignItems: 'center',
   },

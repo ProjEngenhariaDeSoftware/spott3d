@@ -6,12 +6,12 @@ import {
 } from 'react-native';
 
 
-export default class Spotted extends Component {
+export default class Search extends Component {
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Spotted
+          Buscar
         </Text>
       </View>
     );
@@ -23,11 +23,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#EC5D73',
+    backgroundColor: '#DFDFE3',
   },
   welcome: {
     fontSize: 40,
-    color: '#fff',
     textAlign: 'center',
     margin: 10,
   },

@@ -6,12 +6,12 @@ import {
 } from 'react-native';
 
 
-export default class App extends Component {
+export default class Event extends Component {
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Buscar
+          Eventos Acadêmicos
         </Text>
       </View>
     );
@@ -23,10 +23,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#DFDFE3',
+    backgroundColor: '#738A98',
   },
   welcome: {
     fontSize: 40,
+    color: '#fff',
     textAlign: 'center',
     margin: 10,
   },
