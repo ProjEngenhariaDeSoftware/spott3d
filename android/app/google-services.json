@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "574726913022",
+    "firebase_url": "https://spottedplusplus.firebaseio.com",
+    "project_id": "spottedplusplus",
+    "storage_bucket": "spottedplusplus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:574726913022:android:1b1fd1631c49e6f4",
+        "android_client_info": {
+          "package_name": "com.spotted"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "574726913022-7rp88ue2vbuhrsj73kthrb11spjfe1h4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkQF7KRz18wnbU6k-QXPLJNCMWHVAqThc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
