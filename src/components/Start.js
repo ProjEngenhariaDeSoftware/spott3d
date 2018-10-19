@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  AsyncStorage,
+  Button
+} from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -20,12 +26,31 @@ export default class Start extends Component {
       const data = await GoogleSignin.signIn();
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
       const currentUser = await firebase.auth().signInWithCredential(credential);
+
+      await AsyncStorage.setItem('photoURL', currentUser.user.photoURL);
+      await AsyncStorage.setItem('displayName', currentUser.user.displayName);
+      await AsyncStorage.setItem('email', currentUser.user.email);
+
       console.warn(JSON.stringify(currentUser.user.toJSON()));
-      this.setState(currentUser.user);
-      //console.warn(JSON.stringify(this.state));
+      Actions.jump('home');
+      Actions.reset('home');
     } catch (error) {
-      console.error(error);
+      if (error === statusCodes.SIGN_IN_CANCELLED) {
+        alert('Login cancelado, tente novamente');
+      } else if (error === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        alert('PlayServices não está disponível');
+      } else {
+        console.error(error);
+      }
     }
+  }
+
+  googleLogout = async () => {
+    try {
+      await GoogleSignin.configure();
+      await GoogleSignin.signOut();
+      console.warn('feito');
+    } catch (error) { }
   }
 
   render() {
@@ -37,10 +62,9 @@ export default class Start extends Component {
           color={GoogleSigninButton.Color.Light}
           onPress={this.googleLogin}
           disabled={this.state.isSigninInProgress} />
-        <Icon.Button style={styles.button} name="google" backgroundColor="#ff0000" onPress={Actions.home}>
-          Logar com o Google
-        </Icon.Button>
         <Text> </Text>
+
+        <Button title="Deslogar do Google" onPress={this.googleLogout} />
         <Icon.Button style={styles.button} name="facebook" backgroundColor="#3b5998" onPress={Actions.home}>
           Logar com o Facebook
         </Icon.Button>
