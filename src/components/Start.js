@@ -7,9 +7,8 @@ import {
   Button
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin';
+import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
 import firebase from 'react-native-firebase';
 
 
@@ -34,21 +33,14 @@ export default class Start extends Component {
       console.warn(JSON.stringify(currentUser.user.toJSON()));
       Actions.jump('home');
       Actions.reset('home');
-    } catch (error) {
-      if (error === statusCodes.SIGN_IN_CANCELLED) {
-        alert('Login cancelado, tente novamente');
-      } else if (error === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        alert('PlayServices não está disponível');
-      } else {
-        console.error(error);
-      }
-    }
+    } catch (error) { }
   }
 
   googleLogout = async () => {
     try {
       await GoogleSignin.configure();
       await GoogleSignin.signOut();
+      await AsyncStorage.clear();
       console.warn('feito');
     } catch (error) { }
   }
@@ -56,18 +48,23 @@ export default class Start extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <GoogleSigninButton
-          style={{ width: 312, height: 48 }}
-          size={GoogleSigninButton.Size.Wide}
-          color={GoogleSigninButton.Color.Light}
-          onPress={this.googleLogin}
-          disabled={this.state.isSigninInProgress} />
-        <Text> </Text>
-
-        <Button title="Deslogar do Google" onPress={this.googleLogout} />
-        <Icon.Button style={styles.button} name="facebook" backgroundColor="#3b5998" onPress={Actions.home}>
-          Logar com o Facebook
-        </Icon.Button>
+        <View style={styles.column}>
+          <View style={styles.box}>
+            <Text style={styles.title}> Registre-se abaixo </Text>
+          </View>
+        </View>
+        <View style={styles.column}>
+          <View style={styles.box}>
+            <GoogleSigninButton
+              style={{ width: 312, height: 48 }}
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Light}
+              onPress={this.googleLogin}
+              disabled={this.state.isSigninInProgress} />
+            <Text></Text>
+            <Button title="Deslogar do Google" onPress={this.googleLogout} />
+          </View>
+        </View>
       </View>
     )
   }
@@ -76,24 +73,23 @@ export default class Start extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ddffff',
   },
-  title: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-    color: '#333333',
+  column: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  button: {
-    width: 300,
+  box: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  title: {
+    fontFamily: 'ProductSans',
+    fontSize: 22,
     textAlign: 'center',
-    borderRadius: 45,
-    marginLeft: 0,
-    marginRight: 0,
-    marginBottom: 0,
-    marginTop: 0,
+    justifyContent: 'center',
+    color: '#333333'
   }
-
 })

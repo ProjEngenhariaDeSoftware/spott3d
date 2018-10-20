@@ -55,6 +55,7 @@
 		13B18E83620446B78A2080DE /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A786A8395804D93973980D4 /* SafariServices.framework */; };
 		D1E2B34328014B46BBDE45E6 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14FF665C4C884D2EAC5D06DB /* SystemConfiguration.framework */; };
 		F42BD88C0C2E4E2CB0AA5EF0 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09D58C6E3C8540BA845D33AA /* AddressBook.framework */; };
+		FB6D620F152040508DF661AD /* ProductSans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5E788AE04D7F4D93B979873F /* ProductSans.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -381,6 +382,7 @@
 		3A786A8395804D93973980D4 /* SafariServices.framework */ = {isa = PBXFileReference; name = "SafariServices.framework"; path = "System/Library/Frameworks/SafariServices.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 		14FF665C4C884D2EAC5D06DB /* SystemConfiguration.framework */ = {isa = PBXFileReference; name = "SystemConfiguration.framework"; path = "System/Library/Frameworks/SystemConfiguration.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 		09D58C6E3C8540BA845D33AA /* AddressBook.framework */ = {isa = PBXFileReference; name = "AddressBook.framework"; path = "System/Library/Frameworks/AddressBook.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
+		5E788AE04D7F4D93B979873F /* ProductSans.ttf */ = {isa = PBXFileReference; name = "ProductSans.ttf"; path = "../assets/fonts/ProductSans.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -671,6 +673,7 @@
 				AA7231BCF1214D4B9C1CE287 /* Octicons.ttf */,
 				125C61EBC4F946D888C51B87 /* SimpleLineIcons.ttf */,
 				C914FC3FBF434081BD7E74CC /* Zocial.ttf */,
+				5E788AE04D7F4D93B979873F /* ProductSans.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1133,6 +1136,7 @@
 				81CA481819EE4088A62BA333 /* Octicons.ttf in Resources */,
 				74300D4AA7DB41B484DBE69A /* SimpleLineIcons.ttf in Resources */,
 				4F400B82D4E84A9EB3834F46 /* Zocial.ttf in Resources */,
+				FB6D620F152040508DF661AD /* ProductSans.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
