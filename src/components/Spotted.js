@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
   },
   welcome: {
     fontSize: 40,
+    fontFamily: 'ProductSans',
     color: '#fff',
     textAlign: 'center',
     margin: 10,

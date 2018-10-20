@@ -4,11 +4,13 @@ import {
   Text,
   View,
   AsyncStorage,
-  Button
+  Button,
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 
-import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
+import { GoogleSignin } from 'react-native-google-signin';
 import firebase from 'react-native-firebase';
 
 
@@ -19,6 +21,15 @@ export default class Start extends Component {
     this.state = {};
   };
 
+  async componentDidMount() {
+    try {
+      const isLogged = await AsyncStorage.getItem('isLogged');
+      if (isLogged != null) {
+        Actions.reset('home');
+      }
+    } catch (error) {}
+  }
+
   googleLogin = async () => {
     try {
       await GoogleSignin.configure();
@@ -26,22 +37,13 @@ export default class Start extends Component {
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
       const currentUser = await firebase.auth().signInWithCredential(credential);
 
+      await AsyncStorage.setItem('isLogged', 'true');
       await AsyncStorage.setItem('photoURL', currentUser.user.photoURL);
       await AsyncStorage.setItem('displayName', currentUser.user.displayName);
       await AsyncStorage.setItem('email', currentUser.user.email);
 
-      console.warn(JSON.stringify(currentUser.user.toJSON()));
       Actions.jump('home');
       Actions.reset('home');
-    } catch (error) { }
-  }
-
-  googleLogout = async () => {
-    try {
-      await GoogleSignin.configure();
-      await GoogleSignin.signOut();
-      await AsyncStorage.clear();
-      console.warn('feito');
     } catch (error) { }
   }
 
@@ -50,19 +52,18 @@ export default class Start extends Component {
       <View style={styles.container}>
         <View style={styles.column}>
           <View style={styles.box}>
-            <Text style={styles.title}> Registre-se abaixo </Text>
+            <Text style={styles.title}> Logo aqui, e algum texto abaixo </Text>
           </View>
         </View>
         <View style={styles.column}>
           <View style={styles.box}>
-            <GoogleSigninButton
-              style={{ width: 312, height: 48 }}
-              size={GoogleSigninButton.Size.Wide}
-              color={GoogleSigninButton.Color.Light}
+            <TouchableOpacity
+              style={styles.googleButton}
               onPress={this.googleLogin}
-              disabled={this.state.isSigninInProgress} />
-            <Text></Text>
-            <Button title="Deslogar do Google" onPress={this.googleLogout} />
+              activeOpacity={0.7}>
+              <Image style={styles.googleLogo} source={require('./../../assets/images/google-icon.png')}></Image>
+              <Text style={styles.googleText}>Entrar com o Google</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#ddffff',
+    backgroundColor: '#fafafa',
   },
   column: {
     flex: 1,
@@ -91,5 +92,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     color: '#333333'
+  },
+  googleButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 30,
+    padding: 10,
+    marginBottom: 20,
+    elevation: 2,
+    backgroundColor: 'white',
+    borderColor: '#e7e7e7',
+    borderWidth: 0.5,
+  },
+  googleLogo: {
+    width: 26,
+    height: 26,
+    marginRight: 5
+  },
+  googleText: {
+    color: 'gray',
+    fontFamily: 'ProductSans',
+    fontSize: 20,
+    textAlign: 'center',
+    marginLeft: 10,
+    marginRight: 10
   }
 })

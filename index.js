@@ -18,8 +18,9 @@ export default class Spotted extends Component {
             <Scene
               key="start"
               component={Start}
-              title="Bem-vindo"
+              title="Spotted++"
               initial={true}
+              hideNavBar={true}
             />
             <Scene
               key="home"
@@ -40,7 +41,7 @@ export default class Spotted extends Component {
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
 })
 

@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 
@@ -13,40 +14,48 @@ export default class Home extends Component {
         <View style={styles.column}>
           <View style={styles.spotted}>
             <View style={styles.circleOut}>
-              <View style={styles.circle}>
-                <Text style={styles.title} onPress={Actions.aplicacoes}>
-                  spotteds
-                </Text>
-              </View>
+              <TouchableOpacity onPress={Actions.aplicacoes} activeOpacity={0.7}>
+                <View style={styles.circle}>
+                  <Text style={styles.title}>
+                    spotteds
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.event}>
             <View style={styles.circleOut}>
-              <View style={styles.circle}>
-                <Text style={styles.title} onPress={Actions.aplicacoes}>
-                  eventos
-                </Text>
-              </View>
+              <TouchableOpacity onPress={Actions.aplicacoes} activeOpacity={0.7}>
+                <View style={styles.circle}>
+                  <Text style={styles.title} onPress={Actions.aplicacoes}>
+                    eventos
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
         <View style={styles.column}>
           <View style={styles.warnings}>
             <View style={styles.circleOut}>
-              <View style={styles.circle}>
-                <Text style={styles.title} onPress={Actions.aplicacoes}>
-                  avisos
-                </Text>
-              </View>
+              <TouchableOpacity onPress={Actions.aplicacoes} activeOpacity={0.7}>
+                <View style={styles.circle}>
+                  <Text style={styles.title} onPress={Actions.aplicacoes}>
+                    avisos
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.entertainment}>
             <View style={styles.circleOut}>
-              <View style={styles.circle}>
-                <Text style={styles.title} onPress={Actions.aplicacoes}>
-                  entret
-                </Text>
-              </View>
+              <TouchableOpacity onPress={Actions.aplicacoes} activeOpacity={0.7}>
+                <View style={styles.circle}>
+                  <Text style={styles.title} onPress={Actions.aplicacoes}>
+                    diversos
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -74,7 +83,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#5AD0BA',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   entertainment: {
     flex: 1,
@@ -95,6 +104,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#DFDFE3',
     justifyContent: 'center',
     alignItems: 'center',
+    elevation: 18,
+    borderColor: '#e7e7e7',
+    borderWidth: 0.8
   },
   circle: {
     width: 130,
@@ -106,6 +118,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontStyle: 'italic',
+    fontFamily: 'ProductSans'
   }
 })
