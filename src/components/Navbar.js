@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BottomNavigation, Text } from 'react-native-paper';
+import { AsyncStorage } from 'react-native';
 
 import Spotted from '../components/Spotted';
 import Search from '../components/Search';
@@ -10,6 +11,16 @@ import Warnings from '../components/Warnings';
 
 
 export default class Navbar extends Component {
+
+  async componentDidMount() {
+    try {
+      const index = await AsyncStorage.getItem('index');
+      if (index != null) {
+        this.setState({ index: parseInt(index) });
+      }
+    } catch (error) { }
+  }
+
   state = {
     index: 0,
     routes: [
