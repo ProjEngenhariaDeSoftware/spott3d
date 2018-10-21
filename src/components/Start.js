@@ -52,7 +52,7 @@ export default class Start extends Component {
       <View style={styles.container}>
         <View style={styles.column}>
           <View style={styles.box}>
-            <Text style={styles.title}> Logo aqui, e algum texto abaixo </Text>
+            <Text style={styles.title} onPress={Actions.home}> Logo aqui, e algum texto abaixo </Text>
           </View>
         </View>
         <View style={styles.column}>

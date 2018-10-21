@@ -1,22 +1,29 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Text,
   View,
-  TouchableOpacity,
   Image,
-  AsyncStorage
+  TouchableOpacity,
+  AsyncStorage,
+  Dimensions,
 } from 'react-native';
+import { Container, Icon, Left, Right, Grid, Row, Text } from 'native-base';
 import { GoogleSignin } from 'react-native-google-signin';
 import { Actions } from 'react-native-router-flux';
+const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
 
 export default class Perfil extends Component {
-
   constructor(props) {
-    super(props);
-    this.state = {};
-  };
+    super();
+    this.state = {
+      userphoto: 'https://avatars2.githubusercontent.com/u/29696054?s=400&u=4e8a04635bdc34bef2d407581ad1532eabbdef22&v=4',
+      username: 'brunop.meneses',
+      course: 'Ciência da Computação',
+      notification: true,
+      color: 'red'
+    };
+  }
 
   googleLogout = async () => {
     try {
@@ -24,26 +31,55 @@ export default class Perfil extends Component {
       await GoogleSignin.signOut();
       await AsyncStorage.clear();
       Actions.reset('start');
-    } catch (error) {}
+    } catch (error) { }
   }
-
+  iconNotification() {
+    return (
+      <Icon style={{fontSize: 23, color: this.state.color }} type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} button onPress={() => this.notificacao()} />
+    );
+  }
+  notificacao() {
+    this.state.notification ? alert("Notificações: BLA BLA BLA") : alert("Não possui mais Notificações")
+    this.setState({ notification: false, color: '#00B6D9' })
+  }
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Perfil
-        </Text>
-        <View>
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={this.googleLogout}
-            activeOpacity={0.7}>
-            <Image style={styles.googleLogo} source={require('./../../assets/images/google-icon.png')}></Image>
-            <Text style={styles.googleText}>Sair</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Container style={styles.container}>
+        <Grid>
+          <Row style={styles.topView}>
+            <Left>
+              {this.iconNotification()}
+            </Left>
+            <Right>
+              <Icon type="MaterialCommunityIcons" style={{fontSize: 23, color: '#00B6D9' }} name="settings-outline" button onPress={() => alert("Cliquei em configurações")} />
+            </Right>
+          </Row >
+
+          <Row style={styles.photoRow}>
+            <TouchableOpacity activeOpacity={0.75} style={styles.profilepicWrap} onPress={() => alert("Cliquei na photo")}>
+              <Image source={{ uri: this.state.userphoto }} style={styles.profilepic} />
+            </TouchableOpacity>
+          </Row>
+          <Row style={styles.descriptionRow}>
+            <View style={styles.descriptionContainer}>
+              <Text styles={styles.title}>Nome de usuário: {this.state.username}</Text>
+              <Text styles={styles.title}>Curso: {this.state.course}</Text>
+            </View>
+          </Row>
+          <Row>
+            <View style={{width: viewportWidth, alignItems: 'center' ,justifyContent: 'center', marginTop: 10}}>
+              <TouchableOpacity
+                style={styles.googleButton}
+                onPress={this.googleLogout}
+                activeOpacity={0.7}>
+                <Image style={styles.googleLogo} source={require('./../../assets/images/google-icon.png')}></Image>
+                <Text style={styles.googleText}>Sair</Text>
+              </TouchableOpacity>
+            </View>
+          </Row>
+        </Grid>
+      </Container>
     );
   }
 }
@@ -51,9 +87,59 @@ export default class Perfil extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#00B6D9',
+    backgroundColor: '#fff',
+  },
+  topView: {
+    // flex: 0.2,  
+    width: viewportWidth,
+    marginTop: 10,
+    padding: 20,
+    height: 10,
+    // flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  photoRow: {
+    justifyContent: 'center',
+    width: viewportWidth,
+    height: 180,
+  },
+
+  profilepicWrap: {
+    width: 180,
+    height: 180,
+    borderRadius: 120,
+    borderColor: '#5bd7ed',
+    borderWidth: 8,
+  },
+  profilepic: {
+    flex: 1,
+    width: null,
+    alignSelf: 'stretch',
+    borderRadius: 120,
+    borderColor: '#fff',
+    borderWidth: 2,
+  },
+  descriptionRow: {
+    justifyContent: 'center',
+    width: viewportWidth,
+    height: 180,
+  },
+  descriptionContainer: {
+    //backgroundColor: '#00B6D9',  
+    width: viewportWidth - 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 120,
+    //elevation: 5,
+    borderRadius: 10
+  },
+  title: {
+    color: '#fff',
+    fontSize: 12,
+    fontFamily: 'ProductSans',
+    textAlign: 'justify'
   },
   welcome: {
     fontSize: 40,
@@ -77,7 +163,7 @@ const styles = StyleSheet.create({
   googleLogo: {
     width: 26,
     height: 26,
-    marginRight: 5
+    marginRight: 5,
   },
   googleText: {
     color: 'gray',
@@ -85,6 +171,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     marginLeft: 10,
-    marginRight: 10
+    marginRight: 10,
   }
 });
