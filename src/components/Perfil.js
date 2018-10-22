@@ -56,7 +56,7 @@ export default class Perfil extends Component {
 
   render() {
     return (
-      <Container style={styles.container}>
+      <View style={styles.container}>
         <Grid>
           <Row style={styles.topView}>
             <Left>
@@ -90,7 +90,7 @@ export default class Perfil extends Component {
             </View>
           </Row>
         </Grid>
-      </Container>
+      </View>
     );
   }
 }
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   title: {
-    color: '#fff',
+    color: 'red',
     fontSize: 12,
     fontFamily: 'ProductSans',
     textAlign: 'justify'
