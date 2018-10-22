@@ -12,17 +12,28 @@ import { GoogleSignin } from 'react-native-google-signin';
 import { Actions } from 'react-native-router-flux';
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
-
 export default class Perfil extends Component {
+
   constructor(props) {
     super();
     this.state = {
       userphoto: 'https://avatars2.githubusercontent.com/u/29696054?s=400&u=4e8a04635bdc34bef2d407581ad1532eabbdef22&v=4',
       username: 'brunop.meneses',
-      course: 'Ciência da Computação',
+      email: 'Ciência da Computação',
       notification: true,
       color: 'red'
     };
+  }
+
+  async componentDidMount() {
+    try {
+      const photoURL = await AsyncStorage.getItem('photoURL');
+      const displayName = await AsyncStorage.getItem('displayName');
+      const email = await AsyncStorage.getItem('email');
+
+      this.setState({ userphoto: photoURL, username: displayName, email: email });
+
+    } catch (error) { }
   }
 
   googleLogout = async () => {
@@ -35,7 +46,7 @@ export default class Perfil extends Component {
   }
   iconNotification() {
     return (
-      <Icon style={{fontSize: 23, color: this.state.color }} type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} button onPress={() => this.notificacao()} />
+      <Icon style={{ fontSize: 23, color: this.state.color }} type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} button onPress={() => this.notificacao()} />
     );
   }
   notificacao() {
@@ -52,7 +63,7 @@ export default class Perfil extends Component {
               {this.iconNotification()}
             </Left>
             <Right>
-              <Icon type="MaterialCommunityIcons" style={{fontSize: 23, color: '#00B6D9' }} name="settings-outline" button onPress={() => alert("Cliquei em configurações")} />
+              <Icon type="MaterialCommunityIcons" style={{ fontSize: 23, color: '#00B6D9' }} name="settings-outline" button onPress={() => alert("Cliquei em configurações")} />
             </Right>
           </Row >
 
@@ -64,11 +75,11 @@ export default class Perfil extends Component {
           <Row style={styles.descriptionRow}>
             <View style={styles.descriptionContainer}>
               <Text styles={styles.title}>Nome de usuário: {this.state.username}</Text>
-              <Text styles={styles.title}>Curso: {this.state.course}</Text>
+              <Text styles={styles.title}>Email: {this.state.email}</Text>
             </View>
           </Row>
           <Row>
-            <View style={{width: viewportWidth, alignItems: 'center' ,justifyContent: 'center', marginTop: 10}}>
+            <View style={{ width: viewportWidth, alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
               <TouchableOpacity
                 style={styles.googleButton}
                 onPress={this.googleLogout}
@@ -119,7 +130,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     borderRadius: 120,
     borderColor: '#fff',
-    borderWidth: 2,
+    borderWidth: 2
   },
   descriptionRow: {
     justifyContent: 'center',
@@ -127,7 +138,6 @@ const styles = StyleSheet.create({
     height: 180,
   },
   descriptionContainer: {
-    //backgroundColor: '#00B6D9',  
     width: viewportWidth - 25,
     alignItems: 'center',
     justifyContent: 'center',

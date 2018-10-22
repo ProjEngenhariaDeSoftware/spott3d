@@ -37,10 +37,10 @@ export default class Start extends Component {
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
       const currentUser = await firebase.auth().signInWithCredential(credential);
 
-      await AsyncStorage.setItem('isLogged', 'true');
-      await AsyncStorage.setItem('photoURL', currentUser.user.photoURL);
-      await AsyncStorage.setItem('displayName', currentUser.user.displayName);
-      await AsyncStorage.setItem('email', currentUser.user.email);
+      AsyncStorage.setItem('isLogged', 'true');
+      AsyncStorage.setItem('photoURL', currentUser.user.photoURL);
+      AsyncStorage.setItem('displayName', currentUser.user.displayName);
+      AsyncStorage.setItem('email', currentUser.user.email);
 
       Actions.jump('home');
       Actions.reset('home');

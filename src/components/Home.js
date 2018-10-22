@@ -3,18 +3,48 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 
 export default class Home extends Component {
+
+  async openSpotted() {
+    try {
+      await AsyncStorage.setItem('index', '0');
+      Actions.jump('aplicacoes');
+    } catch (error) {}
+  }
+
+  async openEvent() {
+    try {
+      await AsyncStorage.setItem('index', '1');
+      Actions.jump('aplicacoes');
+    } catch (error) {}
+  }
+
+  async openWarnings() {
+    try {
+      await AsyncStorage.setItem('index', '2');
+      Actions.jump('aplicacoes');
+    } catch (error) {}
+  }
+
+  async openEntertainment() {
+    try {
+      await AsyncStorage.setItem('index', '3');
+      Actions.jump('aplicacoes');
+    } catch (error) {}
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.column}>
           <View style={styles.spotted}>
             <View style={styles.circleOut}>
-              <TouchableOpacity onPress={Actions.aplicacoes} activeOpacity={0.7}>
+              <TouchableOpacity onPress={this.openSpotted} activeOpacity={0.7}>
                 <View style={styles.circle}>
                   <Text style={styles.title}>
                     spotteds
@@ -25,7 +55,7 @@ export default class Home extends Component {
           </View>
           <View style={styles.event}>
             <View style={styles.circleOut}>
-              <TouchableOpacity onPress={Actions.aplicacoes} activeOpacity={0.7}>
+              <TouchableOpacity onPress={this.openEvent} activeOpacity={0.7}>
                 <View style={styles.circle}>
                   <Text style={styles.title} onPress={Actions.aplicacoes}>
                     eventos
@@ -38,7 +68,7 @@ export default class Home extends Component {
         <View style={styles.column}>
           <View style={styles.warnings}>
             <View style={styles.circleOut}>
-              <TouchableOpacity onPress={Actions.aplicacoes} activeOpacity={0.7}>
+              <TouchableOpacity onPress={this.openWarnings} activeOpacity={0.7}>
                 <View style={styles.circle}>
                   <Text style={styles.title} onPress={Actions.aplicacoes}>
                     avisos
@@ -49,7 +79,7 @@ export default class Home extends Component {
           </View>
           <View style={styles.entertainment}>
             <View style={styles.circleOut}>
-              <TouchableOpacity onPress={Actions.aplicacoes} activeOpacity={0.7}>
+              <TouchableOpacity onPress={this.openEntertainment} activeOpacity={0.7}>
                 <View style={styles.circle}>
                   <Text style={styles.title} onPress={Actions.aplicacoes}>
                     diversos
