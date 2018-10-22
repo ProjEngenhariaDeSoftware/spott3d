@@ -44,7 +44,7 @@ export default class Start extends Component {
 
       Actions.jump('home');
       Actions.reset('home');
-    } catch (error) { }
+    } catch (error) { console.log(error)}
   }
 
   render() {

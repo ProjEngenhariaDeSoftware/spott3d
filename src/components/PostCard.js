@@ -11,18 +11,18 @@ import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
-class PostCard extends Component {
+export default class PostCard extends Component {
     constructor(props) {
         super(props);
-        this.state = { image: this.props.image };
+        this.data = props.data;
     }
 
     renderImage() {
         return (
             <CardItem cardBody>
                 <ProgressiveImage
-                    thumbnailSource={{ uri: this.props.imageurl }}
-                    source={{ uri: this.props.imageurl }}
+                    thumbnailSource={{ uri: this.data.item.imageurl }}
+                    source={{ uri: this.data.item.imageurl }}
                     style={{ width: viewportWidth, height: 170 }}
                     resizeMode="contain" />
             </CardItem>
@@ -32,7 +32,7 @@ class PostCard extends Component {
         return (
             <CardItem bordered>
                 <Body>
-                    <Text style={styles.postText}>{this.props.text}</Text>
+                    <Text style={styles.postText}>{this.data.item.text}</Text>
                 </Body>
             </CardItem>
         );
@@ -40,15 +40,15 @@ class PostCard extends Component {
 
     render() {
         return (
-            <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => alert("Cliquei no card")}>
-                <Card>
+            <TouchableOpacity activeOpacity={0.5} onPress={() => alert("Cliquei no card")}>
+                <Card style={{marginLeft: 0, flex: 0, width: viewportWidth}}>
                     <CardItem>
                         <Left style={{ flex: 0.8 }}>
-                            <Thumbnail small source={{ uri: this.props.userphoto }} />
+                            <Thumbnail small source={{ uri: this.data.item.userphoto }} />
                             <Body>
-                                <Text style={styles.titleText}>{this.props.title}</Text>
-                                <Text note style={styles.defaultText}>Local {this.props.local}</Text>
-                                <Text note style={styles.defaultText}>Data: {this.props.date}</Text>
+                                <Text style={styles.titleText}>{this.data.item.title}</Text>
+                                <Text note style={styles.defaultText}>Local: {this.data.item.local}</Text>
+                                <Text note style={styles.defaultText}>Data: {this.data.item.date}</Text>
                             </Body>
                         </Left>
                         <Right style={{ flex: 0.2 }}>
@@ -56,13 +56,13 @@ class PostCard extends Component {
                         </Right>
                     </CardItem>
 
-                    {this.state.image ? this.renderImage() : this.renderText()}
+                    {this.data.item.image ? this.renderImage() : this.renderText()}
 
                     <CardItem>
                         <Left>
                             <Button transparent>
                                 <Icon name="chatbubbles" style={{ fontSize: 10, color: 'grey' }} />
-                                <Text note style={styles.iconText}> {this.props.coments} Comentários</Text>
+                                <Text note style={styles.iconText}> {this.data.item.coments} Comentários</Text>
                             </Button>
                         </Left>
                         <Right>
@@ -102,5 +102,4 @@ const styles = StyleSheet.create({
         marginRight: 10
     },
 });
-export default PostCard;
 
