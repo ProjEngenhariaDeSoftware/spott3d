@@ -10,6 +10,7 @@ import {
 
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base'
 import ProgressiveImage from '../components/ProgressiveImage';
+import CommentInput from '../components/CommentInput';
 import DialogManager, { ScaleAnimation, DialogContent } from 'react-native-dialog-component';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
@@ -85,6 +86,7 @@ export default class PostCard extends Component {
         );
     }
 
+
     renderComments() {
         return (
             <FlatList
@@ -119,9 +121,14 @@ export default class PostCard extends Component {
                 }}
 
                 ListHeaderComponent={this.renderCard(DialogManager.viewportWidth)}
+                ListFooterComponent= {this.renderFooter}
             />
 
         );
+    }
+
+    renderFooter(){
+        return (<CommentInput />);
     }
 
 
