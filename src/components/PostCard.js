@@ -5,10 +5,12 @@ import {
     StyleSheet,
     Dimensions,
     TouchableOpacity,
+    AsyncStorage
 } from "react-native";
 
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base'
 import ProgressiveImage from '../components/ProgressiveImage';
+import CommentInput from '../components/CommentInput';
 import DialogManager, { ScaleAnimation, DialogContent } from 'react-native-dialog-component';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
@@ -17,6 +19,22 @@ export default class PostCard extends Component {
     constructor(props) {
         super(props);
         this.data = props.data;
+        this.state = {
+            data: props.data,
+            username: props.username,
+            userphoto: props.userphoto
+        }
+        this.componentDidMount();
+    }
+
+    async componentDidMount() {
+        try {
+            const photoURL = await AsyncStorage.getItem('photoURL');
+            const displayName = await AsyncStorage.getItem('displayName');
+
+            this.setState({ userphoto: photoURL, username: displayName });
+
+        } catch (error) { }
     }
 
     renderImage() {
@@ -55,65 +73,80 @@ export default class PostCard extends Component {
                         <Button transparent>
                             <Icon name="chatbubbles" style={{ fontSize: 10, color: 'grey' }} />
                             <Text note style={styles.iconText}> {this.data.item.coments.length} Comentários</Text>
+
                         </Button>
                     </Left>
-                    <Right>
-                        <Icon type="MaterialCommunityIcons" name="delete" button onPress={() => alert("Cliquei em delete")} />
-                    </Right>
+                    {this.state.username == this.data.item.username &&
+                        <Right>
+                            <Icon type="MaterialCommunityIcons" name="delete" button onPress={() => alert(this.data.item.username)} />
+                        </Right>}
+
                 </CardItem>
             </Card>
         );
     }
 
-    renderComments(){
-        return(
+
+    renderComments() {
+        return (
             <FlatList
-            data={this.data.item.coments}
-            keyExtractor={item => item.coment}
-            onEndReachedThreshold={1}
-            renderItem={({ item }) => {
-                return (
-                    <View style={styles.item}>
+                data={this.state.data.item.coments}
+                extraData={this.state}
+                keyExtractor={item => item.coment}
+                onEndReachedThreshold={1}
+                renderItem={({ item }) => {
+                    return (
+                        <View style={styles.item}>
 
-                    <Card style={{ marginLeft: 0, flex: 0, width: DialogManager.viewportWidth }}>
-                    <CardItem>
-                        <Left style={{ flex: 0.8 }}>
-                            <Thumbnail small source={{ uri:item.userphoto }} />
-                            <Body>
-                            <Text style={styles.titleText}>{item.userid}</Text>
-                            <Text style={styles.text}>{item.coment}</Text>
-                            </Body>
-                        </Left>
-                        
-                    </CardItem>
-                    </Card>
+                            <Card style={{ marginLeft: 0, flex: 0, width: DialogManager.viewportWidth }}>
+                                <CardItem>
+                                    <Left style={{ flex: 0.8 }}>
+                                        <Thumbnail small source={{ uri: item.userphoto }} />
+                                        <Body>
+                                            <Text style={styles.titleText}>{item.userid}</Text>
+                                            <Text style={styles.text}>{item.coment}</Text>
+                                        </Body>
+                                    </Left>
+                                    {this.state.username == item.userid &&
+                                    <Right>
+                                        <Icon type="MaterialCommunityIcons" name="delete" button onPress={() => alert("Cliquei em delete")} />
+                                    </Right>}
+
+                                </CardItem>
+                            </Card>
 
 
-                    </View>
-                );
-            }}
-        />
+                        </View>
+                    );
+                }}
+
+                ListHeaderComponent={this.renderCard(DialogManager.viewportWidth)}
+                ListFooterComponent= {this.renderFooter}
+            />
 
         );
+    }
+
+    renderFooter(){
+        return (<CommentInput />);
     }
 
 
 
     renderDialog() {
         DialogManager.show({
-            height: 500,
+            height: viewportHeight,
             animationDuration: 200,
             ScaleAnimation: new ScaleAnimation(),
             children: (
                 <DialogContent>
                     <View>
-                        {this.renderCard(DialogManager.viewportWidth)}
                         {this.renderComments()}
                     </View>
                 </DialogContent>
             ),
         }, () => {
-       
+
         });
     }
     renderText() {
