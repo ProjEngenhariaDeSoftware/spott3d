@@ -7,6 +7,7 @@ import { Router, Scene } from 'react-native-router-flux';
 import Start from './src/components/Start';
 import Home from './src/components/Home';
 import Navbar from './src/components/Navbar';
+import Register from './src/components/Register';
 
 
 export default class Spotted extends Component {
@@ -27,6 +28,11 @@ export default class Spotted extends Component {
               component={Home}
               title="Página inicial"
               hideNavBar={true}
+            />
+            <Scene
+              key="register"
+              component={Register}
+              title="Quase lá"
             />
             <View
               key="aplicacoes"

@@ -37,14 +37,30 @@ export default class Start extends Component {
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
       const currentUser = await firebase.auth().signInWithCredential(credential);
 
-      AsyncStorage.setItem('isLogged', 'true');
-      AsyncStorage.setItem('photoURL', currentUser.user.photoURL);
-      AsyncStorage.setItem('displayName', currentUser.user.displayName);
-      AsyncStorage.setItem('email', currentUser.user.email);
+      await AsyncStorage.setItem('isLogged', 'true');
+      await AsyncStorage.setItem('photoURL', currentUser.user.photoURL);
+      await AsyncStorage.setItem('displayName', currentUser.user.displayName);
+      await AsyncStorage.setItem('email', currentUser.user.email);
 
-      Actions.jump('home');
-      Actions.reset('home');
-    } catch (error) { console.log(error)}
+      const email = await AsyncStorage.getItem('email');
+
+      let userData = null;
+      await fetch('https://api-spotted.herokuapp.com/api/user/email/' + email)
+        .then(res => res.json())
+        .then(dat => {
+          userData = dat;
+        })
+        .catch(a => {});
+
+      if (userData == null) {
+        Actions.reset('register');      
+      } else {
+        Actions.reset('home');
+      }
+
+    } catch (error) {
+      console.error(error);
+   }
   }
 
   render() {
@@ -52,7 +68,7 @@ export default class Start extends Component {
       <View style={styles.container}>
         <View style={styles.column}>
           <View style={styles.box}>
-            <Text style={styles.title} onPress={Actions.home}> Logo aqui, e algum texto abaixo </Text>
+            <Text style={styles.title}> Logo aqui, e algum texto abaixo </Text>
           </View>
         </View>
         <View style={styles.column}>
@@ -60,7 +76,7 @@ export default class Start extends Component {
             <TouchableOpacity
               style={styles.googleButton}
               onPress={this.googleLogin}
-              activeOpacity={0.7}>
+              activeOpacity={0.8}>
               <Image style={styles.googleLogo} source={require('./../../assets/images/google-icon.png')}></Image>
               <Text style={styles.googleText}>Entrar com o Google</Text>
             </TouchableOpacity>
