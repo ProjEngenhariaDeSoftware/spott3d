@@ -105,10 +105,10 @@ export default class PostCard extends Component {
                                             <Text style={styles.text}>{item.coment}</Text>
                                         </Body>
                                     </Left>
-
+                                    {this.state.username == item.userid &&
                                     <Right>
                                         <Icon type="MaterialCommunityIcons" name="delete" button onPress={() => alert("Cliquei em delete")} />
-                                    </Right>
+                                    </Right>}
 
                                 </CardItem>
                             </Card>
