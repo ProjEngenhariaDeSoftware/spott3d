@@ -152,7 +152,7 @@ export default class PostList extends Component {
           data={this.state.dataSource}
           renderItem={(item) => {
             return (
-              <PostCard data={item} />
+              <PostCard data={item}/>
             )
           }}
           keyExtractor={item => item.key}

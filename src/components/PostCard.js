@@ -19,7 +19,7 @@ const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window'
 export default class PostCard extends Component {
     constructor(props) {
         super(props);
-        this.data= props.data;
+        this.data = props.data;
         this.state = {
             data: props.data,
             username: props.username,
@@ -35,7 +35,8 @@ export default class PostCard extends Component {
             const photoURL = await AsyncStorage.getItem('photoURL');
             const displayName = await AsyncStorage.getItem('displayName');
 
-            this.setState({ userphoto: photoURL, username: displayName});
+            this.setState({ userphoto: photoURL, username: displayName });
+
 
         } catch (error) { }
     }
@@ -100,7 +101,7 @@ export default class PostCard extends Component {
                     return (
                         <View style={styles.item}>
                             <ListItem
-                                containerStyle={{marginLeft: 0}}
+                                containerStyle={{ marginLeft: 0 }}
                                 title={item.userid}
                                 titleStyle={styles.userComment}
                                 subtitle={<View style={styles.subtitleView}>
@@ -128,7 +129,7 @@ export default class PostCard extends Component {
     renderFooter(userphoto) {
         return (
             <View style={{ flexDirection: 'row', width: viewportWidth }}>
-                <Thumbnail small source={{ uri: userphoto }} style={{marginStart: 18}}/>
+                <Thumbnail small source={{ uri: userphoto }} style={{ marginStart: 18 }} />
                 <TextInput
                     autoFocus
                     keyboardType="default"
@@ -136,14 +137,14 @@ export default class PostCard extends Component {
                     autoCapitalize="none"
                     multiline={true}
                     style={styles.textInput}
-                    onChangeText={(text) => {this.setState({newComment: text})}}
+                    onChangeText={(text) => { this.setState({ newComment: text }) }}
                     placeholder="Digite seu comentário..."
                     returnKeyType="send"
                     blurOnSubmit={true}
                     onSubmitEditing={this.sendComment(this.state.newComment)}
                 />
-                <Button transparent small style={{marginLeft: 8, fontFamily: 'ProductSans'}} onPress={() => {this.sendComment(this.state.newComment)}}>
-                <Text>Enviar</Text>
+                <Button transparent small style={{ marginLeft: 8, fontFamily: 'ProductSans' }} onPress={() => { this.sendComment(this.state.newComment) }}>
+                    <Text>Enviar</Text>
                 </Button>
             </View>
         );
@@ -175,7 +176,7 @@ export default class PostCard extends Component {
                         onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <View style={styles.ModalInsideView}>
-                            {this.renderComments()}
+                                {this.renderComments()}
                             </View>
                         </View>
 
@@ -204,7 +205,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 45,
         width: "70%",
-        fontFamily:'ProductSans' },
+        fontFamily: 'ProductSans'
+    },
 
     userComment: {
         fontFamily: 'ProductSans',
