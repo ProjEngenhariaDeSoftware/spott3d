@@ -4,7 +4,6 @@ import {
   Text,
   View,
   AsyncStorage,
-  Button,
   TouchableOpacity,
   Image
 } from 'react-native';

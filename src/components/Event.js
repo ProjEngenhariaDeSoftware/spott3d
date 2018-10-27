@@ -1,14 +1,5 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  Dimensions,
-  FlatList,
-  RefreshControl,
-} from 'react-native';
 import PostList from '../components/PostList'
-
-
-const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
 export default class Event extends Component {
   constructor(props) {
