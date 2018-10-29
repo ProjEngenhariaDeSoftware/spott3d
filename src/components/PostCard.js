@@ -175,7 +175,7 @@ export default class PostCard extends Component {
                         visible={this.state.modalVisibleStatus}
                         onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <View style={styles.ModalInsideView}>
+                            <View>
                                 {this.renderComments()}
                             </View>
                         </View>
