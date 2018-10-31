@@ -8,6 +8,7 @@ import Start from './src/components/Start';
 import Home from './src/components/Home';
 import Navbar from './src/components/Navbar';
 import Register from './src/components/Register';
+import AddSpotted from './src/components/AddSpotted';
 
 
 export default class Spotted extends Component {
@@ -33,6 +34,12 @@ export default class Spotted extends Component {
               key="register"
               component={Register}
               title="Quase lá"
+            />
+            <Scene
+              key="addspotted"
+              component={AddSpotted}
+              title="Enviar novo spotted"
+              hideNavBar={true}
             />
             <View
               key="aplicacoes"

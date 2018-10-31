@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PostList from '../components/PostList';
+import SpottedList from '../components/SpottedList';
 
 
 export default class Spotted extends Component {
@@ -66,7 +66,7 @@ export default class Spotted extends Component {
 
   render() {
     return (
-      <PostList dataPosts={this.state.dataSource} color='#EC5D73'></PostList>
+      <SpottedList dataPosts={this.state.dataSource} color='#EC5D73'></SpottedList>
     );
   }
 }

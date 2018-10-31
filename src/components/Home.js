@@ -57,7 +57,7 @@ export default class Home extends Component {
             <View style={styles.circleOut}>
               <TouchableOpacity onPress={this.openEvent} activeOpacity={0.7}>
                 <View style={styles.circle}>
-                  <Text style={styles.title} onPress={Actions.aplicacoes}>
+                  <Text style={styles.title}>
                     eventos
                   </Text>
                 </View>
@@ -70,7 +70,7 @@ export default class Home extends Component {
             <View style={styles.circleOut}>
               <TouchableOpacity onPress={this.openWarnings} activeOpacity={0.7}>
                 <View style={styles.circle}>
-                  <Text style={styles.title} onPress={Actions.aplicacoes}>
+                  <Text style={styles.title}>
                     avisos
                   </Text>
                 </View>
@@ -81,7 +81,7 @@ export default class Home extends Component {
             <View style={styles.circleOut}>
               <TouchableOpacity onPress={this.openEntertainment} activeOpacity={0.7}>
                 <View style={styles.circle}>
-                  <Text style={styles.title} onPress={Actions.aplicacoes}>
+                  <Text style={styles.title}>
                     diversos
                   </Text>
                 </View>
