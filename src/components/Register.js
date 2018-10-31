@@ -37,6 +37,7 @@ export default class Register extends Component {
 
   submitUser = async () => {
     try {
+      await AsyncStorage.setItem('username', this.state.username);
       await fetch('http://api-spotted.herokuapp.com/api/user', {
         headers: {
           Accept: 'application/json',
@@ -45,7 +46,7 @@ export default class Register extends Component {
         method: 'POST',
         body: JSON.stringify({
           email: this.state.email,
-          nickname: this.state.username.toLowerCase()
+          username: this.state.username.toLowerCase()
         })
       }).then(a => {
         Actions.reset('home');
