@@ -3,14 +3,21 @@ import {
   StyleSheet,
   Text,
   View,
-  AsyncStorage,
   TouchableOpacity,
   Image,
   TextInput,
   Picker,
-  CheckBox
+  CameraRoll
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
+import ImagePicker from 'react-native-image-picker';
+
+const options = {
+  title: 'Opções',
+  chooseFromLibraryButtonTitle: 'Escolha uma imagem da sua galeria',
+  takePhotoButtonTitle: 'Tire uma foto',
+  mediaType: 'photo'
+};
 
 export default class AddSpotted extends Component {
 
@@ -18,83 +25,127 @@ export default class AddSpotted extends Component {
     super();
     this.state = {
       haveImage: false,
-      course: ''
-    };
+      course: '',
+      location: '',
+      text: '',
+      image: null,
+      sendImage: null
+    };    
+  }
+
+  selectPhoto = () => {
+    ImagePicker.showImagePicker(options, (response) => {
+      console.warn('Response = ', response);
+      if (response.error) {
+        alert('Algo de errado aconteceu');
+      } else {
+        const source = { uri: response.uri };
+        const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
+        console.warn(sourceData);
+        this.setState({ image: source, sendImage: sourceData });
+      } 
+    });
+  }
+
+  submitSpotted = async () => {
+    try {
+      await fetch('https://api-spotted.herokuapp.com/api/spotted', {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          location: this.state.location,
+          course: this.state.course,
+          text: this.state.text,
+          image: this.state.sendImage
+        })
+      }).then(res => {
+        Actions.pop();
+      });
+    } catch(error) {}
+
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.row}>
-          <View style={styles.circle}>
-            <Image style={styles.googleLogo} source={require('./../../assets/images/google-icon.png')}></Image>
-          </View> 
-        </View>
-        <View style={styles.row}>
-          <View>
-            <Text style={styles.label}>Local em que foi visto(a)</Text>
-            <TextInput
-              placeholder='BG, CAA, Praça de Alimentação...'
-              style={styles.input}
-              onChangeText={(location) => this.setState({ location })}
-              value={this.state.location}
-            />
+        <View style={{flex: 1, margin: 15}}>
+          <View style={styles.row}>
+            <View>
+              <Text style={styles.label}>Local em que foi visto(a)</Text>
+              <TextInput
+                placeholder='BG, CAA, Praça de Alimentação...'
+                style={styles.input}
+                onChangeText={(location) => this.setState({ location })}
+                value={this.state.location}
+              />
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View>
+              <Text style={styles.label}>Curso</Text>
+              <TouchableOpacity style={styles.course} activeOpacity={0.8}>
+                <Picker
+                selectedValue={this.state.course}
+                  style={{ height: 40, width: 320, color: 'gray' }}
+                  onValueChange={(itemValue, itemIndex) => this.setState({ course: itemValue })}>
+                  <Picker.Item label="Desconhecido" value="Desconhecido" />
+                  <Picker.Item label="Ciências da Computação" value="Ciências da Computação" />
+                  <Picker.Item label="Eng. Elétrica" value="Eng. Elétrica" />
+                </Picker>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View>
+              <Text style={styles.label}>Mensagem</Text>
+              <TextInput
+                placeholder='Abra seu coração'
+                underlineColorAndroid="transparent"
+                numberOfLines={4}
+                multiline={true}
+                style={styles.textArea}
+                onChangeText={(text) => this.setState({ text })}
+                value={this.state.text}
+              />
+            </View>
           </View>
         </View>
-        <View style={styles.row}>
-          <View>
-            <Text style={styles.label}>Curso</Text>
-            <TouchableOpacity style={styles.course} activeOpacity={0.8}>
-              <Picker
-                selectedValue={this.state.course}
-                style={{ height: 40, width: 320, color: 'gray' }}
-                onValueChange={(itemValue, itemIndex) => this.setState({course: itemValue})}>
-                <Picker.Item label="Desconhecido" value="Desconhecido" />
-                <Picker.Item label="Ciências da Computação" value="Ciências da Computação" />
-                <Picker.Item label="Eng. Elétrica" value="Eng. Elétrica" />
-              </Picker>
+        <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-between'}}>
+          <View style={styles.row}>
+            <View>
+              <TouchableOpacity
+                style={styles.submit}
+                onPress={this.selectPhoto}
+                activeOpacity={0.8}>
+                <Text style={styles.text}>
+                  adicionar imagem
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={styles.submit}
+              onPress={this.submitSpotted}
+              activeOpacity={0.8}>
+              <Text style={styles.text}>
+                enviar
+              </Text>
             </TouchableOpacity>
           </View>
-        </View>
-        <View style={styles.row}>
-          <View>
-            <Text style={styles.label}>Mensagem</Text>
-            <TextInput
-              placeholder='Abra seu coração'
-              style={styles.input}
-              onChangeText={(text) => this.setState({ text })}
-              value={this.state.text}
-            />
-          </View>
-        </View>
-        <View style={styles.row}>
-          <CheckBox
-            value={this.state.haveImage}
-            onValueChange={() => this.setState({haveImage: !this.state.haveImage })}
-          />
-          <Text style={{ margin: 5 }}>Checkbox para imagem, adicionar campo</Text>
-        </View>
-        <View style={styles.row}>
-          <TouchableOpacity
-            style={styles.submit}
-            onPress={this.submitUser}
-            activeOpacity={0.8}>
-            <Text style={styles.text}>
-              entrar
-            </Text>
-          </TouchableOpacity>
         </View>
       </View>
     );
   }
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#EC5D73'
+    backgroundColor: '#dadada'
   },
   circle: {
     width: 65,
@@ -106,7 +157,7 @@ const styles = StyleSheet.create({
     margin: 16,
     elevation: 40
   },
-  googleLogo: {
+  imagePreview: {
     width: 50,
     height: 50,
     alignItems: 'center',
@@ -114,31 +165,32 @@ const styles = StyleSheet.create({
   },
   row: {
     flex: 1,
-    flexDirection: 'row',
-    margin: 3
+    margin: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   label: {
-    color: 'white',
+    color: '#EC5D73',
     fontSize: 17,
     fontFamily: 'ProductSans',
     marginLeft: 5,
-    margin:3
+    margin: 3
   },
   text: {
-    color: 'gray',
+    color: 'white',
     fontSize: 17,
     fontFamily: 'ProductSans',
-    margin:3
+    margin: 3
   },
   course: {
-    height: 40, 
+    height: 40,
     width: 330,
-    borderRadius: 50,
+    borderRadius: 10,
     backgroundColor: 'white',
     color: 'gray',
     fontSize: 17,
     fontFamily: 'ProductSans',
-    elevation: 5,
+    elevation: 3,
     borderColor: '#e7e7e7',
     borderWidth: 2,
     margin: 5
@@ -150,27 +202,41 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderColor: '#e7e7e7',
     borderWidth: 2,
-    borderRadius: 30,
-    elevation: 5,
+    borderRadius: 10,
+    elevation: 3,
     padding: 10,
     margin: 5,
     width: 330,
-		height: 40,
+    height: 40,
   },
-   submit: {
+  textArea: {
+    color: 'gray',
+    fontSize: 17,
+    fontFamily: 'ProductSans',
+    backgroundColor: 'white',
+    borderColor: '#e7e7e7',
+    borderWidth: 2,
+    borderRadius: 10,
+    elevation: 3,
+    padding: 10,
+    margin: 5,
+    width: 330,
+    height: 120,
+  },
+  submit: {
     justifyContent: 'center',
     alignItems: 'center',
     color: 'white',
     fontSize: 20,
     fontFamily: 'ProductSans',
-    backgroundColor: 'white',
-    borderColor: '#e7e7e7',
-    borderWidth: 0.5,
+    backgroundColor: '#EC5D73',
+    borderColor: 'white',
+    borderWidth: 1.5,
     borderRadius: 30,
-    elevation: 20,
-    width: 180,
+    elevation: 3,
+    width: 160,
     height: 40,
-    margin: 5
+    margin: 3
   }
-  
+
 });

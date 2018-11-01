@@ -10,8 +10,6 @@ import SpottedCard from '../components/SpottedCard';
 import ProgressBar from '../components/ProgressBar';
 import { Actions } from 'react-native-router-flux';
 
-const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
-
 export default class SpottedList extends Component {
   constructor(props) {
     super();
@@ -46,7 +44,9 @@ export default class SpottedList extends Component {
         .then(res => res.json())
         .then(data => {
           this.state.spotteds = data;
+          this.state.spotteds = this.state.spotteds.reverse();
           this.setState({ isLoading: false });
+          console.warn(data);
         });
     } catch (error) { }
 

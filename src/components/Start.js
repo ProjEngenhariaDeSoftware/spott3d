@@ -23,8 +23,11 @@ export default class Start extends Component {
   async componentDidMount() {
     try {
       const isLogged = await AsyncStorage.getItem('isLogged');
-      if (isLogged != null) {
+      if (isLogged === 'true') {
         Actions.reset('home');
+      }
+      if (isLogged === 'false') {
+        Actions.reset('register');
       }
     } catch (error) {}
   }

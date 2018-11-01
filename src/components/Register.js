@@ -24,6 +24,7 @@ export default class Register extends Component {
 
   async componentDidMount() {
     try {
+      await AsyncStorage.setItem('isLogged', 'false');
       const photo = await AsyncStorage.getItem('photoURL');
       let name = await AsyncStorage.getItem('displayName');
       const userEmail = await AsyncStorage.getItem('email');
@@ -38,7 +39,7 @@ export default class Register extends Component {
   submitUser = async () => {
     try {
       await AsyncStorage.setItem('username', this.state.username);
-      await fetch('http://api-spotted.herokuapp.com/api/user', {
+      await fetch('https://api-spotted.herokuapp.com/api/user', {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
@@ -49,6 +50,8 @@ export default class Register extends Component {
           username: this.state.username.toLowerCase()
         })
       }).then(a => {
+        AsyncStorage.setItem('isLogged', 'true');
+      }).then(b => {         
         Actions.reset('home');
       });
     } catch (error) {}
