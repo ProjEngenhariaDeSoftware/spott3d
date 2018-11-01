@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-image-picker')
     compile project(':react-native-google-signin')
     implementation project(':react-native-firebase')
     implementation "com.google.android.gms:play-services-base:16.0.1"

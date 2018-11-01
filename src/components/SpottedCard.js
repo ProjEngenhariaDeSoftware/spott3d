@@ -5,7 +5,6 @@ import {
 	StyleSheet,
 	Dimensions,
 	TouchableOpacity,
-	AsyncStorage,
 	TextInput,
 	Modal,
 } from 'react-native';
@@ -33,11 +32,15 @@ export default class SpottedCard extends Component {
 
 	renderCard() {
 		return (
-			<Card style={{ margin: 1, flex: 1, elevation: 4 }}>
-				<CardItem>
+			<Card style={{ marginBottom: 0, flex: 1 }}>
+				<CardItem style={{ backgroundColor: '#faeaea' }}>
 					<Left style={{ flex: 2 }}>
-						<Body>
-							<Text style={styles.local}>Local: {this.data.item.location}</Text>
+						<Body style={{ justifyContent: 'center' }}>
+							<Text style={styles.local}>
+                <Icon style={styles.local} type="MaterialIcons" name="report" />
+                {' ' + this.data.item.location.toUpperCase()}
+              </Text>
+							<Text style={styles.datetime}>Curso: {this.data.item.course}</Text>
 							<Text style={styles.datetime}>Data: {this.data.item.datetime}</Text>
 						</Body>
 					</Left>
@@ -45,9 +48,11 @@ export default class SpottedCard extends Component {
 						<Icon type="MaterialIcons" name="report" button onPress={() => alert("Cliquei em denunciar")} />
 					</Right>
 				</CardItem>
-				<Body>
-					{this.renderText()}
-				</Body>
+        <Body>
+				  <Body style={{ flex:1 }}>
+				  	{this.renderText()}
+				  </Body>
+        </Body>
 				<CardItem>
 					<Left>
 						<Button transparent>
@@ -86,7 +91,7 @@ export default class SpottedCard extends Component {
 					);
 				}}
 				contentContainerStyle={{ width: viewportWidth }}
-				ListHeaderComponent={this.renderCard(viewportWidth)}
+				ListHeaderComponent={this.renderCard()}
 				ListFooterComponent={this.renderFooter()}
 			/>
 
@@ -102,7 +107,6 @@ export default class SpottedCard extends Component {
 		return (
 			<View style={styles.box}>
 				<TextInput
-					autoFocus
 					keyboardType="default"
 					autoCorrect={false}
 					style={styles.input}
@@ -169,7 +173,7 @@ const styles = StyleSheet.create({
 	box: {
    	flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center'
+    alignItems: 'center'
   },
 	local: {
 		fontFamily: 'ProductSans',
@@ -206,7 +210,7 @@ const styles = StyleSheet.create({
 		height: 40,
 		borderColor: '#e0e0e0',
 		borderWidth: 1,
-		borderRadius: 45,
+		borderRadius: 10,
 		width: "70%",
 		fontFamily: 'ProductSans'
 	},
@@ -224,7 +228,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EC5D73',
     borderColor: '#e7e7e7',
     borderWidth: 0.5,
-    borderRadius: 25,
+    borderRadius: 10,
     elevation: 2,
     width: 70,
 		height: 40,
