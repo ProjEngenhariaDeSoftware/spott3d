@@ -58,7 +58,7 @@ export default class SpottedCard extends Component {
 						</Body>
 					</Left>
 					<Right style={{ flex: 1 }}>
-						<Icon type="MaterialIcons" name="report" button onPress={() => alert("Cliquei em denunciar")} />
+						<Icon type="MaterialIcons" name="alert-box" button onPress={() => alert("Cliquei em denunciar")} />
 					</Right>
 				</CardItem>
         <Body>
@@ -69,7 +69,7 @@ export default class SpottedCard extends Component {
 				<CardItem>
 					<Left>
 						<Button transparent>
-							<Icon type="MaterialIcons" name="forum" style={styles.comments}/>
+							<Icon type="MaterialIcons" name="comment-text-multiple" style={styles.comments}/>
 							<Text note style={styles.comments}> {this.data.item.comments.length} comentários</Text>
 						</Button>
 					</Left>

@@ -39,12 +39,19 @@ export default class SpottedList extends Component {
   };
 
   async componentDidMount() {
+    let request = [];
+    let posts = [];
     try {
       await fetch('https://api-spotted.herokuapp.com/api/spotted')
         .then(res => res.json())
         .then(data => {
-          this.state.spotteds = data;
-          this.state.spotteds = this.state.spotteds.reverse();
+          request = data;
+          request.forEach(spotted => {
+            if (spotted.visible) {
+              posts.push(spotted);
+            }
+          });
+          this.state.spotteds = posts.sort((a, b) => b.id - a.id);
           this.setState({ isLoading: false });
           console.warn(data);
         });
