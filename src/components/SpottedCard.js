@@ -7,6 +7,7 @@ import {
 	TouchableOpacity,
 	TextInput,
 	Modal,
+	AsyncStorage
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base';
@@ -36,12 +37,24 @@ export default class SpottedCard extends Component {
 				<CardItem style={{ backgroundColor: '#faeaea' }}>
 					<Left style={{ flex: 2 }}>
 						<Body style={{ justifyContent: 'center' }}>
-							<Text style={styles.local}>
-                <Icon style={styles.local} type="MaterialIcons" name="report" />
-                {' ' + this.data.item.location.toUpperCase()}
-              </Text>
-							<Text style={styles.datetime}>Curso: {this.data.item.course}</Text>
-							<Text style={styles.datetime}>Data: {this.data.item.datetime}</Text>
+							<View style={styles.local}>
+                <Icon style={styles.local} type="MaterialIcons" name="pin-drop" />
+                <Text style={styles.local}>
+									{' ' + this.data.item.location.toUpperCase()}
+								</Text>
+              </View>
+							<View style={styles.local}>
+                <Icon style={styles.datetime} type="MaterialIcons" name="school" />
+                <Text style={styles.datetime}>
+									{' ' + this.data.item.course}
+								</Text>
+              </View>
+							<View style={styles.local}>
+                <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
+                <Text style={styles.datetime}>
+									{' ' + this.data.item.datetime}
+								</Text>
+              </View>
 						</Body>
 					</Left>
 					<Right style={{ flex: 1 }}>
@@ -56,7 +69,7 @@ export default class SpottedCard extends Component {
 				<CardItem>
 					<Left>
 						<Button transparent>
-							<Icon name="chatbubbles" style={styles.comments}/>
+							<Icon type="MaterialIcons" name="forum" style={styles.comments}/>
 							<Text note style={styles.comments}> {this.data.item.comments.length} comentários</Text>
 						</Button>
 					</Left>
@@ -77,14 +90,14 @@ export default class SpottedCard extends Component {
 						<View style={styles.item}>
 							<ListItem
 								containerStyle={{ margin: 1 }}
-								title={item.username}
+								title={'@' + item.commenter.username}
 								titleStyle={styles.userComment}
 								subtitle={
 									<View style={styles.subtitleView}>
 										<Text style={styles.comment}>{item.comment}</Text>
 									</View>
 								}
-								leftAvatar={{ source: { uri: item.userPhoto } }}
+								leftAvatar={{ source: { uri: item.commenter.image } }}
 							>
 							</ListItem>
 						</View>
@@ -105,25 +118,26 @@ export default class SpottedCard extends Component {
 
 	renderFooter() {
 		return (
-			<View style={styles.box}>
-				<TextInput
-					keyboardType="default"
-					autoCorrect={false}
-					style={styles.input}
-					onChangeText={(newComment) => { this.setState({ newComment }) }}
-					placeholder="Adicionar comentário..."
-					returnKeyType="send"
-					blurOnSubmit={true}
-					value={this.state.newComment}
-				/>
-				<TouchableOpacity
-					style={styles.submit}
-					onPress={this.sendComment}
-					activeOpacity={0.8}>
-					<Text style={styles.inputText}>
-            enviar
-          </Text>
-				</TouchableOpacity>
+			<View style={{ flex: 1, alignItems: 'center' }}>
+				<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+					<TextInput
+						keyboardType="default"
+						autoCorrect={false}
+						style={styles.input}
+						onChangeText={(newComment) => { this.setState({ newComment }) }}
+						placeholder=" Adicionar comentário..."
+						returnKeyType="send"
+						value={this.state.newComment}
+					/>
+					<TouchableOpacity
+						style={styles.submit}
+						onPress={this.sendComment}
+						activeOpacity={0.8}>
+						<Text style={styles.inputText}>
+        	    enviar
+        	  </Text>
+					</TouchableOpacity>
+				</View>
 			</View>
 		);
 	}
@@ -176,6 +190,8 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
 	local: {
+    flexDirection: 'row',
+    alignItems: 'center',
 		fontFamily: 'ProductSans',
 		fontSize: 16,
 		color: '#EC5D73',
@@ -205,8 +221,6 @@ const styles = StyleSheet.create({
 	},
 	input: {
 		margin: 2,
-		marginLeft: 8,
-		marginBottom: 10,
 		height: 40,
 		borderColor: '#e0e0e0',
 		borderWidth: 1,
@@ -223,7 +237,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     color: 'white',
-    fontSize: 15,
+    fontSize: 19,
     fontFamily: 'ProductSans',
     backgroundColor: '#EC5D73',
     borderColor: '#e7e7e7',

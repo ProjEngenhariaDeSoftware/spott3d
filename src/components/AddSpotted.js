@@ -35,14 +35,13 @@ export default class AddSpotted extends Component {
 
   selectPhoto = () => {
     ImagePicker.showImagePicker(options, (response) => {
-      console.warn('Response = ', response);
       if (response.error) {
         alert('Algo de errado aconteceu');
       } else {
         const source = { uri: response.uri };
         const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
-        console.warn(sourceData);
         this.setState({ image: source, sendImage: sourceData });
+        this.submitSpotted();
       } 
     });
   }
@@ -113,28 +112,30 @@ export default class AddSpotted extends Component {
             </View>
           </View>
         </View>
-        <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-between'}}>
-          <View style={styles.row}>
-            <View>
+        <View style={{ flex: 1 }}>
+          <View style={{ margin: 20, flexDirection: 'row' }}>
+            <View style={styles.row}>
+              <View>
+                <TouchableOpacity
+                  style={styles.submit}
+                  onPress={this.selectPhoto}
+                  activeOpacity={0.8}>
+                  <Text style={styles.text}>
+                    enviar c/ imagem
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.row}>
               <TouchableOpacity
                 style={styles.submit}
-                onPress={this.selectPhoto}
+                onPress={this.submitSpotted}
                 activeOpacity={0.8}>
                 <Text style={styles.text}>
-                  adicionar imagem
+                  enviar s/ imagem
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
-          <View style={styles.row}>
-            <TouchableOpacity
-              style={styles.submit}
-              onPress={this.submitSpotted}
-              activeOpacity={0.8}>
-              <Text style={styles.text}>
-                enviar
-              </Text>
-            </TouchableOpacity>
           </View>
         </View>
       </View>
