@@ -56,6 +56,10 @@ export default class SpottedList extends Component {
     Actions.jump('addspotted');
   };
 
+  handleRefresh = async () => {
+    this.componentDidMount();
+  }
+
   render() {
     return (
       this.state.isLoading ? <ProgressBar color={'#EC5D73'} /> :
