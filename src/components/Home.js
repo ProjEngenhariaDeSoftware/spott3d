@@ -92,7 +92,7 @@ export default class Home extends Component {
               </TouchableOpacity>
             </View>
             <Text style={styles.title}>
-              diversão
+              diversos
             </Text>
           </View>
         </View>

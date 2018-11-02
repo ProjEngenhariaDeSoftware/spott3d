@@ -47,7 +47,8 @@ export default class Register extends Component {
         method: 'POST',
         body: JSON.stringify({
           email: this.state.email,
-          username: this.state.username.toLowerCase()
+          username: this.state.username.toLowerCase(),
+          image: this.state.photoURL
         })
       }).then(a => {
         AsyncStorage.setItem('isLogged', 'true');
@@ -68,14 +69,14 @@ export default class Register extends Component {
               </View>
             </View>
             <Text style={styles.textName}> Olá, {this.state.displayName} </Text>
-            <Text style={styles.text}> Para prosseguir, informe um nickname </Text>
+            <Text style={styles.text}> Para prosseguir, informe um username </Text>
           </View>
         </View>
         <View style={styles.column}>
           <View style={styles.box}>
             <View style={styles.button}>
               <TextInput
-                placeholder='@nickname'
+                placeholder='username'
                 style={styles.input}
                 onChangeText={(username) => this.setState({ username })}
                 value={this.state.username}
