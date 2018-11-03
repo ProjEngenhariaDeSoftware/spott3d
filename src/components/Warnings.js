@@ -81,7 +81,7 @@ export default class Warnings extends Component {
   }
   render() {
     return (
-      <PostList dataPosts={this.posts} color='#adadb1'></PostList>
+      <PostList dataPosts={this.posts} pageTitle = 'Aviso' color='#adadb1'></PostList>
     );
   }
 }

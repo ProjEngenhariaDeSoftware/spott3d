@@ -80,7 +80,7 @@ export default class Event extends Component {
 
   render() {
     return (
-      <PostList dataPosts={this.posts} color='#738A98'></PostList>
+      <PostList dataPosts={this.posts} pageTitle = 'Evento' color='#738A98'></PostList>
     );
   }
 }

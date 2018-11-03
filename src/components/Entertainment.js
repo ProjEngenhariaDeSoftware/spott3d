@@ -81,7 +81,7 @@ export default class Entertainment extends Component {
 
   render() {
     return (
-      <PostList dataPosts={this.posts} color='#179e8a'></PostList>
+      <PostList dataPosts={this.posts} pageTitle = 'Entretenimento' color='#179e8a'></PostList>
     );
   }
 }
