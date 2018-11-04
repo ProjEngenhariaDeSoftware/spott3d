@@ -111,19 +111,17 @@ export default class PostList extends Component {
     this.setState({ modalVisibleStatus: visible });
   }
 
-
-
   sendPost(post) {
-
-    post = { 
+    post = {
       title: this.state.title,
       description: this.state.description,
       location: this.state.location,
       date: this.state.date
     }
-    // this.state.data.item.coments.push({ coment: comment, userid: this.state.username, userphoto: this.state.userphoto });
-    // console.log(coment);
-    
+
+    this.showModalFunction(!this.state.modalVisibleStatus);
+
+
   }
 
 
@@ -138,15 +136,15 @@ export default class PostList extends Component {
           onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
 
 
-           <Button transparent button onPress={() => { this.showModalFunction(!this.state.modalVisibleStatus) }}>
-              <Icon type="MaterialCommunityIcons" name="close" style={{ fontSize: 25, color: this.state.colorDetail }} />
-            </Button>
-            <Text style={{fontFamily:'ProductSans',textAlign:'center', fontWeight: 'bold',fontSize:25, color:this.state.colorDetail}}>Adicionar  {this.state.pageTitle}</Text>
+          <Button transparent button onPress={() => { this.showModalFunction(!this.state.modalVisibleStatus) }}>
+            <Icon type="MaterialCommunityIcons" name="close" style={{ fontSize: 25, color: this.state.colorDetail }} />
+          </Button>
+          <Text style={{ fontFamily: 'ProductSans', textAlign: 'center', fontWeight: 'bold', fontSize: 25, color: this.state.colorDetail }}>Adicionar  {this.state.pageTitle}</Text>
           <View style={{ alignItems: 'center', marginTop: 40 }}>
 
-           
 
-            <Text style={{color:this.state.colorDetail}}>Título:</Text>
+
+            <Text style={{ color: this.state.colorDetail }}>Título:</Text>
             <TextInput
               autoFocus
               keyboardType="default"
@@ -160,7 +158,7 @@ export default class PostList extends Component {
               blurOnSubmit={true}
             />
 
-            <Text style={{color:this.state.colorDetail}}>Descrição:</Text>
+            <Text style={{ color: this.state.colorDetail }}>Descrição:</Text>
             <TextInput
               autoFocus
               keyboardType="default"
@@ -175,7 +173,7 @@ export default class PostList extends Component {
             />
 
 
-            <Text style={{color:this.state.colorDetail}}>Local: </Text>
+            <Text style={{ color: this.state.colorDetail }}>Local: </Text>
             <TextInput
               autoFocus
               keyboardType="default"
@@ -190,7 +188,7 @@ export default class PostList extends Component {
 
             />
 
-            <Text style={{color:this.state.colorDetail}}>Data:</Text>
+            <Text style={{ color: this.state.colorDetail }}>Data:</Text>
             <DatePicker
               style={styles.date}
               date={this.state.date}
@@ -217,15 +215,15 @@ export default class PostList extends Component {
             />
 
 
-            <Button transparent button onPress={() => { this.sendPost() }}>
-              <Icon type="MaterialCommunityIcons" name="send" style={{ fontSize: 25, color: this.state.colorDetail, paddingLeft:10}} />
+            <Button transparent button onPress={() => { this.sendPost() }} >
+              <Icon type="MaterialCommunityIcons" name="send" style={{ fontSize: 25, color: this.state.colorDetail, paddingLeft: 10 }} />
             </Button>
-      
+
 
           </View>
         </Modal>
 
-        <Button transparent button onPress={() => this.addPost()}> 
+        <Button transparent button onPress={() => this.addPost()} >
           <Icon type="MaterialCommunityIcons" name="plus" style={{ fontSize: 25, color: this.state.colorDetail }} />
         </Button>
       </View>
@@ -319,6 +317,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     height: 40,
     elevation: 5,
+
   },
   textInput: {
     marginLeft: 8,
@@ -327,9 +326,9 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
     borderWidth: 1,
     borderRadius: 45,
-
     width: "90%",
-    fontFamily: 'ProductSans'
+    fontFamily: 'ProductSans',
+
   },
   descriptionInput: {
     marginLeft: 8,
@@ -338,9 +337,9 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
     borderWidth: 1,
     borderRadius: 30,
-
     width: "90%",
-    fontFamily: 'ProductSans'
+    fontFamily: 'ProductSans',
+
   },
 
   date: {
@@ -351,6 +350,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 45,
     width: "90%",
+
   },
 
 

@@ -92,15 +92,15 @@ export default class Warnings extends Component {
 
       <Container>
             <Tabs initialPage={0} >
-              <Tab heading="Avisos" tabStyle={{backgroundColor: '#adadb1'}} textStyle={{color: 'white', fontFamily: 'ProductSans'}} 
-              activeTabStyle={{backgroundColor: '#adadb1'}} activeTextStyle={{color: 'white'}} >
+              <Tab heading="Avisos" tabStyle={{backgroundColor: '#738A98'}} textStyle={{color: 'white', fontFamily: 'ProductSans'}} 
+              activeTabStyle={{backgroundColor: '#738A98'}} activeTextStyle={{color: 'white'}} >
                 <View >
                 <PostList dataPosts={this.posts} pageTitle = 'Aviso' color='#adadb1'></PostList>
                         
                 </View>
               </Tab>
-              <Tab heading="Notícias" tabStyle={{backgroundColor: '#adadb1'}} textStyle={{color: 'white'}} 
-              activeTabStyle={{backgroundColor: '#adadb1'}} activeTextStyle={{color: 'white'}}>
+              <Tab heading="Notícias" tabStyle={{backgroundColor: '#738A98'}} textStyle={{color: 'white'}} 
+              activeTabStyle={{backgroundColor: '#738A98'}} activeTextStyle={{color: 'white'}}>
                 <View>
                 <PostList dataPosts={this.posts} pageTitle = 'Notícia' color='#adadb1'></PostList>
                 </View>
