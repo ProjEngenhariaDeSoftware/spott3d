@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import PostList from '../components/PostList'
+import { View, StyleSheet, Dimensions } from 'react-native';
+import {Container, Header, Content, Tab, Tabs,Text } from 'native-base';
+
 
 
 export default class Warnings extends Component {
@@ -77,11 +80,33 @@ export default class Warnings extends Component {
     ]
 
     this.state = {
+      index: 0,
+      routes: [
+        { key: 'first', title: 'Avisos' },
+        { key: 'second', title: 'Notícias' },
+      ]
     }
   }
   render() {
     return (
-      <PostList dataPosts={this.posts} pageTitle = 'Aviso' color='#adadb1'></PostList>
+
+      <Container>
+            <Tabs initialPage={0}>
+              <Tab heading="Avisos">
+                <View >
+                <PostList dataPosts={this.posts} pageTitle = 'Aviso' color='#adadb1'></PostList>
+                        
+                </View>
+              </Tab>
+              <Tab heading="Notícias">
+                <View>
+                <PostList dataPosts={this.posts} pageTitle = 'Notícia' color='#adadb1'></PostList>
+                </View>
+              </Tab>
+            </Tabs>
+          </Container>
+
+    
     );
   }
 }
