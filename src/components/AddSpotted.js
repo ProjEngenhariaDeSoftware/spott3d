@@ -40,7 +40,7 @@ export default class AddSpotted extends Component {
       } else {
         const source = { uri: response.uri };
         const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
-        this.setState({ image: source, sendImage: sourceData });
+        this.setState({ image: source, sendImage: sourceData.uri });
         this.submitSpotted();
       } 
     });
@@ -113,7 +113,7 @@ export default class AddSpotted extends Component {
           </View>
         </View>
         <View style={{ flex: 1 }}>
-          <View style={{ margin: 20, flexDirection: 'row' }}>
+          <View style={{ margin: 10, flexDirection: 'row', position: 'absolute', bottom: 0 }}>
             <View style={styles.row}>
               <View>
                 <TouchableOpacity
