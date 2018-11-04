@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PostList from '../components/PostList'
-import { View, StyleSheet, Dimensions } from 'react-native';
-import {Container, Header, Content, Tab, Tabs,Text } from 'native-base';
+import { View} from 'react-native';
+import {Container, Tab, Tabs} from 'native-base';
 
 
 
@@ -91,14 +91,16 @@ export default class Warnings extends Component {
     return (
 
       <Container>
-            <Tabs initialPage={0}>
-              <Tab heading="Avisos">
+            <Tabs initialPage={0} >
+              <Tab heading="Avisos" tabStyle={{backgroundColor: '#adadb1'}} textStyle={{color: 'white', fontFamily: 'ProductSans'}} 
+              activeTabStyle={{backgroundColor: '#adadb1'}} activeTextStyle={{color: 'white'}} >
                 <View >
                 <PostList dataPosts={this.posts} pageTitle = 'Aviso' color='#adadb1'></PostList>
                         
                 </View>
               </Tab>
-              <Tab heading="Notícias">
+              <Tab heading="Notícias" tabStyle={{backgroundColor: '#adadb1'}} textStyle={{color: 'white'}} 
+              activeTabStyle={{backgroundColor: '#adadb1'}} activeTextStyle={{color: 'white'}}>
                 <View>
                 <PostList dataPosts={this.posts} pageTitle = 'Notícia' color='#adadb1'></PostList>
                 </View>
@@ -110,3 +112,8 @@ export default class Warnings extends Component {
     );
   }
 }
+
+
+
+
+
