@@ -28,10 +28,8 @@ export default class Register extends Component {
       const photo = await AsyncStorage.getItem('photoURL');
       let name = await AsyncStorage.getItem('displayName');
       const userEmail = await AsyncStorage.getItem('email');
-
       const names = name.split(' ');
       name = names[0] + ' ' + names[1];
-
       this.setState({ photoURL: photo, displayName: name, email: userEmail });
     } catch (error) { }
   }
