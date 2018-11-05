@@ -11,11 +11,11 @@ import {
 import { Button, Icon, View, Spinner, Left } from 'native-base'
 import PostCard from '../components/PostCard';
 import ProgressBar from '../components/ProgressBar';
-import DatePicker from 'react-native-datepicker'
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
 export default class PostList extends Component {
+  
   constructor(props) {
     super();
     // this.posts = [
@@ -91,15 +91,31 @@ export default class PostList extends Component {
       colorDetail: props.color,
       modalVisibleStatus: false,
       pageTitle: props.pageTitle,
+      type: props.type,
+      email: "",
       title: "",
       description: "",
       location: "",
-      date: new Date(),
+      
+      photoURL: '',
+      username: '',
+      email: ''
 
 
     }
 
   }
+
+  async componentDidMount() {
+    try {
+        const photoURL = await AsyncStorage.getItem('photoURL');
+        const displayName = await AsyncStorage.getItem('displayName');
+        const mail =  await AsyncStorage.getItem('email');
+        this.setState({ userphoto: photoURL, username: displayName, email: mail });
+
+
+    } catch (error) { }
+}
 
   renderLoader = () => {
     return (
@@ -111,17 +127,38 @@ export default class PostList extends Component {
     this.setState({ modalVisibleStatus: visible });
   }
 
+  
+
   sendPost(post) {
     post = {
+      email: this.state.email,
+      type: this.state.type,
       title: this.state.title,
-      description: this.state.description,
-      location: this.state.location,
-      date: this.state.date
-    }
+      text: this.state.description,
+      location: this.state.location}
+      async () => {
+      try {
+        await fetch('https://api-spotted.herokuapp.com/api/post', {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify(post)
+        }).then(res => {
+         if (res.status == 200){
+           alert("Enviado com Sucesso!");
+           this.showModalFunction(!this.state.modalVisibleStatus);
+         }
 
-    this.showModalFunction(!this.state.modalVisibleStatus);
+         else{
+          alert("Falha ao Enviar!");
+         }
+         
+        });
+      } catch(error) {}}
 
-
+    
   }
 
 
@@ -186,32 +223,6 @@ export default class PostList extends Component {
               returnKeyType="send"
               blurOnSubmit={true}
 
-            />
-
-            <Text style={{ color: this.state.colorDetail }}>Data:</Text>
-            <DatePicker
-              style={styles.date}
-              date={this.state.date}
-              mode="date"
-              placeholder="Selecione a Data"
-              format="DD/MM/YYYY"
-              minDate={new Date()}
-              maxDate="23/09/2024"
-              confirmBtnText="Confirm"
-              cancelBtnText="Cancel"
-              showIcon={false}
-              customStyles={{
-
-                dateInput: {
-                  borderWidth: 0,
-                  shadowOpacity: 0.0
-                },
-                dateText: {
-                  fontFamily: 'ProductSans'
-                }
-
-              }}
-              onDateChange={(date) => { this.setState({ date: date }) }}
             />
 
 
