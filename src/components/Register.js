@@ -18,25 +18,27 @@ export default class Register extends Component {
       photoURL: '',
       displayName: '',
       email: '',
-      username: ''
+      username: '',
+      alert: false
     };
   }
 
   async componentDidMount() {
-    try {
+   try {
       await AsyncStorage.setItem('isLogged', 'false');
       const photo = await AsyncStorage.getItem('photoURL');
       let name = await AsyncStorage.getItem('displayName');
       const userEmail = await AsyncStorage.getItem('email');
       const names = name.split(' ');
-      name = names[0] + ' ' + names[1];
+      name = names[0];
       this.setState({ photoURL: photo, displayName: name, email: userEmail });
     } catch (error) { }
   }
 
   submitUser = async () => {
-    try {
-      await AsyncStorage.setItem('username', this.state.username);
+   try {
+      this.setState({ alert: false });
+      await AsyncStorage.setItem('username', this.state.username.toLowerCase());
       await fetch('https://api-spotted.herokuapp.com/api/user', {
         headers: {
           Accept: 'application/json',
@@ -53,12 +55,14 @@ export default class Register extends Component {
       }).then(b => {         
         Actions.reset('home');
       });
-    } catch (error) {}
+    } catch (error) {
+      this.setState({ alert: true });
+    }
   }
 
   render() {
     return (
-      <View style={styles.container}>
+     <View style={styles.container}>
         <View style={styles.column}>
           <View style={styles.box}>
             <View style={styles.circleOut}>
@@ -72,6 +76,7 @@ export default class Register extends Component {
         </View>
         <View style={styles.column}>
           <View style={styles.box}>
+            { this.state.alert ? <Text style={styles.text}> Já existe usuário com esse username </Text> : null }
             <View style={styles.button}>
               <TextInput
                 placeholder='username'
@@ -175,5 +180,4 @@ const styles = StyleSheet.create({
     width: 180,
     margin: 10
   }
-
 });

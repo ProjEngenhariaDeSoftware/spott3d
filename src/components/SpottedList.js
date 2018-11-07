@@ -12,34 +12,34 @@ import { Actions } from 'react-native-router-flux';
 
 export default class SpottedList extends Component {
   constructor(props) {
-    super();
+    super(props);
     this.state = {
-      dataSource: props.dataPosts,
-      colorDetail: props.color,
-      spotteds: [],
+      color: props.color,
+      subcolor: props.subcolor,
+      spotteds: props.dataPosts,
       isLoading: true,
       refreshing: false,
     }
   }
 
   renderLoader = () => {
-    return (
-      this.state.showLoader ? <View><Spinner color={'#EC5D73'} /></View> : null
+   return (
+      this.state.showLoader ? <View><Spinner color={this.state.color} /></View> : null
     );
   };
 
   addButton = () => {
     return (
-      <View style={styles.view}>
+     <View style={styles.view}>
         <Button transparent button onPress={this.addPost}>
-          <Icon type="MaterialCommunityIcons" name="plus" style={{ fontSize: 25, color: '#EC5D73' }} />
+          <Icon type="MaterialCommunityIcons" name="plus" style={{ fontSize: 25, color: this.state.color }} />
         </Button>
       </View>
     );
   };
 
   async componentDidMount() {
-    let request = [];
+     let request = [];
     let posts = [];
     try {
       await fetch('https://api-spotted.herokuapp.com/api/spotted')
@@ -53,10 +53,8 @@ export default class SpottedList extends Component {
           });
           this.state.spotteds = posts.sort((a, b) => b.id - a.id);
           this.setState({ isLoading: false });
-          console.warn(data);
         });
-    } catch (error) { }
-
+    } catch (error) {}
   };
 
   addPost = () => {
@@ -64,26 +62,31 @@ export default class SpottedList extends Component {
   };
 
   handleRefresh = async () => {
-    this.componentDidMount();
+    this.setState({ isLoading: true });
+    await this.componentDidMount();
   }
 
   render() {
     return (
-      this.state.isLoading ? <ProgressBar color={'#EC5D73'} /> :
+      this.state.isLoading ? <ProgressBar color={this.state.color} /> :
         <FlatList
           data={this.state.spotteds}
           renderItem={(item) => {
             return (
-              <SpottedCard data={item} />
-            )
-          }}
+              <SpottedCard 
+                data={item}
+                color={this.state.color}
+                subcolor={this.state.subcolor}
+              />
+            )}
+          }
           keyExtractor={item => item.id}
           onEndReachedThreshold={1}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
               onRefresh={this.handleRefresh}
-              colors={['#EC5D73']}
+              colors={[this.state.color]}
             />
           }
           ListHeaderComponent={this.addButton}

@@ -7,7 +7,8 @@ import {
 	TouchableOpacity,
 	TextInput,
 	Modal,
-	AsyncStorage
+	AsyncStorage,
+	Image
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base';
@@ -20,6 +21,8 @@ export default class SpottedCard extends Component {
 	constructor(props) {
 		super(props);
 		this.data = props.data;
+		this.subcolor = props.subcolor;
+		this.color = props.color;
 		this.state = {
 			newComment: '',
 			modalVisibleStatus: false
@@ -33,23 +36,23 @@ export default class SpottedCard extends Component {
 
 	renderCard() {
 		return (
-			<Card style={{ marginBottom: 0, flex: 1 }}>
-				<CardItem style={{ backgroundColor: '#faeaea' }}>
+		<Card style={{ marginBottom: 1, flex: 1 }}>
+				<CardItem style={{ backgroundColor: this.subcolor }}>
 					<Left style={{ flex: 2 }}>
-						<Body style={{ justifyContent: 'center' }}>
-							<View style={styles.local}>
-                <Icon style={styles.local} type="MaterialIcons" name="pin-drop" />
-                <Text style={styles.local}>
-									{' ' + this.data.item.location.toUpperCase()}
+						<Body style={{ justifyContent: 'center', margin: 1 }}>
+							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                <Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
+                <Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+									{this.data.item.location != '' ? ' ' + this.data.item.location.toUpperCase() : 'Desconhecido'}
 								</Text>
               </View>
-							<View style={styles.local}>
+							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
                 <Icon style={styles.datetime} type="MaterialIcons" name="school" />
                 <Text style={styles.datetime}>
-									{' ' + this.data.item.course}
+									{this.data.item.course != '' ? ' ' + this.data.item.course : 'Desconhecido'}
 								</Text>
               </View>
-							<View style={styles.local}>
+							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
                 <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
                 <Text style={styles.datetime}>
 									{' ' + this.data.item.datetime}
@@ -58,25 +61,36 @@ export default class SpottedCard extends Component {
 						</Body>
 					</Left>
 					<Right style={{ flex: 1 }}>
-						<Icon type="MaterialIcons" name="alert-box" button onPress={() => alert("Cliquei em denunciar")} />
+						<Icon type="MaterialCommunityIcons" name="alert-box" />
 					</Right>
 				</CardItem>
         <Body>
 				  <Body style={{ flex:1 }}>
 				  	{this.renderText()}
+						{this.renderImage()}
 				  </Body>
         </Body>
 				<CardItem>
 					<Left>
-						<Button transparent>
-							<Icon type="MaterialIcons" name="comment-text-multiple" style={styles.comments}/>
-							<Text note style={styles.comments}> {this.data.item.comments.length} comentários</Text>
+						<Button transparent onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+							<Icon type="MaterialCommunityIcons" name="comment-text-multiple" style={styles.comments}/>
+							<Text note style={styles.comments}> {this.data.item.comments.length == 0 ? 'Adicionar comentário' : this.data.item.comments.length + ' comentário(s)'}</Text>
 						</Button>
 					</Left>
 				</CardItem>
 			</Card>
 		);
 	}
+
+	renderImage() {
+  	return (
+  		<CardItem cardBody>
+        <Image source={{ uri: this.data.item.image }} 
+				 style={{ width: viewportWidth, height: 170, resizeMode: 'contain',}}
+				/>
+  		</CardItem>
+  	);
+  }
 
 	renderComments() {
 		return (
@@ -107,19 +121,62 @@ export default class SpottedCard extends Component {
 				ListHeaderComponent={this.renderCard()}
 				ListFooterComponent={this.renderFooter()}
 			/>
-
 		);
 	}
 
 	sendComment = async () => {
-		// this.state.data.item.coments.push({ coment: comment, userid: this.state.username, userphoto: this.state.userphoto });
-		// console.log(coment);
+		try{
+			let usersMentioned = newComment.match(/@\w+/g).map(e => e.substr(1));
+			const userEmail = await AsyncStorage.getItem('email');
+			const userPhoto = await AsyncStorage.getItem('photoURL');
+			const nickname = await AsyncStorage.getItem('username');
+
+			await fetch('https://api-spotted.herokuapp.com/api/spotted/' + '' + '/comment', {
+				method: 'PUT',
+				headers: {
+					Accept: 'application/json',
+          'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					userMentioned: usersMentioned,
+          comment: this.state.newComment,
+          commenter: {
+						email: userEmail,
+            username: nickname,
+            image: userPhoto
+					}
+				})
+			}).then(a => {
+				this.data.item.comments.push({ 
+					comment: this.state.newComment,
+					commenter: {
+						username: nickname, 
+						image: userPhoto
+					}
+				});
+			});
+		} catch(error){}
+	}
+
+	report = async () => {
+		try {
+			await fetch('https://api-spotted.herokuapp.com/api/spotted/' + '', {
+				method: 'PUT',
+				headers: {
+					Accept: 'application/json',
+          'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					visible: false
+				})
+			})
+		} catch(error) {}
 	}
 
 	renderFooter() {
 		return (
 			<View style={{ flex: 1, alignItems: 'center' }}>
-				<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+				<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', margin: 2 }}>
 					<TextInput
 						keyboardType="default"
 						autoCorrect={false}
@@ -130,8 +187,8 @@ export default class SpottedCard extends Component {
 						value={this.state.newComment}
 					/>
 					<TouchableOpacity
-						style={styles.submit}
-						onPress={this.sendComment}
+						style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "20%", height: 40, margin: 2, marginRight: 4 }}
+						onPress={this.sendComment()}
 						activeOpacity={0.8}>
 						<Text style={styles.inputText}>
         	    enviar
@@ -158,7 +215,7 @@ export default class SpottedCard extends Component {
 
 	render() {
 		return (
-			<View style={styles.container}>
+		<View style={{ flex: 1, backgroundColor: this.color }}>
 				<TouchableOpacity activeOpacity={0.8} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
 					<View>
 						{this.renderCard()}
@@ -180,23 +237,15 @@ export default class SpottedCard extends Component {
 	}
 }
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#EC5D73'
+		item: {
+		backgroundColor: 'white',
+		margin: 2
 	},
 	box: {
    	flex: 1,
     flexDirection: 'row',
     alignItems: 'center'
   },
-	local: {
-    flexDirection: 'row',
-    alignItems: 'center',
-		fontFamily: 'ProductSans',
-		fontSize: 16,
-		color: '#EC5D73',
-		margin: 1
-	},
 	datetime: {
 		fontFamily: 'ProductSans',
 		fontSize: 13,
@@ -220,38 +269,24 @@ const styles = StyleSheet.create({
 		margin: 0.5
 	},
 	input: {
+		marginLeft: 4,
 		margin: 2,
 		height: 40,
 		borderColor: '#e0e0e0',
 		borderWidth: 1,
 		borderRadius: 10,
-		width: "70%",
+		width: "80%",
 		fontFamily: 'ProductSans'
 	},
 	inputText: {
 		fontFamily: 'ProductSans',
 		color: 'white',
-		fontSize: 12
+		fontSize: 14
 	},
-	submit: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: 'white',
-    fontSize: 19,
-    fontFamily: 'ProductSans',
-    backgroundColor: '#EC5D73',
-    borderColor: '#e7e7e7',
-    borderWidth: 0.5,
-    borderRadius: 10,
-    elevation: 2,
-    width: 70,
-		height: 40,
-    margin: 2
-  },
 	userComment: {
 		fontFamily: 'ProductSans',
 		color: 'black',
-		fontSize: 12
+		fontSize: 14
 	},
 	postText: {
 		fontFamily: 'ProductSans',

@@ -14,9 +14,12 @@ import ImagePicker from 'react-native-image-picker';
 
 const options = {
   title: 'Opções',
+  cancelButtonTitle: 'Cancelar',
   chooseFromLibraryButtonTitle: 'Escolha uma imagem da sua galeria',
   takePhotoButtonTitle: 'Tire uma foto',
-  mediaType: 'photo'
+  mediaType: 'photo',
+  maxWidth: '800px',
+  quality: 1
 };
 
 export default class AddSpotted extends Component {
@@ -24,7 +27,6 @@ export default class AddSpotted extends Component {
   constructor(props) {
     super();
     this.state = {
-      haveImage: false,
       course: '',
       location: '',
       text: '',
@@ -34,14 +36,13 @@ export default class AddSpotted extends Component {
   }
 
   selectPhoto = () => {
-    ImagePicker.showImagePicker(options, (response) => {
+     ImagePicker.showImagePicker(options, (response) => {
       if (response.error) {
         alert('Algo de errado aconteceu');
       } else {
         const source = { uri: response.uri };
         const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
         this.setState({ image: source, sendImage: sourceData.uri });
-        this.submitSpotted();
       } 
     });
   }
@@ -64,7 +65,6 @@ export default class AddSpotted extends Component {
         Actions.pop();
       });
     } catch(error) {}
-
   }
 
   render() {
@@ -91,7 +91,7 @@ export default class AddSpotted extends Component {
                   style={{ height: 40, width: 320, color: 'gray' }}
                   onValueChange={(itemValue, itemIndex) => this.setState({ course: itemValue })}>
                   <Picker.Item label="Desconhecido" value="Desconhecido" />
-                  <Picker.Item label="Ciências da Computação" value="Ciências da Computação" />
+                  <Picker.Item label="Ciência da Computação" value="Ciência da Computação" />
                   <Picker.Item label="Eng. Elétrica" value="Eng. Elétrica" />
                 </Picker>
               </TouchableOpacity>
@@ -109,6 +109,7 @@ export default class AddSpotted extends Component {
                 onChangeText={(text) => this.setState({ text })}
                 value={this.state.text}
               />
+              <Image style={styles.imagePreview} source={this.state.image != null ? this.state.image : null } />
             </View>
           </View>
         </View>
@@ -121,7 +122,7 @@ export default class AddSpotted extends Component {
                   onPress={this.selectPhoto}
                   activeOpacity={0.8}>
                   <Text style={styles.text}>
-                    enviar c/ imagem
+                    adicionar imagem
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -132,7 +133,7 @@ export default class AddSpotted extends Component {
                 onPress={this.submitSpotted}
                 activeOpacity={0.8}>
                 <Text style={styles.text}>
-                  enviar s/ imagem
+                  enviar
                 </Text>
               </TouchableOpacity>
             </View>
@@ -238,6 +239,11 @@ const styles = StyleSheet.create({
     width: 160,
     height: 40,
     margin: 3
+  },
+  image: {
+    height: 150,
+    margin: 150,
+    borderRadius: 30,
+    margin: 5
   }
-
 });

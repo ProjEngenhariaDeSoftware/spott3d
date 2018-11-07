@@ -17,11 +17,14 @@ export default class Start extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      loading: false
+    };
   };
 
   async componentDidMount() {
     try {
+      this.setState({ loading: false });
       const isLogged = await AsyncStorage.getItem('isLogged');
       if (isLogged === 'true') {
         Actions.reset('home');
@@ -35,6 +38,7 @@ export default class Start extends Component {
   googleLogin = async () => {
     try {
       await GoogleSignin.configure();
+      this.setState({ loading: true });
       const data = await GoogleSignin.signIn();
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
       const currentUser = await firebase.auth().signInWithCredential(credential);
@@ -62,6 +66,7 @@ export default class Start extends Component {
 
     } catch (error) {
       console.error(error);
+      this.setState({ loading: false });
    }
   }
 
@@ -80,7 +85,7 @@ export default class Start extends Component {
               onPress={this.googleLogin}
               activeOpacity={0.8}>
               <Image style={styles.googleLogo} source={require('./../../assets/images/google-icon.png')}></Image>
-              <Text style={styles.googleText}>Entrar com o Google</Text>
+              <Text style={styles.googleText}>{this.state.loading ? 'Aguarde...' : 'Entrar com o Google'}</Text>
             </TouchableOpacity>
           </View>
         </View>
