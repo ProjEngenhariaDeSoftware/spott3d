@@ -193,7 +193,7 @@ export default class PostList extends Component {
   renderEmptyData() {
     return (
       <View style={{alignItems: 'center', marginTop: 25 }}>
-        <Text style={{ fontSize: 14, fontFamily: 'ProductSans Bold' }}>Desculpe mas não temos nada aqui :(</Text>
+        <Text style={{ fontSize: 18, fontFamily: 'ProductSans' }}>{'Desculpe, \nmas não temos nada aqui :('}</Text>
       </View>
     );
   }

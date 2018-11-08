@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
-  Picker,
+  Picker
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import ImagePicker from 'react-native-image-picker';
@@ -26,9 +26,9 @@ export default class AddSpotted extends Component {
   constructor(props) {
     super();
     this.state = {
-      course: '',
-      location: '',
-      text: '',
+      course: null,
+      location: null,
+      text: null,
       image: null,
       sendImage: null
     };    
