@@ -20,22 +20,25 @@ export default class PostCard extends Component {
     constructor(props) {
         super(props);
         this.data = props.data;
+        this.subcolor = props.subcolor;
+        this.color = props.color;
         this.state = {
             data: props.data,
-            username: props.username,
-            userphoto: props.userphoto,
+            username: '',
+            userphoto: '',
+            email: '',
             newComment: "",
             modalVisibleStatus: false
         }
-        this.componentDidMount();
     }
 
     async componentDidMount() {
         try {
             const photoURL = await AsyncStorage.getItem('photoURL');
             const displayName = await AsyncStorage.getItem('displayName');
+            const mail = await AsyncStorage.getItem('email');
 
-            this.setState({ userphoto: photoURL, username: displayName });
+            this.setState({ userphoto: photoURL, username: displayName, email: mail });
 
 
         } catch (error) { }
@@ -45,69 +48,125 @@ export default class PostCard extends Component {
         return (
             <CardItem cardBody>
                 <ProgressiveImage
-                    thumbnailSource={{ uri: this.data.item.imageurl }}
-                    source={{ uri: this.data.item.imageurl }}
+                    thumbnailSource={{ uri: this.data.item.image }}
+                    source={{ uri: this.data.item.image }}
                     style={{ width: viewportWidth, height: 170 }}
                     resizeMode="contain" />
             </CardItem>
         );
     }
 
-    renderCard(widthCard) {
+    renderCard() {
         return (
-            <Card style={{ marginLeft: 0, flex: 0, width: widthCard }}>
-                <CardItem>
-                    <Left style={{ flex: 0.8 }}>
-                        <Thumbnail small source={{ uri: this.data.item.userphoto }} />
-                        <Body>
-                            <Text style={styles.titleText}>{this.data.item.title}</Text>
-                            <Text note style={styles.defaultText}>Local: {this.data.item.local}</Text>
-                            <Text note style={styles.defaultText}>Data: {this.data.item.date}</Text>
+            // <Card style={{ marginLeft: 0, flex: 0, width: viewportWidth }}>
+            //     <CardItem>
+            //         <Left style={{ flex: 0.8 }}>
+            //             <Thumbnail small source={{ uri: this.state.userphoto }} />
+            //             <Body>
+            //                 <Text note style={styles.defaultText}>Data: {this.data.item.datetime}</Text>
+            //             </Body>
+            //         </Left>
+            //         <Right style={{ flex: 0.2 }}>
+            //             <Icon type="MaterialIcons" name="report" button onPress={() => alert("Cliquei em denunciar")} />
+            //         </Right>
+            //     </CardItem>
+
+            //     {this.data.item.image ? this.renderImage() : this.renderText()}
+
+            //     <CardItem>
+            //         <Left>
+            //             <Button transparent>
+            //                 <Icon name="chatbubbles" style={{ fontSize: 10, color: 'grey' }} />
+            //                 <Text note style={styles.iconText}> {this.data.item.comments.length} Comentários</Text>
+
+            //             </Button>
+            //         </Left>
+            //         {this.state.email == this.data.item.email &&
+            //             <Right>
+            //                 <Icon type="MaterialCommunityIcons" name="delete" button onPress={() => alert(this.data.item.username)} />
+            //             </Right>}
+            //     </CardItem>
+            // </Card>
+
+            <Card style={{ marginBottom: 1, flex: 1 }}>
+                <CardItem style={{ backgroundColor: this.subcolor }}>
+                    <Left style={{ flex: 2 }}>
+                        <Body style={{ justifyContent: 'center', margin: 1 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                                <Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
+                                <Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                                    {/* {this.data.item.location != '' ? ' ' + this.data.item.location.toUpperCase() : 'Desconhecido'} */}
+                                    Sem Local
+                            </Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                                <Icon style={styles.datetime} type="MaterialIcons" name="verified-user" />
+                                <Text style={styles.datetime}>
+                                    {/* {this.data.item.course != '' ? ' ' + this.data.item.course : 'Desconhecido'} */}
+                                    {this.data.item.email}
+                                </Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                                <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
+                                <Text style={styles.datetime}>
+                                    {' ' + this.data.item.datetime}
+                                </Text>
+                            </View>
                         </Body>
                     </Left>
-                    <Right style={{ flex: 0.2 }}>
-                        <Icon type="MaterialIcons" name="report" button onPress={() => alert("Cliquei em denunciar")} />
+                    <Right style={{ flex: 1 }}>
+                        <Icon type="MaterialCommunityIcons" name="alert-box" />
                     </Right>
                 </CardItem>
-
-                {this.data.item.image ? this.renderImage() : this.renderText()}
-
+                <Body>
+                    <Body style={{ flex: 1 }}>
+                        {this.renderText()}
+                        {this.renderImage()}
+                    </Body>
+                </Body>
                 <CardItem>
                     <Left>
-                        <Button transparent>
-                            <Icon name="chatbubbles" style={{ fontSize: 10, color: 'grey' }} />
-                            <Text note style={styles.iconText}> {this.data.item.coments.length} Comentários</Text>
-
+                        <Button transparent onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+                            <Icon type="MaterialCommunityIcons" name="comment-text-multiple" style={styles.comments} />
+                            <Text note style={styles.comments}> {this.data.item.comments.length == 0 ? 'Adicionar comentário' : this.data.item.comments.length + ' comentário(s)'}</Text>
                         </Button>
                     </Left>
-                    {this.state.username == this.data.item.username &&
+                    {this.state.email == this.data.item.email &&
                         <Right>
-                            <Icon type="MaterialCommunityIcons" name="delete" button onPress={() => alert(this.data.item.username)} />
+                            <Icon type="MaterialCommunityIcons" name="delete" button onPress={() => this.deletePost()} />
                         </Right>}
                 </CardItem>
             </Card>
         );
     }
 
+    deletePost = async () => {
+        const id = this.data.item.id;
+        await fetch('https://api-spotted.herokuapp.com/api/post/id/' + id, {
+            method: 'delete'
+          });
+          alert("Post deletado atualize o feed!");
+    };
+
 
     renderComments() {
         return (
             <FlatList
-                data={this.state.data.item.coments}
+                data={this.state.data.item.comments}
                 extraData={this.state}
-                keyExtractor={item => item.coment}
+                keyExtractor={item => item.id + ''}
                 onEndReachedThreshold={1}
                 renderItem={({ item }) => {
                     return (
                         <View style={styles.item}>
                             <ListItem
                                 containerStyle={{ marginLeft: 0 }}
-                                title={item.userid}
+                                title={'@' + item.commenter.username}
                                 titleStyle={styles.userComment}
                                 subtitle={<View style={styles.subtitleView}>
-                                    <Text style={styles.text}>{item.coment}</Text>
+                                    <Text style={styles.text}>{item.comment}</Text>
                                 </View>}
-                                leftAvatar={{ source: { uri: item.userphoto } }}
+                                leftAvatar={{ source: { uri: item.commenter.image } }}
                             >
                             </ListItem>
                         </View>
@@ -121,14 +180,48 @@ export default class PostCard extends Component {
         );
     }
 
-    sendComment(comment) {
-        // this.state.data.item.coments.push({ coment: comment, userid: this.state.username, userphoto: this.state.userphoto });
-        // console.log(coment);
+    sendComment = async () => {
+		try {
+			let usersMentioned = this.state.newComment.match(/@\w+/g).map(e => e.substr(1));
+			const nickname = await AsyncStorage.getItem('username');
+
+            const id = this.data.item.id;
+            console.log(usersMentioned);
+            console.log(nickname);
+            console.log(id);
+
+			await fetch('https://api-spotted.herokuapp.com/api/post/' + id + '/comment', {
+				method: 'PUT',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					userMentioned: usersMentioned,
+					comment: this.state.newComment,
+					commenter: {
+						email: this.state.email,
+						username: nickname,
+						image: this.state.userphoto
+					}
+				})
+			}).then(a => {
+				this.data.item.comments.push({
+					comment: this.state.newComment,
+					commenter: {
+						username: nickname,
+						image: this.state.userphoto
+					}
+				});
+			});
+		} catch (error) {
+            console.log(error);
+         }
     }
 
     renderFooter(userphoto) {
         return (
-            <View style={{ flexDirection: 'row', width: viewportWidth }}>
+            <View style={{ flexDirection: 'row', width: viewportWidth, margin: 2 }}>
                 <Thumbnail small source={{ uri: userphoto }} style={{ marginStart: 18 }} />
                 <TextInput
                     autoFocus
@@ -136,16 +229,19 @@ export default class PostCard extends Component {
                     autoCorrect={false}
                     autoCapitalize="none"
                     multiline={true}
-                    style={styles.textInput}
+                    style={styles.input}
                     onChangeText={(text) => { this.setState({ newComment: text }) }}
-                    placeholder="Digite seu comentário..."
+                    placeholder=" Adicionar comentário..."
                     returnKeyType="send"
-                    blurOnSubmit={true}
-                    onSubmitEditing={this.sendComment(this.state.newComment)}
                 />
-                <Button transparent small style={{ marginLeft: 8, fontFamily: 'ProductSans' }} onPress={() => { this.sendComment(this.state.newComment) }}>
-                    <Text>Enviar</Text>
-                </Button>
+                <TouchableOpacity
+                    style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "15%", height: 40, marginRight: 4 }}
+                    onPress={() => this.sendComment()}
+                    activeOpacity={0.8}>
+                    <Text style={styles.inputText}>
+                        enviar
+        	  			</Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -156,7 +252,7 @@ export default class PostCard extends Component {
 
     renderText() {
         return (
-            <CardItem bordered>
+            <CardItem>
                 <Body>
                     <Text style={styles.postText}>{this.data.item.text}</Text>
                 </Body>
@@ -168,7 +264,7 @@ export default class PostCard extends Component {
         return (
             <TouchableOpacity activeOpacity={0.5} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
                 <View>
-                    {this.renderCard(viewportWidth)}
+                    {this.renderCard()}
                     <Modal
                         transparent={false}
                         animationType={"slide"}
@@ -187,53 +283,61 @@ export default class PostCard extends Component {
     }
 }
 const styles = StyleSheet.create({
-    titleText: {
+    item: {
+        backgroundColor: 'white',
+        margin: 2
+    },
+    box: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    datetime: {
         fontFamily: 'ProductSans',
-        fontWeight: 'bold',
-        fontSize: 12
+        fontSize: 13,
+        color: 'gray',
+        margin: 1
+    },
+    comments: {
+        fontFamily: 'ProductSans',
+        fontSize: 13,
+        color: 'gray',
+        margin: 5
+    },
+    comment: {
+        fontFamily: 'ProductSans',
+        fontSize: 12,
+        color: 'gray',
+        margin: 1
     },
     subtitleView: {
         flexDirection: 'row',
-        paddingLeft: 2,
-        paddingTop: 2
+        margin: 0.5
     },
-    textInput: {
-        marginLeft: 8,
-        marginBottom: 10,
+    input: {
+        marginLeft: 4,
+        margin: 2,
         height: 40,
         borderColor: '#e0e0e0',
         borderWidth: 1,
-        borderRadius: 45,
-        width: "70%",
+        borderRadius: 10,
+        width: '68%',
         fontFamily: 'ProductSans'
     },
-
+    inputText: {
+        fontFamily: 'ProductSans',
+        color: 'white',
+        fontSize: 14
+    },
     userComment: {
         fontFamily: 'ProductSans',
-        fontWeight: 'bold',
         color: 'black',
-        fontSize: 12
+        fontSize: 14
     },
-
-    defaultText: {
-        fontFamily: 'ProductSans',
-        fontSize: 10
-    },
-
     postText: {
         fontFamily: 'ProductSans',
         textAlign: 'justify',
         margin: 5,
-        fontSize: 14
-    },
-
-    iconText: {
-        color: 'gray',
-        fontFamily: 'ProductSans',
-        fontSize: 10,
-        textAlign: 'center',
-        marginLeft: 10,
-        marginRight: 10
-    },
+        fontSize: 16
+    }
 });
-

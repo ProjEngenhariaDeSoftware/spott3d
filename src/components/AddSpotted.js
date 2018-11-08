@@ -7,7 +7,6 @@ import {
   Image,
   TextInput,
   Picker,
-  CameraRoll
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import ImagePicker from 'react-native-image-picker';

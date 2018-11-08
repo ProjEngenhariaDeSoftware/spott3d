@@ -36,44 +36,44 @@ export default class SpottedCard extends Component {
 
 	renderCard() {
 		return (
-		<Card style={{ marginBottom: 1, flex: 1 }}>
+			<Card style={{ marginBottom: 1, flex: 1 }}>
 				<CardItem style={{ backgroundColor: this.subcolor }}>
 					<Left style={{ flex: 2 }}>
 						<Body style={{ justifyContent: 'center', margin: 1 }}>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                <Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
-                <Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+								<Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
+								<Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
 									{this.data.item.location != '' ? ' ' + this.data.item.location.toUpperCase() : 'Desconhecido'}
 								</Text>
-              </View>
+							</View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                <Icon style={styles.datetime} type="MaterialIcons" name="school" />
-                <Text style={styles.datetime}>
+								<Icon style={styles.datetime} type="MaterialIcons" name="school" />
+								<Text style={styles.datetime}>
 									{this.data.item.course != '' ? ' ' + this.data.item.course : 'Desconhecido'}
 								</Text>
-              </View>
+							</View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
-                <Text style={styles.datetime}>
+								<Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
+								<Text style={styles.datetime}>
 									{' ' + this.data.item.datetime}
 								</Text>
-              </View>
+							</View>
 						</Body>
 					</Left>
 					<Right style={{ flex: 1 }}>
 						<Icon type="MaterialCommunityIcons" name="alert-box" />
 					</Right>
 				</CardItem>
-        <Body>
-				  <Body style={{ flex:1 }}>
-				  	{this.renderText()}
+				<Body>
+					<Body style={{ flex: 1 }}>
+						{this.renderText()}
 						{this.renderImage()}
-				  </Body>
-        </Body>
+					</Body>
+				</Body>
 				<CardItem>
 					<Left>
 						<Button transparent onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
-							<Icon type="MaterialCommunityIcons" name="comment-text-multiple" style={styles.comments}/>
+							<Icon type="MaterialCommunityIcons" name="comment-text-multiple" style={styles.comments} />
 							<Text note style={styles.comments}> {this.data.item.comments.length == 0 ? 'Adicionar comentário' : this.data.item.comments.length + ' comentário(s)'}</Text>
 						</Button>
 					</Left>
@@ -83,14 +83,14 @@ export default class SpottedCard extends Component {
 	}
 
 	renderImage() {
-  	return (
-  		<CardItem cardBody>
-        <Image source={{ uri: this.data.item.image }} 
-				 style={{ width: viewportWidth, height: 170, resizeMode: 'contain',}}
+		return (
+			<CardItem cardBody>
+				<Image source={{ uri: this.data.item.image }}
+					style={{ width: viewportWidth, height: 170, resizeMode: 'contain', }}
 				/>
-  		</CardItem>
-  	);
-  }
+			</CardItem>
+		);
+	}
 
 	renderComments() {
 		return (
@@ -125,7 +125,7 @@ export default class SpottedCard extends Component {
 	}
 
 	sendComment = async () => {
-		try{
+		try {
 			let usersMentioned = newComment.match(/@\w+/g).map(e => e.substr(1));
 			const userEmail = await AsyncStorage.getItem('email');
 			const userPhoto = await AsyncStorage.getItem('photoURL');
@@ -135,27 +135,27 @@ export default class SpottedCard extends Component {
 				method: 'PUT',
 				headers: {
 					Accept: 'application/json',
-          'Content-Type': 'application/json'
+					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 					userMentioned: usersMentioned,
-          comment: this.state.newComment,
-          commenter: {
+					comment: this.state.newComment,
+					commenter: {
 						email: userEmail,
-            username: nickname,
-            image: userPhoto
+						username: nickname,
+						image: userPhoto
 					}
 				})
 			}).then(a => {
-				this.data.item.comments.push({ 
+				this.data.item.comments.push({
 					comment: this.state.newComment,
 					commenter: {
-						username: nickname, 
+						username: nickname,
 						image: userPhoto
 					}
 				});
 			});
-		} catch(error){}
+		} catch (error) { }
 	}
 
 	report = async () => {
@@ -164,13 +164,13 @@ export default class SpottedCard extends Component {
 				method: 'PUT',
 				headers: {
 					Accept: 'application/json',
-          'Content-Type': 'application/json'
+					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 					visible: false
 				})
 			})
-		} catch(error) {}
+		} catch (error) { }
 	}
 
 	renderFooter() {
@@ -188,11 +188,11 @@ export default class SpottedCard extends Component {
 					/>
 					<TouchableOpacity
 						style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "20%", height: 40, margin: 2, marginRight: 4 }}
-						onPress={this.sendComment()}
+						onPress={() => this.sendComment()}
 						activeOpacity={0.8}>
 						<Text style={styles.inputText}>
-        	    enviar
-        	  </Text>
+							enviar
+        	  			</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -215,7 +215,7 @@ export default class SpottedCard extends Component {
 
 	render() {
 		return (
-		<View style={{ flex: 1, backgroundColor: this.color }}>
+			<View style={{ flex: 1, backgroundColor: this.color }}>
 				<TouchableOpacity activeOpacity={0.8} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
 					<View>
 						{this.renderCard()}
@@ -237,15 +237,15 @@ export default class SpottedCard extends Component {
 	}
 }
 const styles = StyleSheet.create({
-		item: {
+	item: {
 		backgroundColor: 'white',
 		margin: 2
 	},
 	box: {
-   	flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center'
+	},
 	datetime: {
 		fontFamily: 'ProductSans',
 		fontSize: 13,

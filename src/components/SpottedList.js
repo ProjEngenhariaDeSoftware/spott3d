@@ -80,7 +80,7 @@ export default class SpottedList extends Component {
               />
             )}
           }
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.id + ''}
           onEndReachedThreshold={1}
           refreshControl={
             <RefreshControl

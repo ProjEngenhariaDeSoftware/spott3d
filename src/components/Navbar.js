@@ -28,13 +28,13 @@ export default class Navbar extends Component {
         key: 'spotted',
         title: 'Spotteds',
         icon: 'favorite-border',
-        color: '#b52848'
+        color: '#EC5D73'
       },
       {
         key: 'event',
         title: 'Eventos',
         icon: 'event',
-        color: '#738A98'
+        color: '#5AD0BA'
       },
       {
         key: 'warnings',
@@ -46,7 +46,7 @@ export default class Navbar extends Component {
         key: 'entertainment',
         title: 'Diversos',
         icon: 'movie-filter',
-        color: '#179e8a'
+        color: '#00B6D9'
       },
       {
         key: 'search',

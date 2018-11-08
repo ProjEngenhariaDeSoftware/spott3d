@@ -22,27 +22,19 @@ export default class Perfil extends Component {
   constructor(props) {
     super();
     this.state = {
-      userNotifications: [{
-        userphoto: 'https://avatars1.githubusercontent.com/u/28960913',
-        username: 'Cassio',
-        typenotification: 'Mencionou você em um Evento.'
-      },
-      {
-        userphoto: 'https://avatars3.githubusercontent.com/u/12588175',
-        username: 'Sammara',
-        typenotification: 'Mencionou você em um Evento.'
-      }
-      ],
+      userNotifications: [],
       userphoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgTajOSQOEn79tT6EqTxU2ngWkZeoi2Ft8frau_vQII6x4PPKh',
       username: '',
       email: '',
-      notification: true,
+      notification: false,
+      notificationSize: 0,
       notificationVisibleStatus: false,
       configurationVisibleStatus: false,
       modalVisibleStatus: false,
       refreshing: false,
       color: '#00B6D9',
-      transparent: false
+      transparent: false,
+      showLoader: false,
     };
   }
 
@@ -51,8 +43,15 @@ export default class Perfil extends Component {
       const photoURL = await AsyncStorage.getItem('photoURL');
       const displayName = await AsyncStorage.getItem('displayName');
       const email = await AsyncStorage.getItem('email');
-
-      this.setState({ userphoto: photoURL, username: displayName, email: email });
+      const emailP = 'geovane.silva@ccc.ufcg.edu.br';
+      await fetch('https://api-spotted.herokuapp.com/api/user/' + emailP + '/notify')
+        .then(res => res.json())
+        .then(data => {
+          const size = data.notifications.length;
+          this.state.notification = size > 0;
+          const newData = data;
+          this.setState({ notificationSize: size, userphoto: photoURL, username: displayName, email: emailP, userNotifications: newData });
+        });
 
     } catch (error) { }
   }
@@ -65,30 +64,17 @@ export default class Perfil extends Component {
       Actions.reset('start');
     } catch (error) { }
   }
-  iconNotification() {
+  iconNotification = () => {
     return (
       <View style={styles.badgeIconView}>
-        {this.state.notification ? <Text style={styles.badge}>{this.state.userNotifications.length}</Text> : null}
+        {this.state.notification ? <Text style={styles.badge}>{this.state.notificationSize}</Text> : null}
         <Icon size={26} color={this.state.color} type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} button onPress={() => this.buttonNotification(!this.state.notificationVisibleStatus)} />
       </View>
     );
   }
 
   handleRefresh = () => {
-    const newData = this.state.userNotifications.slice();
-    newData.unshift({
-      userphoto: 'https://sites.google.com/site/matheusgr/_/rsrc/1454169440563/config/customLogo.gif?revision=5',
-      username: 'Matheus',
-      typenotification: 'Mencionou você em um Evento Acadêmico.'
-    });
-
-    var self = this;
-    this.setState({ refreshing: true },
-      () => {
-        setTimeout(function () {
-          self.setState({ refreshing: false, userNotifications: newData });
-        }, 1);
-      });
+    this.componentDidMount();
   };
 
   buttonNotification(visible) {
@@ -157,21 +143,29 @@ export default class Perfil extends Component {
   headerNotifications() {
     return (
       <View>
-        <Text style={{color: 'black', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold' }}>Notificações</Text>
+        <Text style={{ color: 'black', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold' }}>Notificações</Text>
       </View>
     );
   }
+
+  renderLoader = () => {
+    return (
+      this.state.showLoader ? <View><Spinner color={this.state.color} /></View> : null
+    );
+  };
 
   showModal(visible) {
     this.setState({ modalVisibleStatus: visible, configurationVisibleStatus: false, notificationVisibleStatus: false })
   }
 
+  hideLoader = (e) => {
+    e.distanceFromEnd === 0 ? this.setState({ showLoader: true }) : this.setState({ showLoader: false });
+  };
+
   renderNotifications() {
     return (
       <FlatList
         data={this.state.userNotifications}
-        keyExtractor={item => item.username}
-        onEndReachedThreshold={1}
         renderItem={({ item }) => {
           return (
             <View style={styles.item}>
@@ -180,14 +174,16 @@ export default class Perfil extends Component {
                 title={item.username}
                 titleStyle={styles.userComment}
                 subtitle={<View style={styles.subtitleView}>
-                  <Text style={styles.text}>{item.typenotification}</Text>
+                  <Text style={styles.text}>{item.notifications.publicationType}</Text>
                 </View>}
-                leftAvatar={{ source: { uri: item.userphoto } }}
+                leftAvatar={{ source: { uri: item.image } }}
               >
               </ListItem>
             </View>
           );
         }}
+        keyExtractor={item => item.username + ''}
+        onEndReachedThreshold={1}
         refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}
@@ -195,7 +191,10 @@ export default class Perfil extends Component {
             colors={["#00B6D9"]}
           />
         }
+        onEndReached={(event) => this.hideLoader(event)}
+        ListEmptyComponent={<View></View>}
         ListHeaderComponent={this.headerNotifications}
+        ListFooterComponent={this.renderLoader}
         contentContainerStyle={{ width: viewportWidth }}
       />
     );
@@ -218,14 +217,7 @@ export default class Perfil extends Component {
           <Text styles={styles.textDescription}>Nome de usuário: {this.state.username}</Text>
           <Text styles={styles.textDescription}>Email: {this.state.email}</Text>
         </View>
-        <View style={{ flex: 0.2}}>
-          {/* <TouchableOpacity
-            style={styles.googleButton}
-            onPress={this.googleLogout}
-            activeOpacity={0.7}>
-            <Image style={styles.googleLogo} source={require('./../../assets/images/google-icon.png')}></Image>
-            <Text style={styles.googleText}>Sair</Text>
-          </TouchableOpacity> */}
+        <View style={{ flex: 0.2 }}>
         </View>
         <Modal
           transparent={this.state.transparent}
