@@ -11,8 +11,8 @@ export default class Warnings extends Component {
     this.state = {
       index: 0,
       routes: [
-        { key: 'first', title: 'Avisos' },
-        { key: 'second', title: 'Notícias' },
+        { key: 'first', title: 'avisos' },
+        { key: 'second', title: 'notícias' },
       ]
     }
   }
@@ -21,15 +21,15 @@ export default class Warnings extends Component {
 
       <Container>
             <Tabs initialPage={0} tabContainerStyle={{ height: '8%'}}>
-              <Tab heading="Avisos" tabStyle={{backgroundColor: '#738A98'}} textStyle={{color: 'white', fontFamily: 'ProductSans'}} 
-              activeTabStyle={{backgroundColor: '#738A98'}} activeTextStyle={{color: 'white'}} >
+              <Tab heading="avisos" tabStyle={{backgroundColor: '#738A98'}} textStyle={{color: 'white', fontFamily: 'ProductSans'}} 
+              activeTabStyle={{backgroundColor: '#738A98'}} activeTextStyle={{color: '#fff', fontFamily: 'ProductSans'}} >
                 <View >
                 <PostList pageTitle = 'Aviso'  type = "NOTICE" color='#adadb1'></PostList>
                         
                 </View>
               </Tab>
-              <Tab heading="Notícias" tabStyle={{backgroundColor: '#738A98'}} textStyle={{color: 'white'}} 
-              activeTabStyle={{backgroundColor: '#738A98'}} activeTextStyle={{color: 'white'}}>
+              <Tab heading="notícias" tabStyle={{backgroundColor: '#738A98'}} textStyle={{color: 'white', fontFamily: 'ProductSans'}} 
+              activeTabStyle={{backgroundColor: '#738A98'}} activeTextStyle={{color: '#fff', fontFamily: 'ProductSans'}}>
                 <View>
                 <PostList pageTitle = 'Notícia' type = 'NEWS' color='#adadb1'></PostList>
                 </View>
