@@ -43,13 +43,13 @@ export default class SpottedCard extends Component {
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
 								<Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
 								<Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-									{this.data.item.location != '' ? ' ' + this.data.item.location.toUpperCase() : 'Desconhecido'}
+									{this.data.item.location !== null ? ' ' + this.data.item.location.toUpperCase() : 'Desconhecido'}
 								</Text>
 							</View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
 								<Icon style={styles.datetime} type="MaterialIcons" name="school" />
 								<Text style={styles.datetime}>
-									{this.data.item.course != '' ? ' ' + this.data.item.course : 'Desconhecido'}
+									{this.data.item.course !== null ? ' ' + this.data.item.course : 'Desconhecido'}
 								</Text>
 							</View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
