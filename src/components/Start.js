@@ -27,12 +27,24 @@ export default class Start extends Component {
       this.setState({ loading: false });
       const isLogged = await AsyncStorage.getItem('isLogged');
       if (isLogged === 'true') {
-        Actions.reset('home');
+        const email = await AsyncStorage.getItem('email');
+
+        let data = null;
+        await fetch('https://api-spotted.herokuapp.com/api/user/email/' + email)
+          .then(res => res.json())
+          .then(r => {
+            data = r;
+          })
+          .catch(a => { });
+        if (data != null) {
+          await AsyncStorage.setItem('username', data.username);
+          Actions.reset('home');
+        }
       }
       if (isLogged === 'false') {
         Actions.reset('register');
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   googleLogin = async () => {
@@ -56,18 +68,19 @@ export default class Start extends Component {
         .then(dat => {
           userData = dat;
         })
-        .catch(a => {});
+        .catch(a => { });
 
       if (userData == null) {
-        Actions.reset('register');      
+        Actions.reset('register');
       } else {
+        await AsyncStorage.setItem('username', userData.username);
         Actions.reset('home');
       }
 
     } catch (error) {
       console.error(error);
       this.setState({ loading: false });
-   }
+    }
   }
 
   render() {
