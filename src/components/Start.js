@@ -11,6 +11,7 @@ import { Actions } from 'react-native-router-flux';
 
 import { GoogleSignin } from 'react-native-google-signin';
 import firebase from 'react-native-firebase';
+import SplashScreen from 'react-native-splash-screen';
 
 
 export default class Start extends Component {
@@ -24,6 +25,7 @@ export default class Start extends Component {
 
   async componentDidMount() {
     try {
+      SplashScreen.hide();
       this.setState({ loading: false });
       const isLogged = await AsyncStorage.getItem('isLogged');
       if (isLogged === 'true') {

@@ -15,6 +15,9 @@ import { ListItem } from 'react-native-elements';
 import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+const dimensions = Dimensions.get('window');
+const imageHeight = Math.round(dimensions.width * 9 / 16);
+const imageWidth = dimensions.width;
 
 export default class SpottedCard extends Component {
 	constructor(props) {
@@ -95,7 +98,7 @@ export default class SpottedCard extends Component {
 		return (
 			<CardItem cardBody>
 				<Image source={{ uri: this.data.item.image }}
-					style={{ width: viewportWidth, height: 170, resizeMode: 'contain', }}
+					style={{ width: viewportWidth, height: imageHeight, resizeMode: 'contain', }}
 				/>
 			</CardItem>
 		);
