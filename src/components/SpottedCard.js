@@ -45,44 +45,44 @@ export default class SpottedCard extends Component {
 
 	renderCard() {
 		return (
-		<Card style={{ marginBottom: 1, flex: 1 }}>
+			<Card style={{ marginBottom: 1, flex: 1 }}>
 				<CardItem style={{ backgroundColor: this.subcolor }}>
 					<Left style={{ flex: 2 }}>
 						<Body style={{ justifyContent: 'center', margin: 1 }}>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                <Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
-                <Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+								<Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
+								<Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
 									{this.validadeData(this.data.item.location) ? ' ' + this.data.item.location.toUpperCase() : 'DESCONHECIDO'}
 								</Text>
-              </View>
+							</View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                <Icon style={styles.datetime} type="MaterialIcons" name="school" />
-                <Text style={styles.datetime}>
+								<Icon style={styles.datetime} type="MaterialIcons" name="school" />
+								<Text style={styles.datetime}>
 									{this.validadeData(this.data.item.course) ? ' ' + this.data.item.course : 'Desconhecido'}
 								</Text>
-              </View>
+							</View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
-                <Text style={styles.datetime}>
+								<Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
+								<Text style={styles.datetime}>
 									{' ' + this.data.item.datetime}
 								</Text>
-              </View>
+							</View>
 						</Body>
 					</Left>
 					<Right style={{ flex: 1, fontSize: 17 }} onPress={this.report}>
 						<Icon type="MaterialCommunityIcons" name="alert-box" />
 					</Right>
 				</CardItem>
-        <Body>
-				  <Body style={{ flex:1 }}>
-				  	{this.renderText()}
+				<Body>
+					<Body style={{ flex: 1 }}>
+						{this.renderText()}
 						{this.renderImage()}
-				  </Body>
-        </Body>
+					</Body>
+				</Body>
 				<CardItem>
 					<Left>
 						<Button transparent onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
-							<Icon type="MaterialCommunityIcons" name="comment-text-multiple" style={styles.comments}/>
+							<Icon type="MaterialCommunityIcons" name="comment-text-multiple" style={styles.comments} />
 							<Text note style={styles.comments}> {this.data.item.comments.length == 0 ? 'Adicionar comentário' : this.data.item.comments.length + ' comentário(s)'}</Text>
 						</Button>
 					</Left>
@@ -92,14 +92,14 @@ export default class SpottedCard extends Component {
 	}
 
 	renderImage() {
-  	return (
-  		<CardItem cardBody>
-        <Image source={{ uri: this.data.item.image }} 
-				 style={{ width: viewportWidth, height: 170, resizeMode: 'contain',}}
+		return (
+			<CardItem cardBody>
+				<Image source={{ uri: this.data.item.image }}
+					style={{ width: viewportWidth, height: 170, resizeMode: 'contain', }}
 				/>
-  		</CardItem>
-  	);
-  }
+			</CardItem>
+		);
+	}
 
 	renderComments() {
 		return (
@@ -134,7 +134,7 @@ export default class SpottedCard extends Component {
 	}
 
 	sendComment = async () => {
-		try{
+		try {
 			this.setState({ sending: true });
 			let userEmail = await AsyncStorage.getItem('email');
 			let userPhoto = await AsyncStorage.getItem('photoURL');
@@ -145,21 +145,21 @@ export default class SpottedCard extends Component {
 				method: 'PUT',
 				headers: {
 					Accept: 'application/json',
-          'Content-Type': 'application/json'
+					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 					userMentioned: '',
-          comment: this.state.newComment,
-          commenter: {
+					comment: this.state.newComment,
+					commenter: {
 						email: userEmail,
-            username: nickname,
-            image: userPhoto
+						username: nickname,
+						image: userPhoto
 					}
 				})
 			}).then(a => {
 				this.setState({ modalVisibleStatus: false });
 			});
-		} catch(error){
+		} catch (error) {
 			this.setState({ sending: false });
 		}
 	}
@@ -170,7 +170,7 @@ export default class SpottedCard extends Component {
 				method: 'PUT',
 				headers: {
 					Accept: 'application/json',
-          'Content-Type': 'application/json'
+					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 					visible: false
@@ -178,7 +178,7 @@ export default class SpottedCard extends Component {
 			}).then(a => {
 				alert('Reportado!');
 			});
-		} catch(error) {
+		} catch (error) {
 			console.error(error);
 		}
 	}
@@ -201,8 +201,8 @@ export default class SpottedCard extends Component {
 						onPress={this.sendComment}
 						activeOpacity={0.8}>
 						<Text style={styles.inputText}>
-        	    { this.state.sending ? 'enviando' : 'enviar' }
-        	  </Text>
+							{this.state.sending ? 'enviando' : 'enviar'}
+						</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -225,7 +225,7 @@ export default class SpottedCard extends Component {
 
 	render() {
 		return (
-		<View style={{ flex: 1, backgroundColor: this.color }}>
+			<View style={{ flex: 1, backgroundColor: this.color }}>
 				<TouchableOpacity activeOpacity={0.8} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
 					<View>
 						{this.renderCard()}
@@ -252,10 +252,10 @@ const styles = StyleSheet.create({
 		margin: 2
 	},
 	box: {
-   	flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center'
+	},
 	datetime: {
 		fontFamily: 'ProductSans',
 		fontSize: 13,

@@ -23,6 +23,8 @@ export default class PostList extends Component {
     this.state = {
       isLoading: true,
       showLoader: false,
+      userPhoto: '',
+      username: '',
       refreshing: false,
       dataSource: [],
       color: props.color,
@@ -40,13 +42,15 @@ export default class PostList extends Component {
 
   async componentDidMount() {
     try {
+      const photoURL = await AsyncStorage.getItem('photoURL');
+      const displayName = await AsyncStorage.getItem('displayName');
       const mail = await AsyncStorage.getItem('email');
       await fetch('https://api-spotted.herokuapp.com/api/post')
         .then(res => res.json())
         .then(data => {
 
           const dataType = data.filter(post => post.type === this.state.type);
-          this.setState({ refreshing: false, isLoading: false, dataSource: dataType, email: mail });
+          this.setState({username: displayName, userPhoto: photoURL, refreshing: false, isLoading: false, dataSource: dataType, email: mail });
         });
     } catch (error) { }
   }
@@ -206,9 +210,13 @@ export default class PostList extends Component {
           data={this.state.dataSource}
           renderItem={(item) => {
             return (
-              <PostCard data={item}
-              color={this.state.color}
+              <PostCard
+              data={item}
               subcolor={this.state.subcolor}
+              color={this.state.color}
+              username={this.state.username}
+              userphoto={this.state.userPhoto}
+              email={this.state.email}
               />
             )
           }}

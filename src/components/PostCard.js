@@ -24,24 +24,30 @@ export default class PostCard extends Component {
         this.color = props.color;
         this.state = {
             data: props.data,
-            username: '',
-            userphoto: '',
-            email: '',
+            username: props.username,
+            userphoto: props.userphoto,
+            author: '',
+            authorPhoto: '',
+            email: props.email,
             newComment: "",
-            modalVisibleStatus: false
+            modalVisibleStatus: false,
+            refreshing: false
         }
     }
 
     async componentDidMount() {
         try {
-            const photoURL = await AsyncStorage.getItem('photoURL');
-            const displayName = await AsyncStorage.getItem('displayName');
-            const mail = await AsyncStorage.getItem('email');
-
-            this.setState({ userphoto: photoURL, username: displayName, email: mail });
-
-
-        } catch (error) { }
+            const email = this.data.item.email;
+            await fetch('https://api-spotted.herokuapp.com/api/user/email/' + email)
+                .then(res => res.json())
+                .then(postInfo => {
+                    const author = postInfo.username;
+                    const authorPhoto = postInfo.image;
+                    this.setState({ author: author, authorPhoto: authorPhoto });
+                });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     renderImage() {
@@ -92,12 +98,15 @@ export default class PostCard extends Component {
                 <CardItem style={{ backgroundColor: this.subcolor }}>
                     <Left style={{ flex: 2 }}>
                         <Body style={{ justifyContent: 'center', margin: 1 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                                <Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
+                            <View style={{ flexDirection: 'row', alignItems: 'flex-start', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                                {/* <Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
                                 <Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                                    {/* {this.data.item.location != '' ? ' ' + this.data.item.location.toUpperCase() : 'Desconhecido'} */}
+                                    {this.data.item.location != '' ? ' ' + this.data.item.location.toUpperCase() : 'Desconhecido'}
                                     Sem Local
-                            </Text>
+                            </Text> */}
+                                <Left style={{ flex: 0.8 }}>
+                                    <Thumbnail small source={{ uri: this.state.authorPhoto }} />
+                                </Left>
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
                                 <Icon style={styles.datetime} type="MaterialIcons" name="verified-user" />
@@ -144,16 +153,28 @@ export default class PostCard extends Component {
         const id = this.data.item.id;
         await fetch('https://api-spotted.herokuapp.com/api/post/id/' + id, {
             method: 'delete'
-          });
-          alert("Post deletado atualize o feed!");
+        });
+        alert("Post deletado atualize o feed!");
     };
 
+    refreshingData = async () => {
+        try{
+            await fetch('https://api-spotted.herokuapp.com/api/post/id/' + this.state.data.item.id)
+              .then(res => res.json())
+              .then(newData => {
+                  const newItemData = {"item" : newData};
+                  console.log(newItemData);
+                this.setState({ data: newItemData});
+            });
+        }catch (erro) {}
+    };
 
     renderComments() {
         return (
             <FlatList
                 data={this.state.data.item.comments}
-                extraData={this.state}
+                extraData={this.state.data.item.comments}
+                refreshing={true}
                 keyExtractor={item => item.id + ''}
                 onEndReachedThreshold={1}
                 renderItem={({ item }) => {
@@ -181,42 +202,32 @@ export default class PostCard extends Component {
     }
 
     sendComment = async () => {
-		try {
-			let usersMentioned = this.state.newComment.match(/@\w+/g).map(e => e.substr(1));
-			const nickname = await AsyncStorage.getItem('username');
+        try {
+            const usersMentioned = this.state.newComment.match(/@\w+\S\w*/)[0].substr(1);
 
             const id = this.data.item.id;
-            console.log(usersMentioned);
-            console.log(nickname);
-            console.log(id);
-
-			await fetch('https://api-spotted.herokuapp.com/api/post/' + id + '/comment', {
-				method: 'PUT',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					userMentioned: usersMentioned,
-					comment: this.state.newComment,
-					commenter: {
-						email: this.state.email,
-						username: nickname,
-						image: this.state.userphoto
-					}
-				})
-			}).then(a => {
-				this.data.item.comments.push({
-					comment: this.state.newComment,
-					commenter: {
-						username: nickname,
-						image: this.state.userphoto
-					}
-				});
-			});
-		} catch (error) {
+            const email = this.state.email;
+            const newComment = this.state.newComment;
+            await fetch(`https://api-spotted.herokuapp.com/api/post/${id}/comment`, {
+                method: 'PUT',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userMentioned: usersMentioned,
+                    comment: newComment,
+                    commenter: { email: email }
+                })
+            }).then(this.refreshingData());
+            // .then(a => {
+            //     this.data.item.comments.push({
+            //         comment: this.state.newComment,
+            //         commenter: { email: this.state.email }
+            //     });
+        } catch (error) {
             console.log(error);
-         }
+        }
     }
 
     renderFooter(userphoto) {
