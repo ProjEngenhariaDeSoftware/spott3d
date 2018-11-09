@@ -17,7 +17,7 @@ const options = {
   chooseFromLibraryButtonTitle: 'Escolha uma imagem da sua galeria',
   takePhotoButtonTitle: 'Tire uma foto',
   mediaType: 'photo',
-  maxWidth: '800px',
+  maxWidth: 800,
   quality: 1
 };
 
