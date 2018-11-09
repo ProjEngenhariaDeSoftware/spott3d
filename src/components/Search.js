@@ -17,16 +17,7 @@ export default class Search extends Component {
   constructor(props) {
     super();
     this.state = {
-      dataSource: [{
-        key: '0',
-        userphoto: 'https://avatars3.githubusercontent.com/u/12588175',
-        title: 'Evento Roadsec',
-        local: 'UFCG',
-        date: '45 de Outubro de 2018',
-        image: false,
-        text: 'O Roadsec é o maior evento hacker da América Latina, durante o evento são apresentadas diversas palestras e oficinas de hacking, segurança da informação, ti e tecnologia em geral, além é claro de reunir profissionais, empresas e pessoas com o mesmo interesse, ou seja, como o Roadsec acaba sendo uma ótima forma de conhecer pessoas com os mesmos interesses que você, ou quem sabe até mesmo conseguir uma vaga de emprego ou simplesmente um networking.',
-        coments: '320'
-      }],
+      dataSource: [],
       isLoading: true,
       showLoader: true,
       refreshing: false,
