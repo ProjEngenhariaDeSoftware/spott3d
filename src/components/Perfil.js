@@ -43,14 +43,14 @@ export default class Perfil extends Component {
       const photoURL = await AsyncStorage.getItem('photoURL');
       const displayName = await AsyncStorage.getItem('displayName');
       const email = await AsyncStorage.getItem('email');
-      const emailP = 'geovane.silva@ccc.ufcg.edu.br';
-      await fetch('https://api-spotted.herokuapp.com/api/user/' + emailP + '/notify')
+      await fetch('https://api-spotted.herokuapp.com/api/user/' + email + '/notify')
         .then(res => res.json())
         .then(data => {
+          console.log(data.notifications);
           const size = data.notifications.length;
           this.state.notification = size > 0;
           const newData = data;
-          this.setState({ notificationSize: size, userphoto: photoURL, username: displayName, email: emailP, userNotifications: newData });
+          this.setState({ notificationSize: size, userphoto: photoURL, username: displayName, email: email, userNotifications: newData });
         });
 
     } catch (error) { }

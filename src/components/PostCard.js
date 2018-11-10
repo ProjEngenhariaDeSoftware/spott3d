@@ -5,7 +5,6 @@ import {
     StyleSheet,
     Dimensions,
     TouchableOpacity,
-    AsyncStorage,
     TextInput,
     Modal,
 } from "react-native";
@@ -46,7 +45,6 @@ export default class PostCard extends Component {
                     this.setState({ author: author, authorPhoto: authorPhoto });
                 });
         } catch (error) {
-            console.log(error);
         }
     }
 
@@ -64,36 +62,6 @@ export default class PostCard extends Component {
 
     renderCard() {
         return (
-            // <Card style={{ marginLeft: 0, flex: 0, width: viewportWidth }}>
-            //     <CardItem>
-            //         <Left style={{ flex: 0.8 }}>
-            //             <Thumbnail small source={{ uri: this.state.userphoto }} />
-            //             <Body>
-            //                 <Text note style={styles.defaultText}>Data: {this.data.item.datetime}</Text>
-            //             </Body>
-            //         </Left>
-            //         <Right style={{ flex: 0.2 }}>
-            //             <Icon type="MaterialIcons" name="report" button onPress={() => alert("Cliquei em denunciar")} />
-            //         </Right>
-            //     </CardItem>
-
-            //     {this.data.item.image ? this.renderImage() : this.renderText()}
-
-            //     <CardItem>
-            //         <Left>
-            //             <Button transparent>
-            //                 <Icon name="chatbubbles" style={{ fontSize: 10, color: 'grey' }} />
-            //                 <Text note style={styles.iconText}> {this.data.item.comments.length} Comentários</Text>
-
-            //             </Button>
-            //         </Left>
-            //         {this.state.email == this.data.item.email &&
-            //             <Right>
-            //                 <Icon type="MaterialCommunityIcons" name="delete" button onPress={() => alert(this.data.item.username)} />
-            //             </Right>}
-            //     </CardItem>
-            // </Card>
-
             <Card style={{ marginBottom: 1, flex: 1 }}>
                 <CardItem style={{ backgroundColor: this.subcolor }}>
                     <Left style={{ flex: 2 }}>
@@ -111,7 +79,6 @@ export default class PostCard extends Component {
                             <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
                                 <Icon style={styles.datetime} type="MaterialIcons" name="verified-user" />
                                 <Text style={styles.datetime}>
-                                    {/* {this.data.item.course != '' ? ' ' + this.data.item.course : 'Desconhecido'} */}
                                     {this.data.item.email}
                                 </Text>
                             </View>
@@ -158,12 +125,12 @@ export default class PostCard extends Component {
     };
 
     refreshingData = async () => {
+        this.setState({newComment: ''});
         try{
             await fetch('https://api-spotted.herokuapp.com/api/post/id/' + this.state.data.item.id)
               .then(res => res.json())
               .then(newData => {
                   const newItemData = {"item" : newData};
-                  console.log(newItemData);
                 this.setState({ data: newItemData});
             });
         }catch (erro) {}
@@ -203,11 +170,15 @@ export default class PostCard extends Component {
 
     sendComment = async () => {
         try {
-            const usersMentioned = this.state.newComment.match(/@\w+\S\w*/)[0].substr(1);
+            const filterMentioned = this.state.newComment.match(/@\w+\S\w*/);
+            const usersMentioned = filterMentioned !== null ? filterMentioned[0].substr(1) : '';
 
             const id = this.data.item.id;
             const email = this.state.email;
+            const username = this.state.username;
+            const userphoto = this.state.userphoto
             const newComment = this.state.newComment;
+
             await fetch(`https://api-spotted.herokuapp.com/api/post/${id}/comment`, {
                 method: 'PUT',
                 headers: {
@@ -217,7 +188,11 @@ export default class PostCard extends Component {
                 body: JSON.stringify({
                     userMentioned: usersMentioned,
                     comment: newComment,
-                    commenter: { email: email }
+                    commenter: { 
+                        image: userphoto,
+                        username: username,
+                        email: email
+                    }
                 })
             }).then(this.refreshingData());
             // .then(a => {
@@ -226,9 +201,12 @@ export default class PostCard extends Component {
             //         commenter: { email: this.state.email }
             //     });
         } catch (error) {
-            console.log(error);
         }
     }
+
+    handleInputChange = newComment => {
+        this.setState({newComment});
+    };
 
     renderFooter(userphoto) {
         return (
@@ -241,9 +219,11 @@ export default class PostCard extends Component {
                     autoCapitalize="none"
                     multiline={true}
                     style={styles.input}
-                    onChangeText={(text) => { this.setState({ newComment: text }) }}
+                    value={this.state.newComment}
+                    onChangeText={this.handleInputChange}
                     placeholder=" Adicionar comentário..."
                     returnKeyType="send"
+                    onSubmitEditing={this.sendComment}
                 />
                 <TouchableOpacity
                     style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "15%", height: 40, marginRight: 4 }}
