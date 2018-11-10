@@ -20,6 +20,7 @@ const imageHeight = Math.round(dimensions.width * 9 / 16);
 const imageWidth = dimensions.width;
 
 export default class SpottedCard extends Component {
+	
 	constructor(props) {
 		super(props);
 		this.data = props.data;
@@ -39,11 +40,7 @@ export default class SpottedCard extends Component {
 	}
 
 	validadeData(value) {
-		if (value != null && value.trim().length != 0) {
-			return true;
-		} else {
-			return false;
-		}
+		return (value != null && value.trim().length != 0);
 	}
 
 	renderCard() {
@@ -107,7 +104,7 @@ export default class SpottedCard extends Component {
 	renderComments() {
 		return (
 			<FlatList
-				data={this.data.item.comments}
+				data={this.data.item.comments.sort((a, b) => a.id - b.id)}
 				extraData={this.state}
 				keyExtractor={item => item.id}
 				onEndReachedThreshold={1}
@@ -160,7 +157,17 @@ export default class SpottedCard extends Component {
 					}
 				})
 			}).then(a => {
-				this.setState({ modalVisibleStatus: false });
+				this.data.item.comments.push({
+					id: a.id,
+					userMentioned: '',
+					comment: this.state.newComment,
+					commenter: {
+						email: userEmail,
+						username: nickname,
+						image: userPhoto
+					}
+				});
+				this.setState({ newComment: '', sending: false });
 			});
 		} catch (error) {
 			this.setState({ sending: false });
@@ -196,7 +203,6 @@ export default class SpottedCard extends Component {
 						style={styles.input}
 						onChangeText={(newComment) => { this.setState({ newComment }) }}
 						placeholder=" Adicionar comentário..."
-						returnKeyType="send"
 						value={this.state.newComment}
 					/>
 					<TouchableOpacity
@@ -229,7 +235,7 @@ export default class SpottedCard extends Component {
 	render() {
 		return (
 			<View style={{ flex: 1, backgroundColor: this.color }}>
-				<TouchableOpacity activeOpacity={0.8} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+				<TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
 					<View>
 						{this.renderCard()}
 						<Modal
