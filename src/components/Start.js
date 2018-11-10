@@ -25,7 +25,6 @@ export default class Start extends Component {
 
 	async componentDidMount() {
 		try {
-			SplashScreen.hide();
 			this.setState({ loading: false });
 			const isLogged = await AsyncStorage.getItem('isLogged');
 			if (isLogged === 'true') {
@@ -41,10 +40,14 @@ export default class Start extends Component {
 				if (data != null) {
 					await AsyncStorage.setItem('username', data.username);
 					Actions.reset('home');
+					SplashScreen.hide();
 				}
 			}
 			if (isLogged === 'false') {
 				Actions.reset('register');
+				SplashScreen.hide();
+			} else {
+				SplashScreen.hide();
 			}
 		} catch (error) { }
 	}
