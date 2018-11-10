@@ -11,6 +11,7 @@ import ProgressBar from '../components/ProgressBar';
 import { Actions } from 'react-native-router-flux';
 
 export default class SpottedList extends Component {
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -18,7 +19,7 @@ export default class SpottedList extends Component {
       subcolor: props.subcolor,
       spotteds: props.dataPosts,
       isLoading: true,
-      refreshing: false,
+      refreshing: false
     }
   }
 
@@ -39,7 +40,7 @@ export default class SpottedList extends Component {
   };
 
   async componentDidMount() {
-     let request = [];
+    let request = [];
     let posts = [];
     try {
       await fetch('https://api-spotted.herokuapp.com/api/spotted')
@@ -64,7 +65,7 @@ export default class SpottedList extends Component {
   handleRefresh = async () => {
     this.setState({ isLoading: true });
     await this.componentDidMount();
-  }
+  };
 
   render() {
     return (
