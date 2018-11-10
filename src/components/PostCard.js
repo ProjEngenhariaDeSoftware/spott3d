@@ -79,7 +79,6 @@ export default class PostCard extends Component {
                             <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
                                 <Icon style={styles.datetime} type="MaterialIcons" name="verified-user" />
                                 <Text style={styles.datetime}>
-                                    {/* {this.data.item.course != '' ? ' ' + this.data.item.course : 'Desconhecido'} */}
                                     {this.data.item.email}
                                 </Text>
                             </View>
