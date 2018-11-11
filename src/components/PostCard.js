@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import {
     Text,
     FlatList,
@@ -6,16 +6,17 @@ import {
     Dimensions,
     TouchableOpacity,
     TextInput,
+    AsyncStorage,
     Modal,
 } from "react-native";
-
+import { Actions } from 'react-native-router-flux';
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base'
 import { ListItem } from 'react-native-elements'
 import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
-export default class PostCard extends Component {
+export default class PostCard extends PureComponent {
     constructor(props) {
         super(props);
         this.data = props.data;
@@ -26,7 +27,7 @@ export default class PostCard extends Component {
             username: props.username,
             userphoto: props.userphoto,
             author: '',
-            authorPhoto: '',
+            authorPhoto: './../../assets/images/entretenimento.png',
             email: props.email,
             newComment: "",
             modalVisibleStatus: false,
@@ -64,35 +65,22 @@ export default class PostCard extends Component {
         return (
             <Card style={{ marginBottom: 1, flex: 1 }}>
                 <CardItem style={{ backgroundColor: this.subcolor }}>
-                    <Left style={{ flex: 2 }}>
-                        <Body style={{ justifyContent: 'center', margin: 1 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'flex-start', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                                {/* <Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
-                                <Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                                    {this.data.item.location != '' ? ' ' + this.data.item.location.toUpperCase() : 'Desconhecido'}
-                                    Sem Local
-                            </Text> */}
-                                <Left style={{ flex: 0.8 }}>
-                                    <Thumbnail small source={{ uri: this.state.authorPhoto }} />
-                                </Left>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                                <Icon style={styles.datetime} type="MaterialIcons" name="verified-user" />
-                                <Text style={styles.datetime}>
-                                    {this.data.item.email}
-                                </Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                                <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
-                                <Text style={styles.datetime}>
-                                    {' ' + this.data.item.datetime}
-                                </Text>
-                            </View>
-                        </Body>
-                    </Left>
-                    <Right style={{ flex: 1 }}>
-                        <Icon type="MaterialCommunityIcons" name="alert-box" />
-                    </Right>
+                    <View style={{ flexDirection: 'column', flex: 2, alignItems: 'flex-start' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                            <Thumbnail small source={{ uri: this.state.authorPhoto }} />
+                            <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16 }}> Aguardando Título.</Text>
+                            <Right>
+                                <Icon type="MaterialCommunityIcons" name="alert-box" style={{ fontSize: 24, color: this.color }} />
+                            </Right>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                            <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
+                            <Text style={styles.datetime}>
+                                {' ' + this.data.item.datetime}
+                            </Text>
+                        </View>
+                    </View>
                 </CardItem>
                 <Body>
                     <Body style={{ flex: 1 }}>
@@ -107,9 +95,9 @@ export default class PostCard extends Component {
                             <Text note style={styles.comments}> {this.data.item.comments.length == 0 ? 'Adicionar comentário' : this.data.item.comments.length + ' comentário(s)'}</Text>
                         </Button>
                     </Left>
-                    {this.state.email == this.data.item.email &&
+                    {this.state.email === this.data.item.email &&
                         <Right>
-                            <Icon type="MaterialCommunityIcons" name="delete" button onPress={() => this.deletePost()} />
+                            <Icon type="MaterialCommunityIcons" name="delete" style={{ fontSize: 24, color: this.color }} button onPress={() => this.deletePost()} />
                         </Right>}
                 </CardItem>
             </Card>
@@ -121,27 +109,30 @@ export default class PostCard extends Component {
         await fetch('https://api-spotted.herokuapp.com/api/post/id/' + id, {
             method: 'delete'
         });
-        alert("Post deletado atualize o feed!");
+        // await AsyncStorage.mergeItem('postDeleted', 'true');
+        // alert("Post deletado atualize o feed!");
+        await AsyncStorage.setItem('index', '3');
+        Actions.reset('aplicacoes');
     };
 
     refreshingData = async () => {
-        this.setState({newComment: ''});
-        try{
+        this.setState({ newComment: '' });
+        try {
             await fetch('https://api-spotted.herokuapp.com/api/post/id/' + this.state.data.item.id)
-              .then(res => res.json())
-              .then(newData => {
-                  const newItemData = {"item" : newData};
-                this.setState({ data: newItemData});
-            });
-        }catch (erro) {}
+                .then(res => res.json())
+                .then(newData => {
+                    const newItemData = { "item": newData };
+                    this.setState({ data: newItemData });
+                });
+        } catch (erro) { }
     };
 
     renderComments() {
         return (
             <FlatList
                 data={this.state.data.item.comments}
-                extraData={this.state.data.item.comments}
-                refreshing={true}
+                contentContainerStyle={{ paddingLeft: 1, paddingRight: 1 }}
+                refreshing={this.state.refreshing}
                 keyExtractor={item => item.id + ''}
                 onEndReachedThreshold={1}
                 renderItem={({ item }) => {
@@ -160,8 +151,7 @@ export default class PostCard extends Component {
                         </View>
                     );
                 }}
-                contentContainerStyle={{ width: viewportWidth }}
-                ListHeaderComponent={this.renderCard(viewportWidth)}
+                ListHeaderComponent={this.renderCard()}
                 ListFooterComponent={this.renderFooter(this.state.userphoto)}
             />
 
@@ -188,7 +178,7 @@ export default class PostCard extends Component {
                 body: JSON.stringify({
                     userMentioned: usersMentioned,
                     comment: newComment,
-                    commenter: { 
+                    commenter: {
                         image: userphoto,
                         username: username,
                         email: email
@@ -205,13 +195,13 @@ export default class PostCard extends Component {
     }
 
     handleInputChange = newComment => {
-        this.setState({newComment});
+        this.setState({ newComment });
     };
 
     renderFooter(userphoto) {
         return (
-            <View style={{ flexDirection: 'row', width: viewportWidth, margin: 2 }}>
-                <Thumbnail small source={{ uri: userphoto }} style={{ marginStart: 18 }} />
+            <View style={{ flexDirection: 'row', width: viewportWidth, margin: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
+                <Thumbnail small source={{ uri: userphoto }} />
                 <TextInput
                     autoFocus
                     keyboardType="default"
@@ -266,7 +256,6 @@ export default class PostCard extends Component {
                                 {this.renderComments()}
                             </View>
                         </View>
-
                     </Modal>
                 </View>
             </TouchableOpacity>
@@ -312,7 +301,7 @@ const styles = StyleSheet.create({
         borderColor: '#e0e0e0',
         borderWidth: 1,
         borderRadius: 10,
-        width: '68%',
+        width: '70%',
         fontFamily: 'ProductSans'
     },
     inputText: {

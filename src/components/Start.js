@@ -86,8 +86,8 @@ export default class Start extends Component {
 			console.error(error);
 			this.setState({ loading: false });
 		}
-	}
-
+  }
+  
 	render() {
 		return (
 			<View style={styles.container}>

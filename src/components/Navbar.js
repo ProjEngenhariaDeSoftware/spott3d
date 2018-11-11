@@ -22,7 +22,7 @@ export default class Navbar extends Component {
   }
 
   state = {
-    index: 0,
+    index: 5,
     routes: [
       {
         key: 'spotted',
