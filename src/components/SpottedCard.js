@@ -16,10 +16,11 @@ import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const dimensions = Dimensions.get('window');
-const imageHeight = Math.round(dimensions.width * 9 / 16);
+const imageHeight = Math.round(dimensions.width);
 const imageWidth = dimensions.width;
 
 export default class SpottedCard extends Component {
+	
 	constructor(props) {
 		super(props);
 		this.data = props.data;
@@ -29,7 +30,7 @@ export default class SpottedCard extends Component {
 			newComment: '',
 			modalVisibleStatus: false,
 			id: this.data.item.id,
-			sending: false
+			sending: false,
 		}
 	}
 
@@ -39,11 +40,7 @@ export default class SpottedCard extends Component {
 	}
 
 	validadeData(value) {
-		if (value != null && value.trim().length != 0) {
-			return true;
-		} else {
-			return false;
-		}
+		return (value != null && value.trim().length != 0);
 	}
 
 	renderCard() {
@@ -97,9 +94,11 @@ export default class SpottedCard extends Component {
 	renderImage() {
 		return (
 			<CardItem cardBody>
-				<Image source={{ uri: this.data.item.image }}
-					style={{ width: viewportWidth, height: imageHeight, resizeMode: 'contain', }}
-				/>
+				<View style={{ alignItems: 'center', margin: 2 }}>
+					<Image source={{ uri: this.data.item.image }}
+						style={{ width: imageWidth-5, height: imageHeight-5, resizeMode: 'contain' }}
+					/>
+				</View>
 			</CardItem>
 		);
 	}
@@ -107,7 +106,7 @@ export default class SpottedCard extends Component {
 	renderComments() {
 		return (
 			<FlatList
-				data={this.data.item.comments}
+				data={this.data.item.comments.sort((a, b) => a.id - b.id)}
 				extraData={this.state}
 				keyExtractor={item => item.id}
 				onEndReachedThreshold={1}
@@ -151,7 +150,7 @@ export default class SpottedCard extends Component {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					userMentioned: '',
+					userMentioned: [],
 					comment: this.state.newComment,
 					commenter: {
 						email: userEmail,
@@ -160,7 +159,17 @@ export default class SpottedCard extends Component {
 					}
 				})
 			}).then(a => {
-				this.setState({ modalVisibleStatus: false });
+				this.data.item.comments.push({
+					id: a.id,
+					userMentioned: [],
+					comment: this.state.newComment,
+					commenter: {
+						email: userEmail,
+						username: nickname,
+						image: userPhoto
+					}
+				});
+				this.setState({ newComment: '', sending: false });
 			});
 		} catch (error) {
 			this.setState({ sending: false });
@@ -196,13 +205,13 @@ export default class SpottedCard extends Component {
 						style={styles.input}
 						onChangeText={(newComment) => { this.setState({ newComment }) }}
 						placeholder=" Adicionar comentário..."
-						returnKeyType="send"
 						value={this.state.newComment}
 					/>
 					<TouchableOpacity
 						style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "20%", height: 40, margin: 2, marginRight: 4 }}
 						onPress={this.sendComment}
-						activeOpacity={0.8}>
+						activeOpacity={0.8}
+						disabled={this.state.sending}>
 						<Text style={styles.inputText}>
 							{this.state.sending ? 'enviando' : 'enviar'}
 						</Text>
@@ -229,7 +238,7 @@ export default class SpottedCard extends Component {
 	render() {
 		return (
 			<View style={{ flex: 1, backgroundColor: this.color }}>
-				<TouchableOpacity activeOpacity={0.8} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+				<TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
 					<View>
 						{this.renderCard()}
 						<Modal
