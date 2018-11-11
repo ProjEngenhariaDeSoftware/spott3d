@@ -16,7 +16,7 @@ import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const dimensions = Dimensions.get('window');
-const imageHeight = Math.round(dimensions.width * 9 / 16);
+const imageHeight = Math.round(dimensions.width);
 const imageWidth = dimensions.width;
 
 export default class SpottedCard extends Component {
@@ -30,7 +30,7 @@ export default class SpottedCard extends Component {
 			newComment: '',
 			modalVisibleStatus: false,
 			id: this.data.item.id,
-			sending: false
+			sending: false,
 		}
 	}
 
@@ -94,9 +94,11 @@ export default class SpottedCard extends Component {
 	renderImage() {
 		return (
 			<CardItem cardBody>
-				<Image source={{ uri: this.data.item.image }}
-					style={{ width: viewportWidth, height: imageHeight, resizeMode: 'contain', }}
-				/>
+				<View style={{ alignItems: 'center', margin: 2 }}>
+					<Image source={{ uri: this.data.item.image }}
+						style={{ width: imageWidth-5, height: imageHeight-5, resizeMode: 'contain' }}
+					/>
+				</View>
 			</CardItem>
 		);
 	}
@@ -148,7 +150,7 @@ export default class SpottedCard extends Component {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					userMentioned: '',
+					userMentioned: [],
 					comment: this.state.newComment,
 					commenter: {
 						email: userEmail,
@@ -159,7 +161,7 @@ export default class SpottedCard extends Component {
 			}).then(a => {
 				this.data.item.comments.push({
 					id: a.id,
-					userMentioned: '',
+					userMentioned: [],
 					comment: this.state.newComment,
 					commenter: {
 						email: userEmail,
@@ -208,7 +210,8 @@ export default class SpottedCard extends Component {
 					<TouchableOpacity
 						style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "20%", height: 40, margin: 2, marginRight: 4 }}
 						onPress={this.sendComment}
-						activeOpacity={0.8}>
+						activeOpacity={0.8}
+						disabled={this.state.sending}>
 						<Text style={styles.inputText}>
 							{this.state.sending ? 'enviando' : 'enviar'}
 						</Text>

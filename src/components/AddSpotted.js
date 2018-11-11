@@ -30,7 +30,8 @@ export default class AddSpotted extends Component {
       location: null,
       text: null,
       image: null,
-      sendImage: null
+      sendImage: null,
+      sending: false
     };    
   }
 
@@ -48,6 +49,7 @@ export default class AddSpotted extends Component {
 
   submitSpotted = async () => {
     try {
+      this.setState({ sending: true });
       await fetch('https://api-spotted.herokuapp.com/api/spotted', {
         headers: {
           Accept: 'application/json',
@@ -63,7 +65,9 @@ export default class AddSpotted extends Component {
       }).then(res => {
         Actions.pop();
       });
-    } catch(error) {}
+    } catch(error) {
+      this.setState({ sending: false });
+    }
   }
 
   render() {
@@ -130,7 +134,8 @@ export default class AddSpotted extends Component {
               <TouchableOpacity
                 style={styles.submit}
                 onPress={this.submitSpotted}
-                activeOpacity={0.8}>
+                activeOpacity={0.8}
+                disabled={this.state.sending}>
                 <Text style={styles.text}>
                   enviar
                 </Text>
