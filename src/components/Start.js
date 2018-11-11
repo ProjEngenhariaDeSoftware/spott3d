@@ -98,6 +98,7 @@ export default class Start extends Component {
             <TouchableOpacity
               style={styles.googleButton}
               onPress={this.googleLogin}
+              disabled={this.state.loading}
               activeOpacity={0.8}>
               <Image style={styles.googleLogo} source={require('./../../assets/images/google-icon.png')}></Image>
               <Text style={styles.googleText}>{this.state.loading ? 'Aguarde...' : 'Entrar com o Google'}</Text>
