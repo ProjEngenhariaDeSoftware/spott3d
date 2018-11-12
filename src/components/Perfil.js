@@ -161,7 +161,7 @@ export default class Perfil extends Component {
   headerNotifications() {
     return (
       <View>
-        <ButtonBase transparent button onPress={() => this.showModal(false)}>
+        <ButtonBase transparent button onPress={() => this.buttonNotification(!this.state.notificationVisibleStatus)}>
           <IconBase type="MaterialCommunityIcons" name="close" style={{ fontSize: 25, color: '#00B6D9' }} />
         </ButtonBase>
         <Text style={{ color: '#00B6D9', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold' }}>Notificações</Text>
