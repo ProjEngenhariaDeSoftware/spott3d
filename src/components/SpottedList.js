@@ -9,6 +9,7 @@ import { Button, Icon, View, Spinner } from 'native-base';
 import SpottedCard from '../components/SpottedCard';
 import ProgressBar from '../components/ProgressBar';
 import { Actions } from 'react-native-router-flux';
+import LZString from 'lz-string';
 
 export default class SpottedList extends Component {
   
@@ -52,8 +53,11 @@ export default class SpottedList extends Component {
               posts.push(spotted);
             }
           });
-          this.state.spotteds = posts.sort((a, b) => b.id - a.id);
-          this.setState({ isLoading: false });
+          //posts.map(item => {
+          //  item.image = LZString.decompress(item.image);
+          //}).sort((a, b) => b.id - a.id);
+          posts.sort((a,b) => b.id - a.id);
+          this.setState({ isLoading: false, spotteds: posts });
         });
     } catch (error) {}
   };
