@@ -11,15 +11,20 @@ import {
   FlatList,
   RefreshControl,
 } from 'react-native';
+import { Icon as IconBase, Button as ButtonBase, Card, CardItem } from 'native-base'
 import { Icon, Button } from 'react-native-elements';
 import { GoogleSignin } from 'react-native-google-signin';
 import { Actions } from 'react-native-router-flux';
 import { ListItem } from 'react-native-elements'
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
+
+
 export default class Perfil extends Component {
 
   constructor(props) {
+
+
     super();
     this.state = {
       userNotifications: [],
@@ -40,20 +45,26 @@ export default class Perfil extends Component {
 
   async componentDidMount() {
     try {
+
       const photoURL = await AsyncStorage.getItem('photoURL');
       const displayName = await AsyncStorage.getItem('displayName');
       const email = await AsyncStorage.getItem('email');
+
+
       await fetch('https://api-spotted.herokuapp.com/api/user/' + email + '/notify')
         .then(res => res.json())
         .then(data => {
-          console.log(data.notifications);
           const size = data.notifications.length;
           this.state.notification = size > 0;
-          const newData = data;
+          const newData = data.notifications;
           this.setState({ notificationSize: size, userphoto: photoURL, username: displayName, email: email, userNotifications: newData });
         });
 
+
+   
+
     } catch (error) { }
+
   }
 
   googleLogout = async () => {
@@ -64,6 +75,7 @@ export default class Perfil extends Component {
       Actions.reset('start');
     } catch (error) { }
   }
+
   iconNotification = () => {
     return (
       <View style={styles.badgeIconView}>
@@ -86,6 +98,7 @@ export default class Perfil extends Component {
   }
   renderConfigurations() {
     return (
+
       <View>
         <TouchableOpacity style={{ flex: 1, justifyContent: 'flex-start' }} onPress={() => this.showModal(false)}>
         </TouchableOpacity>
@@ -140,10 +153,18 @@ export default class Perfil extends Component {
     );
   }
 
+  showModal(visible) {
+    this.setState({ modalVisibleStatus: visible, configurationVisibleStatus: false, notificationVisibleStatus: false })
+  }
+
+
   headerNotifications() {
     return (
       <View>
-        <Text style={{ color: 'black', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold' }}>Notificações</Text>
+        <ButtonBase transparent button onPress={() => this.buttonNotification(!this.state.notificationVisibleStatus)}>
+          <IconBase type="MaterialCommunityIcons" name="close" style={{ fontSize: 25, color: '#00B6D9' }} />
+        </ButtonBase>
+        <Text style={{ color: '#00B6D9', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold' }}>Notificações</Text>
       </View>
     );
   }
@@ -154,51 +175,63 @@ export default class Perfil extends Component {
     );
   };
 
-  showModal(visible) {
-    this.setState({ modalVisibleStatus: visible, configurationVisibleStatus: false, notificationVisibleStatus: false })
-  }
 
   hideLoader = (e) => {
     e.distanceFromEnd === 0 ? this.setState({ showLoader: true }) : this.setState({ showLoader: false });
   };
 
+ 
+
+ 
+
   renderNotifications() {
+
     return (
-      <FlatList
-        data={this.state.userNotifications}
-        renderItem={({ item }) => {
-          return (
-            <View style={styles.item}>
-              <ListItem
-                containerStyle={{ marginLeft: 0 }}
-                title={item.username}
-                titleStyle={styles.userComment}
-                subtitle={<View style={styles.subtitleView}>
-                  <Text style={styles.text}>{item.notifications.publicationType}</Text>
-                </View>}
-                leftAvatar={{ source: { uri: item.image } }}
-              >
-              </ListItem>
-            </View>
-          );
-        }}
-        keyExtractor={item => item.username + ''}
-        onEndReachedThreshold={1}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this.handleRefresh}
-            colors={["#00B6D9"]}
-          />
-        }
-        onEndReached={(event) => this.hideLoader(event)}
-        ListEmptyComponent={<View></View>}
-        ListHeaderComponent={this.headerNotifications}
-        ListFooterComponent={this.renderLoader}
-        contentContainerStyle={{ width: viewportWidth }}
-      />
-    );
+
+      this.state.userNotifications.length > 0 ?
+
+        <FlatList
+          data={this.state.userNotifications}
+          renderItem={({ item }) => {
+            return (
+
+              item.commenter !== this.state.email &&
+              <View>
+             
+                <ListItem
+                  containerStyle={{ marginLeft: 0 }}
+                  title={'@' + item.commenter.username}
+                  titleStyle={styles.title}
+                  subtitle={<View style={styles.subtitleView}>
+                    <Text >Mencionou você em um Comentário</Text>
+
+                  </View>}
+                  leftAvatar={{ source: { uri: item.commenter.image}}}
+                >
+                </ListItem>
+              </View>
+
+            );
+          }}
+          keyExtractor={item => item.id + ''}
+          onEndReachedThreshold={1}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.handleRefresh}
+              colors={["#00B6D9"]}
+            />
+          }
+          onEndReached={(event) => this.hideLoader(event)}
+          ListEmptyComponent={<View></View>}
+          ListHeaderComponent={this.headerNotifications}
+          ListFooterComponent={this.renderLoader}
+          contentContainerStyle={{ width: viewportWidth }}
+        /> : <View><Text>Nenhuma Notificação!</Text></View>);
   }
+
+
+
 
   render() {
     return (
@@ -342,5 +375,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginLeft: 10,
     marginRight: 10,
-  }
+  },
+  title: {
+    fontFamily: 'ProductSans',
+    color: 'black',
+    fontSize: 14
+  },
+  subtitleView: {
+    flexDirection: 'row',
+    margin: 0.5
+  },
+
 });
