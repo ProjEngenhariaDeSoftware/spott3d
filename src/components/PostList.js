@@ -8,7 +8,6 @@ import {
   TextInput,
   AsyncStorage,
   Image,
-  KeyboardAvoidingView,
   Text
 } from 'react-native';
 import { Button, Icon, View, Spinner, Left } from 'native-base'
@@ -18,10 +17,6 @@ import ProgressBar from '../components/ProgressBar';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const options = {
-  // title: 'Opções',
-  // cancelButtonTitle: 'Cancelar',
-  // chooseFromLibraryButtonTitle: 'Escolha uma imagem da sua galeria',
-  // takePhotoButtonTitle: 'Tire uma foto',
   mediaType: 'photo',
   maxWidth: 800,
   quality: 1
