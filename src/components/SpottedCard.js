@@ -16,7 +16,7 @@ import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const dimensions = Dimensions.get('window');
-const imageHeight = Math.round(dimensions.width);
+const imageHeight = Math.round(dimensions.height);
 const imageWidth = dimensions.width;
 
 export default class SpottedCard extends Component {
@@ -94,9 +94,9 @@ export default class SpottedCard extends Component {
 	renderImage() {
 		return (
 			<CardItem cardBody>
-				<View style={{ alignItems: 'center', margin: 2 }}>
+				<View style={{ alignItems: 'center' }}>
 					<Image source={{ uri: this.data.item.image }}
-						style={{ width: imageWidth-5, height: imageHeight-5, resizeMode: 'contain' }}
+						style={{ width: imageWidth, height: imageHeight, resizeMode: 'contain', borderRadius: 15 }}
 					/>
 				</View>
 			</CardItem>
@@ -137,40 +137,44 @@ export default class SpottedCard extends Component {
 
 	sendComment = async () => {
 		try {
-			this.setState({ sending: true });
-			let userEmail = await AsyncStorage.getItem('email');
-			let userPhoto = await AsyncStorage.getItem('photoURL');
-			let nickname = await AsyncStorage.getItem('username');
-			//let usersMentioned = this.state.newComment.match(/@\w+/g).map(e => e.substr(1));
-
-			await fetch('https://api-spotted.herokuapp.com/api/spotted/' + this.state.id + '/comment', {
-				method: 'PUT',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					userMentioned: [],
-					comment: this.state.newComment,
-					commenter: {
-						email: userEmail,
-						username: nickname,
-						image: userPhoto
-					}
-				})
-			}).then(a => {
-				this.data.item.comments.push({
-					id: a.id,
-					userMentioned: [],
-					comment: this.state.newComment,
-					commenter: {
-						email: userEmail,
-						username: nickname,
-						image: userPhoto
-					}
+			if (this.state.newComment.trim().length != 0) {
+				this.setState({ sending: true });
+				let userEmail = await AsyncStorage.getItem('email');
+				let userPhoto = await AsyncStorage.getItem('photoURL');
+				let nickname = await AsyncStorage.getItem('username');
+				let usersMentioned = this.state.newComment;
+				if (usersMentioned.indexOf('@') != -1) {
+					usersMentioned = this.state.newComment.match(/@\w+/g).map(e => e.substr(1));
+				}
+				await fetch('https://api-spotted.herokuapp.com/api/spotted/' + this.state.id + '/comment', {
+					method: 'PUT',
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						userMentioned: usersMentioned,
+						comment: this.state.newComment,
+						commenter: {
+							email: userEmail,
+							username: nickname,
+							image: userPhoto
+						}
+					})
+				}).then(a => {
+					this.data.item.comments.push({
+						id: a.id,
+						userMentioned: usersMentioned,
+						comment: this.state.newComment,
+						commenter: {
+							email: userEmail,
+							username: nickname,
+							image: userPhoto
+						}
+					});
+					this.setState({ newComment: '', sending: false });
 				});
-				this.setState({ newComment: '', sending: false });
-			});
+			}
 		} catch (error) {
 			this.setState({ sending: false });
 		}
