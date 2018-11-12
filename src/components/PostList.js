@@ -54,8 +54,6 @@ export default class PostList extends PureComponent {
 
   }
 
-
-
   async componentDidMount() {
     try {
       const photoURL = await AsyncStorage.getItem('photoURL');
@@ -245,6 +243,10 @@ export default class PostList extends PureComponent {
     );
   }
 
+  postDeleted() {
+    this.handleRefresh();
+  }
+
   render() {
     return (
       this.state.isLoading ? <ProgressBar color={this.state.color} /> :
@@ -263,6 +265,7 @@ export default class PostList extends PureComponent {
                 username={this.state.username}
                 userphoto={this.state.userPhoto}
                 email={this.state.email}
+                deleted={this.postDeleted.bind(this)}
               />
             )
           }}
