@@ -4,17 +4,18 @@ import {
     FlatList,
     StyleSheet,
     Dimensions,
+    RefreshControl,
     TouchableOpacity,
     TextInput,
-    AsyncStorage,
+    Image,
     Modal,
 } from "react-native";
-import { Actions } from 'react-native-router-flux';
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base'
 import { ListItem } from 'react-native-elements'
-import ProgressiveImage from '../components/ProgressiveImage';
+//import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+
 
 export default class PostCard extends PureComponent {
     constructor(props) {
@@ -31,7 +32,8 @@ export default class PostCard extends PureComponent {
             email: props.email,
             newComment: "",
             modalVisibleStatus: false,
-            refreshing: false
+            refreshing: false,
+            send: false,
         }
     }
 
@@ -52,11 +54,11 @@ export default class PostCard extends PureComponent {
     renderImage() {
         return (
             <CardItem cardBody>
-                <ProgressiveImage
-                    thumbnailSource={{ uri: this.data.item.image }}
-                    source={{ uri: this.data.item.image }}
-                    style={{ width: viewportWidth, height: 170 }}
-                    resizeMode="contain" />
+                <View style={{ alignItems: 'center', margin: 2 }}>
+                    <Image source={{ uri: this.data.item.image }}
+                        style={{ width: viewportWidth, height: viewportHeight, resizeMode: 'contain', borderRadius: 15 }}
+                    />
+                </View>
             </CardItem>
         );
     }
@@ -66,19 +68,20 @@ export default class PostCard extends PureComponent {
             <Card style={{ marginBottom: 1, flex: 1 }}>
                 <CardItem style={{ backgroundColor: this.subcolor }}>
                     <View style={{ flexDirection: 'column', flex: 2, alignItems: 'flex-start' }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Thumbnail small source={{ uri: this.state.authorPhoto }} />
-                            <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16 }}> Aguardando Título.</Text>
+                            <View style={{ flexDirection: 'column', justifyContent: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                                <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color }}> AGUARDANDO TÍTULO..</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                                    <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
+                                    <Text style={styles.datetime}>
+                                        {' ' + this.data.item.datetime}
+                                    </Text>
+                                </View>
+                            </View>
                             <Right>
                                 <Icon type="MaterialCommunityIcons" name="alert-box" style={{ fontSize: 24, color: this.color }} />
                             </Right>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                            <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
-                            <Text style={styles.datetime}>
-                                {' ' + this.data.item.datetime}
-                            </Text>
                         </View>
                     </View>
                 </CardItem>
@@ -109,20 +112,17 @@ export default class PostCard extends PureComponent {
         await fetch('https://api-spotted.herokuapp.com/api/post/id/' + id, {
             method: 'delete'
         });
-        // await AsyncStorage.mergeItem('postDeleted', 'true');
-        // alert("Post deletado atualize o feed!");
-        await AsyncStorage.setItem('index', '3');
-        Actions.reset('aplicacoes');
+        this.props.deleted();
     };
 
     refreshingData = async () => {
-        this.setState({ newComment: '' });
+        this.setState({ refreshing: true });
         try {
             await fetch('https://api-spotted.herokuapp.com/api/post/id/' + this.state.data.item.id)
                 .then(res => res.json())
                 .then(newData => {
                     const newItemData = { "item": newData };
-                    this.setState({ data: newItemData });
+                    this.setState({ data: newItemData, refreshing: false });
                 });
         } catch (erro) { }
     };
@@ -130,9 +130,17 @@ export default class PostCard extends PureComponent {
     renderComments() {
         return (
             <FlatList
+                ref={(list) => this.commentsFlatList = list}
                 data={this.state.data.item.comments}
+                extraData={this.state.send}
                 contentContainerStyle={{ paddingLeft: 1, paddingRight: 1 }}
-                refreshing={this.state.refreshing}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this.refreshingData}
+                        colors={[this.color]}
+                    />
+                }
                 keyExtractor={item => item.id + ''}
                 onEndReachedThreshold={1}
                 renderItem={({ item }) => {
@@ -151,6 +159,8 @@ export default class PostCard extends PureComponent {
                         </View>
                     );
                 }}
+                // onContentSizeChange={() => this.commentsFlatList.scrollToEnd({animated: true})}
+                // onLayout={() => this.commentsFlatList.scrollToEnd({animated: true})}             
                 ListHeaderComponent={this.renderCard()}
                 ListFooterComponent={this.renderFooter(this.state.userphoto)}
             />
@@ -184,12 +194,21 @@ export default class PostCard extends PureComponent {
                         email: email
                     }
                 })
-            }).then(this.refreshingData());
-            // .then(a => {
-            //     this.data.item.comments.push({
-            //         comment: this.state.newComment,
-            //         commenter: { email: this.state.email }
-            //     });
+            }).then(a => {
+                this.data.item.comments.push({
+                    id: a.id,
+                    userMentioned: usersMentioned,
+                    comment: newComment,
+                    commenter: {
+                        email: email,
+                        username: username,
+                        image: userphoto
+                    }
+                });
+                this.setState({ newComment: '', send: true });
+            });
+            //this.commentsFlatList.scrollToEnd();
+            this.setState({ send: false });
         } catch (error) {
         }
     }
@@ -200,7 +219,7 @@ export default class PostCard extends PureComponent {
 
     renderFooter(userphoto) {
         return (
-            <View style={{ flexDirection: 'row', width: viewportWidth, margin: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
+            <View style={{ flexDirection: 'row', width: viewportWidth, margin: 2, alignItems: 'center', justifyContent: 'flex-start' }}>
                 <Thumbnail small source={{ uri: userphoto }} />
                 <TextInput
                     autoFocus
@@ -216,7 +235,7 @@ export default class PostCard extends PureComponent {
                     onSubmitEditing={this.sendComment}
                 />
                 <TouchableOpacity
-                    style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "15%", height: 40, marginRight: 4 }}
+                    style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "13%", height: 40, marginRight: 4 }}
                     onPress={() => this.sendComment()}
                     activeOpacity={0.8}>
                     <Text style={styles.inputText}>
@@ -243,7 +262,7 @@ export default class PostCard extends PureComponent {
 
     render() {
         return (
-            <TouchableOpacity activeOpacity={0.5} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+            <TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
                 <View>
                     {this.renderCard()}
                     <Modal
@@ -301,13 +320,13 @@ const styles = StyleSheet.create({
         borderColor: '#e0e0e0',
         borderWidth: 1,
         borderRadius: 10,
-        width: '70%',
+        width: '75%',
         fontFamily: 'ProductSans'
     },
     inputText: {
         fontFamily: 'ProductSans',
         color: 'white',
-        fontSize: 14
+        fontSize: 14,
     },
     userComment: {
         fontFamily: 'ProductSans',

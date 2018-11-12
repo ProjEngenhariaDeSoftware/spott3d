@@ -8,7 +8,6 @@ import {
   TextInput,
   AsyncStorage,
   Image,
-  KeyboardAvoidingView,
   Text
 } from 'react-native';
 import { Button, Icon, View, Spinner, Left } from 'native-base'
@@ -18,10 +17,6 @@ import ProgressBar from '../components/ProgressBar';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const options = {
-  // title: 'Opções',
-  // cancelButtonTitle: 'Cancelar',
-  // chooseFromLibraryButtonTitle: 'Escolha uma imagem da sua galeria',
-  // takePhotoButtonTitle: 'Tire uma foto',
   mediaType: 'photo',
   maxWidth: 800,
   quality: 1
@@ -53,8 +48,6 @@ export default class PostList extends PureComponent {
     }
 
   }
-
-
 
   async componentDidMount() {
     try {
@@ -245,6 +238,10 @@ export default class PostList extends PureComponent {
     );
   }
 
+  postDeleted() {
+    this.handleRefresh();
+  }
+
   render() {
     return (
       this.state.isLoading ? <ProgressBar color={this.state.color} /> :
@@ -263,6 +260,7 @@ export default class PostList extends PureComponent {
                 username={this.state.username}
                 userphoto={this.state.userPhoto}
                 email={this.state.email}
+                deleted={this.postDeleted.bind(this)}
               />
             )
           }}
