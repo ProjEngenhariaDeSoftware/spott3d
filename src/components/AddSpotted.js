@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import ImagePicker from 'react-native-image-picker';
+import LZString from 'lz-string';
 
 const options = {
   title: 'Opções',
@@ -41,8 +42,9 @@ export default class AddSpotted extends Component {
         alert('Algo de errado aconteceu');
       } else {
         const source = { uri: response.uri };
-        const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
-        this.setState({ image: source, sendImage: sourceData.uri });
+        let sourceData = 'data:image/jpeg;base64,' + response.data;
+        //sourceData = LZString.compress(sourceData);
+        this.setState({ image: source, sendImage: sourceData });
       } 
     });
   }
@@ -63,6 +65,7 @@ export default class AddSpotted extends Component {
           image: this.state.sendImage
         })
       }).then(res => {
+        console.error(res);
         Actions.pop();
       });
     } catch(error) {
@@ -112,7 +115,9 @@ export default class AddSpotted extends Component {
                 onChangeText={(text) => this.setState({ text })}
                 value={this.state.text}
               />
-              <Image style={styles.imagePreview} source={this.state.image != null ? this.state.image : null } />
+              <View style={{ alignItems: 'center', justifyContent: 'center', margin: 5 }}>
+                <Image style={styles.imagePreview} source={this.state.image != null ? this.state.image : null } />
+              </View>
             </View>
           </View>
         </View>
@@ -164,10 +169,12 @@ const styles = StyleSheet.create({
     elevation: 40
   },
   imagePreview: {
-    width: 50,
-    height: 50,
+    width: 140,
+    height: 140,
+    borderRadius: 15,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    margin: 2
   },
   row: {
     flex: 1,
