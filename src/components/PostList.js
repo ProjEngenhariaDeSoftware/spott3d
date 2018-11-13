@@ -143,11 +143,8 @@ export default class PostList extends PureComponent {
           visible={this.state.modalVisibleStatus}
           onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
           <View style={{ flex: 1, justifyContent: 'flex-start' }}>
-            <View style={{ flexDirection: 'row' }}>
-              <Button transparent button onPress={() => { this.showModalFunction(!this.state.modalVisibleStatus) }}>
-                <Icon type="MaterialCommunityIcons" name="chevron-left" style={{ fontSize: 30, color: this.state.color }} />
-              </Button>
-              <Text style={{ fontFamily: 'ProductSans Bold', textAlign: 'center', fontSize: 25, color: this.state.color, paddingTop: 8 }}>Adicionar  {this.state.pageTitle}</Text>
+            <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', elevation: 2 }}>
+              <Text style={{ padding: 10, fontFamily: 'ProductSans Bold', textAlign: 'center', fontSize: 24, color: this.state.color }}>Adicionar  {this.state.pageTitle}</Text>
             </View>
             <View style={{ alignItems: 'center', paddingTop: 40, paddingLeft: -1 }}>
               <Text style={{ color: this.state.color }}>Título:</Text>

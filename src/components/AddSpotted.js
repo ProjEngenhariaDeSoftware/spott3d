@@ -32,7 +32,8 @@ export default class AddSpotted extends Component {
       text: null,
       image: null,
       sendImage: null,
-      sending: false
+      sending: false,
+      textWarning: false
     };    
   }
 
@@ -51,7 +52,7 @@ export default class AddSpotted extends Component {
 
   submitSpotted = async () => {
     try {
-      this.setState({ sending: true });
+      this.setState({ sending: true, textWarning: false });
       await fetch('https://api-spotted.herokuapp.com/api/spotted', {
         headers: {
           Accept: 'application/json',
@@ -69,7 +70,7 @@ export default class AddSpotted extends Component {
         Actions.pop();
       });
     } catch(error) {
-      this.setState({ sending: false });
+      this.setState({ sending: false, textWarning: true });
     }
   }
 
@@ -115,6 +116,7 @@ export default class AddSpotted extends Component {
                 onChangeText={(text) => this.setState({ text })}
                 value={this.state.text}
               />
+              <Text style={styles.label}>{ this.state.textWarning ? 'Esse campo não pode ser vazio': null }</Text>
               <View style={{ alignItems: 'center', justifyContent: 'center', margin: 5 }}>
                 <Image style={styles.imagePreview} source={this.state.image != null ? this.state.image : null } />
               </View>
@@ -157,16 +159,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#dadada'
-  },
-  circle: {
-    width: 65,
-    height: 65,
-    borderRadius: 65 / 2,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 16,
-    elevation: 40
   },
   imagePreview: {
     width: 140,
