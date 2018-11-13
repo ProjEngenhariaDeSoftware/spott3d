@@ -3,12 +3,14 @@ import {
   StyleSheet,
   Dimensions,
   FlatList,
-  RefreshControl
+  RefreshControl,
+  Text
 } from 'react-native';
 import { Button, Icon, View, Spinner } from 'native-base';
 import SpottedCard from '../components/SpottedCard';
 import ProgressBar from '../components/ProgressBar';
 import { Actions } from 'react-native-router-flux';
+import ActionButton from 'react-native-action-button';
 import LZString from 'lz-string';
 
 export default class SpottedList extends Component {
@@ -71,9 +73,18 @@ export default class SpottedList extends Component {
     await this.componentDidMount();
   };
 
+  renderEmptyData() {
+    return (
+      <View style={{ alignItems: 'center', marginTop: 25 }}>
+        <Text style={{ fontSize: 18, fontFamily: 'ProductSans' }}>{'\n\n\n\n\nDesculpe, \nmas não temos nada aqui :(\n\n\nAproveite e adicione um novo!'}</Text>
+      </View>
+    );
+  }
+
   render() {
     return (
       this.state.isLoading ? <ProgressBar color={this.state.color} /> :
+      <View style={{ flex: 1 }}>
         <FlatList
           data={this.state.spotteds}
           renderItem={(item) => {
@@ -94,9 +105,15 @@ export default class SpottedList extends Component {
               colors={[this.state.color]}
             />
           }
-          ListHeaderComponent={this.addButton}
           ListFooterComponent={this.renderLoader}
+          ListEmptyComponent={this.renderEmptyData}
         />
+        <ActionButton
+          buttonColor="rgba(236,93,115,1)"
+          onPress={this.addPost}
+          size={50}
+        />
+        </View>
     );
   }
 }

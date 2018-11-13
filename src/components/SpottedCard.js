@@ -96,7 +96,7 @@ export default class SpottedCard extends Component {
 			<CardItem cardBody>
 				<View style={{ alignItems: 'center' }}>
 					<Image source={{ uri: this.data.item.image }}
-						style={{ width: imageWidth, height: imageHeight, resizeMode: 'contain', borderRadius: 15 }}
+						style={{ width: imageWidth-10, height: imageHeight-10, borderRadius: 15 }}
 					/>
 				</View>
 			</CardItem>
