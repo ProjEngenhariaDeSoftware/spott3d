@@ -25,10 +25,9 @@ export default class PostCard extends PureComponent {
         this.color = props.color;
         this.state = {
             data: props.data,
+            userPhoto: props.userphoto,
             username: props.username,
-            userphoto: props.userphoto,
             author: '',
-            authorPhoto: './../../assets/images/entretenimento.png',
             email: props.email,
             newComment: "",
             modalVisibleStatus: false,
@@ -38,25 +37,15 @@ export default class PostCard extends PureComponent {
     }
 
     async componentDidMount() {
-        try {
-            const email = this.data.item.email;
-            await fetch('https://api-spotted.herokuapp.com/api/user/email/' + email)
-                .then(res => res.json())
-                .then(postInfo => {
-                    const author = postInfo.username;
-                    const authorPhoto = postInfo.image;
-                    this.setState({ author: author, authorPhoto: authorPhoto });
-                });
-        } catch (error) {
-        }
+        this.setState({ author: this.state.data.item.parent});
     }
 
     renderImage() {
         return (
             <CardItem cardBody>
-                <View style={{ alignItems: 'center', margin: 2 }}>
+                <View style={{ alignItems: 'center'}}>
                     <Image source={{ uri: this.data.item.image }}
-                        style={{ width: viewportWidth, height: viewportHeight, resizeMode: 'contain', borderRadius: 15 }}
+                        style={{ width: viewportWidth, height: viewportHeight - 30}}
                     />
                 </View>
             </CardItem>
@@ -65,13 +54,13 @@ export default class PostCard extends PureComponent {
 
     renderCard() {
         return (
-            <Card style={{ marginBottom: 1, flex: 1 }}>
+            <Card style={{ marginBottom: 1, flex: 1}}>
                 <CardItem style={{ backgroundColor: this.subcolor }}>
                     <View style={{ flexDirection: 'column', flex: 2, alignItems: 'flex-start' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Thumbnail small source={{ uri: this.state.authorPhoto }} />
+                            <Thumbnail small source={{ uri: this.state.author.image }} />
                             <View style={{ flexDirection: 'column', justifyContent: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                                <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color }}> AGUARDANDO TÍTULO..</Text>
+                                <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color }}>{this.data.item.title.toUpperCase()}</Text>
                                 <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                                     <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
                                     <Text style={styles.datetime}>
@@ -98,7 +87,7 @@ export default class PostCard extends PureComponent {
                             <Text note style={styles.comments}> {this.data.item.comments.length == 0 ? 'Adicionar comentário' : this.data.item.comments.length + ' comentário(s)'}</Text>
                         </Button>
                     </Left>
-                    {this.state.email === this.data.item.email &&
+                    {this.state.author.email === this.state.email &&
                         <Right>
                             <Icon type="MaterialCommunityIcons" name="delete" style={{ fontSize: 24, color: this.color }} button onPress={() => this.deletePost()} />
                         </Right>}
@@ -133,6 +122,7 @@ export default class PostCard extends PureComponent {
                 ref={(list) => this.commentsFlatList = list}
                 data={this.state.data.item.comments}
                 extraData={this.state.send}
+                keyExtractor={item => item.id + ''}
                 contentContainerStyle={{ paddingLeft: 1, paddingRight: 1 }}
                 refreshControl={
                     <RefreshControl
@@ -141,7 +131,6 @@ export default class PostCard extends PureComponent {
                         colors={[this.color]}
                     />
                 }
-                keyExtractor={item => item.id + ''}
                 onEndReachedThreshold={1}
                 renderItem={({ item }) => {
                     return (
@@ -162,7 +151,7 @@ export default class PostCard extends PureComponent {
                 // onContentSizeChange={() => this.commentsFlatList.scrollToEnd({animated: true})}
                 // onLayout={() => this.commentsFlatList.scrollToEnd({animated: true})}             
                 ListHeaderComponent={this.renderCard()}
-                ListFooterComponent={this.renderFooter(this.state.userphoto)}
+                ListFooterComponent={this.renderFooter()}
             />
 
         );
@@ -170,13 +159,18 @@ export default class PostCard extends PureComponent {
 
     sendComment = async () => {
         try {
-            const filterMentioned = this.state.newComment.match(/@\w+\S\w*/);
-            const usersMentioned = filterMentioned !== null ? filterMentioned[0].substr(1) : '';
-
+            let usersMentioned = this.state.newComment;
+            if (usersMentioned.indexOf('@') != -1) {
+                usersMentioned = this.state.newComment.match(/@\w+/g).map(e => e.substr(1));
+            } else {
+                usersMentioned = [];
+            }
+            
+            console.log(usersMentioned);
             const id = this.data.item.id;
             const email = this.state.email;
             const username = this.state.username;
-            const userphoto = this.state.userphoto
+            const userphoto = this.state.userPhoto
             const newComment = this.state.newComment;
 
             await fetch(`https://api-spotted.herokuapp.com/api/post/${id}/comment`, {
@@ -186,7 +180,7 @@ export default class PostCard extends PureComponent {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    userMentioned: usersMentioned,
+                    usersMentioned: usersMentioned,
                     comment: newComment,
                     commenter: {
                         image: userphoto,
@@ -207,7 +201,7 @@ export default class PostCard extends PureComponent {
                 });
                 this.setState({ newComment: '', send: true });
             });
-            //this.commentsFlatList.scrollToEnd();
+            this.commentsFlatList.scrollToEnd();
             this.setState({ send: false });
         } catch (error) {
         }
@@ -217,12 +211,11 @@ export default class PostCard extends PureComponent {
         this.setState({ newComment });
     };
 
-    renderFooter(userphoto) {
+    renderFooter() {
         return (
             <View style={{ flexDirection: 'row', width: viewportWidth, margin: 2, alignItems: 'center', justifyContent: 'flex-start' }}>
-                <Thumbnail small source={{ uri: userphoto }} />
+                <Thumbnail small source={{ uri: this.state.userPhoto }} />
                 <TextInput
-                    autoFocus
                     keyboardType="default"
                     autoCorrect={false}
                     autoCapitalize="none"
@@ -262,6 +255,7 @@ export default class PostCard extends PureComponent {
 
     render() {
         return (
+            <View style={{ flex: 1, backgroundColor: this.color,  paddingLeft: 1, paddingRight: 1, paddingBottom: 1 }}>
             <TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
                 <View>
                     {this.renderCard()}
@@ -278,6 +272,7 @@ export default class PostCard extends PureComponent {
                     </Modal>
                 </View>
             </TouchableOpacity>
+            </View>
         );
     }
 }

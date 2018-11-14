@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { BottomNavigation } from 'react-native-paper';
 import { AsyncStorage } from 'react-native';
+
 import Spotted from '../components/Spotted';
 import Search from '../components/Search';
 import Events from '../components/Event';
@@ -42,7 +43,7 @@ export default class Navbar extends Component {
           key: 'search',
           title: 'Pesquisar',
           icon: 'search',
-          color: '#adadb1'
+          color: '#29434e'
         },
         {
           key: 'perfil',
