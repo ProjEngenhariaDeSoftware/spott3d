@@ -129,7 +129,7 @@ export default class Perfil extends Component {
   headerNotifications() {
     return (
       <View>
-        <Text style={{ color: '#00B6D9', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold', marginTop: 10 }}>Notificações</Text>
+        <Text style={{ color: '#00B6D9', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold', marginTop:10 }}>Notificações</Text>
       </View>
     );
   }
