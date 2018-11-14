@@ -12,27 +12,31 @@ import {
 } from 'react-native';
 import { Button, Icon, View, Spinner, Left } from 'native-base'
 import ImagePicker from 'react-native-image-picker';
+import ActionButton from 'react-native-action-button';
 import PostCard from '../components/PostCard';
 import ProgressBar from '../components/ProgressBar';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+
 const options = {
   mediaType: 'photo',
   maxWidth: 800,
   quality: 1
 };
 
+
 export default class PostList extends PureComponent {
 
   constructor(props) {
     super();
-
+    this._listViewOffset = 0
     this.state = {
       isLoading: true,
       showLoader: false,
       sendPost: false,
       refreshing: false,
       modalVisibleStatus: false,
+      isActionButtonVisible: true,
       userPhoto: '',
       username: '',
       dataSource: [],
@@ -44,7 +48,8 @@ export default class PostList extends PureComponent {
       description: "",
       sendImage: null,
       image: null,
-
+      startDate: null,
+      endDate: null,
     }
 
   }
@@ -68,7 +73,7 @@ export default class PostList extends PureComponent {
   };
 
   async showModalFunction(visible) {
-    this.setState({ modalVisibleStatus: visible });
+    this.setState({ modalVisibleStatus: visible, sendPost: !visible });
   }
 
 
@@ -79,6 +84,7 @@ export default class PostList extends PureComponent {
     const type = this.state.type;
     const text = this.state.description;
     const image = this.state.sendImage;
+    const title = this.state.title;
     try {
       await fetch('https://api-spotted.herokuapp.com/api/post', {
         headers: {
@@ -87,7 +93,10 @@ export default class PostList extends PureComponent {
         },
         method: 'POST',
         body: JSON.stringify({
-          email: email,
+          title: title,
+          parent: {
+            email: email,
+          },
           type: type,
           text: text,
           image: image,
@@ -113,7 +122,7 @@ export default class PostList extends PureComponent {
     ImagePicker.launchCamera(options, (response) => {
       if (response.error) {
         alert('Algo de errado aconteceu');
-      } else {
+      } else if (!response.didCancel) {
         const source = { uri: response.uri };
         const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
         this.setState({ image: source, sendImage: sourceData.uri });
@@ -134,68 +143,63 @@ export default class PostList extends PureComponent {
   }
 
 
-  renderHeader = () => {
+  renderModal = () => {
     return (
-      <View style={styles.view}>
-        <Modal
-          transparent={false}
-          animationType={"slide"}
-          visible={this.state.modalVisibleStatus}
-          onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
-          <View style={{ flex: 1, justifyContent: 'flex-start' }}>
-            <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', elevation: 2 }}>
-              <Text style={{ padding: 10, fontFamily: 'ProductSans Bold', textAlign: 'center', fontSize: 24, color: this.state.color }}>Adicionar  {this.state.pageTitle}</Text>
-            </View>
-            <View style={{ alignItems: 'center', paddingTop: 40, paddingLeft: -1 }}>
-              <Text style={{ color: this.state.color }}>Título:</Text>
-              <TextInput
-                autoFocus
-                keyboardType="default"
-                autoCorrect={false}
-                autoCapitalize="none"
-                multiline={true}
-                style={styles.textInput}
-                onChangeText={(text) => { this.setState({ title: text }) }}
-                placeholder="Digite o Título..."
-                returnKeyType="next"
-                blurOnSubmit={true}
-              />
-              <Text style={{ color: this.state.color }}>Descrição:</Text>
-              <TextInput
-                keyboardType="default"
-                autoCorrect={false}
-                autoCapitalize="none"
-                multiline={true}
-                style={styles.descriptionInput}
-                onChangeText={(text) => { this.setState({ description: text }) }}
-                placeholder="Digite a Descrição..."
-                returnKeyType="send"
-                blurOnSubmit={true}
-              />
-              <View style={{ flexDirection: 'row', alignSelf: 'flex-start', paddingLeft: 10 }}>
-                <Button transparent button onPress={() => { this.galleryImage() }} >
-                  <Icon type="MaterialCommunityIcons" name="image-plus" style={{ fontSize: 25, color: this.state.color }} />
-                </Button>
-                <Button transparent button onPress={() => { this.cameraImage() }} >
-                  <Icon type="MaterialCommunityIcons" name="camera" style={{ fontSize: 25, color: this.state.color }} />
-                </Button>
-              </View>
-              <View style={{ justifyContent: 'center' }}>
-                <View style={styles.badgeIconView}>
-                  {(this.state.image !== null) ? <Text style={styles.badge} onPress={() => { this.removeImage() }}>X</Text> : <View style={styles.imagePreview} />}
-                  <Image style={styles.imagePreview} source={this.state.image !== null ? this.state.image : null} />
-                </View>
-              </View>
-              <Button transparent disabled={this.state.sendPost} style={{ alignSelf: 'center' }} button onPress={() => { this.sendPost() }} >
-                <Icon type="MaterialCommunityIcons" name="send" style={{ fontSize: 25, color: this.state.color, paddingLeft: 10 }} />
+      <Modal
+        transparent={false}
+        animationType={"slide"}
+        visible={this.state.modalVisibleStatus}
+        onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
+        <View style={{ flex: 1, justifyContent: 'flex-start' }}>
+          <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', elevation: 2 }}>
+            <Text style={{ padding: 10, fontFamily: 'ProductSans Bold', textAlign: 'center', fontSize: 24, color: this.state.color }}>Adicionar  {this.state.pageTitle}</Text>
+          </View>
+          <View style={{ alignItems: 'center', paddingTop: 40, paddingLeft: -1 }}>
+            <Text style={{ color: this.state.color }}>Título:</Text>
+            <TextInput
+              autoFocus
+              keyboardType="default"
+              autoCorrect={false}
+              autoCapitalize="none"
+              multiline={true}
+              style={styles.textInput}
+              onChangeText={(text) => { this.setState({ title: text }) }}
+              placeholder="Digite o Título..."
+              returnKeyType="next"
+              blurOnSubmit={true}
+            />
+            <Text style={{ color: this.state.color }}>Descrição:</Text>
+            <TextInput
+              keyboardType="default"
+              autoCorrect={false}
+              autoCapitalize="none"
+              multiline={true}
+              style={styles.descriptionInput}
+              onChangeText={(text) => { this.setState({ description: text }) }}
+              placeholder="Digite a Descrição..."
+              returnKeyType="send"
+              blurOnSubmit={true}
+            />
+            <View style={{ flexDirection: 'row', alignSelf: 'flex-start', paddingLeft: 10 }}>
+              <Button transparent button onPress={() => { this.galleryImage() }} >
+                <Icon type="MaterialCommunityIcons" name="image-plus" style={{ fontSize: 25, color: this.state.color }} />
+              </Button>
+              <Button transparent button onPress={() => { this.cameraImage() }} >
+                <Icon type="MaterialCommunityIcons" name="camera" style={{ fontSize: 25, color: this.state.color }} />
               </Button>
             </View>
+            <View style={{ justifyContent: 'center' }}>
+              <View style={styles.badgeIconView}>
+                {(this.state.image !== null) ? <Text style={styles.badge} onPress={() => { this.removeImage() }}>X</Text> : <View style={styles.imagePreview} />}
+                <Image style={styles.imagePreview} source={this.state.image !== null ? this.state.image : null} />
+              </View>
+            </View>
+            <Button transparent disabled={this.state.sendPost} style={{ alignSelf: 'center' }} button onPress={() => { this.sendPost() }} >
+              <Icon type="MaterialCommunityIcons" name="send" style={{ fontSize: 25, color: this.state.color, paddingLeft: 10 }} />
+            </Button>
           </View>
-        </Modal>
-        <Button transparent style={{ justifyContent: 'center', alignSelf: 'flex-end' }} button onPress={() => this.addPost()} >
-          <Icon type="MaterialCommunityIcons" name="plus" style={{ fontSize: 25, color: this.state.color }} />
-        </Button>
-      </View>
+        </View>
+      </Modal>
     );
   };
 
@@ -214,11 +218,10 @@ export default class PostList extends PureComponent {
 
   refreshingData = async () => {
     try {
-      await fetch('https://api-spotted.herokuapp.com/api/post')
+      await fetch('https://api-spotted.herokuapp.com/api/post/type/' + this.state.type)
         .then(res => res.json())
         .then(data => {
-          const dataType = data.filter(post => post.type === this.state.type).sort((a, b) => b.id - a.id);
-          this.setState({ refreshing: false, dataSource: dataType });
+          this.setState({ refreshing: false, dataSource: data });
         });
     } catch (error) { }
   }
@@ -239,45 +242,66 @@ export default class PostList extends PureComponent {
     this.handleRefresh();
   }
 
+  _onScroll = (event) => {
+    const currentOffset = event.nativeEvent.contentOffset.y
+    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
+      ? 'down'
+      : 'up'
+    const isActionButtonVisible = direction === 'up'
+    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
+      this.setState({ isActionButtonVisible })
+    }
+    this._listViewOffset = currentOffset
+  }
+  
+
   render() {
     return (
-      this.state.isLoading ? <ProgressBar color={this.state.color} /> :
-
-        <FlatList
-          data={this.state.dataSource}
-          contentContainerStyle={{ paddingLeft: 1, paddingRight: 1, paddingBottom: 1, backgroundColor: this.state.color }}
-          initialNumToRender={10}
-          keyExtractor={item => item.id + ''}
-          renderItem={(item) => {
-            return (
-              <PostCard
-                data={item}
-                subcolor={this.state.subcolor}
-                color={this.state.color}
-                username={this.state.username}
-                userphoto={this.state.userPhoto}
-                email={this.state.email}
-                deleted={this.postDeleted.bind(this)}
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
+        {this.state.isLoading ? <ProgressBar color={this.state.color} /> :
+          <FlatList
+            ref={(list) => this.commentsFlatList = list}
+            data={this.state.dataSource}
+            initialNumToRender={10}
+            onScroll={this._onScroll}
+            keyExtractor={item => item.id + ''}
+            renderItem={(item) => {
+              return (
+                <PostCard
+                  data={item}
+                  subcolor={this.state.subcolor}
+                  color={this.state.color}
+                  username={this.state.username}
+                  userphoto={this.state.userPhoto}
+                  email={this.state.email}
+                  deleted={this.postDeleted.bind(this)}
+                />
+              )
+            }}
+            onEndReachedThreshold={1}
+            onEndReached={(event) => this.hideLoader(event)}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.handleRefresh}
+                colors={[this.state.color]}
               />
-            )
-          }}
-          onEndReachedThreshold={1}
-          onEndReached={(event) => this.hideLoader(event)}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.handleRefresh}
-              colors={[this.state.color]}
-            />
-          }
-          ListEmptyComponent={this.renderEmptyData}
-          ListHeaderComponent={this.renderHeader}
-          ListFooterComponent={this.renderLoader}
-        />
+            }
+            ListEmptyComponent={this.renderEmptyData}
+            ListFooterComponent={this.renderLoader}
+          />}
+        {this.renderModal()}
+        {this.state.isActionButtonVisible ?
+          <ActionButton
+            buttonColor={this.state.color}
+            position='center'
+            onPress={this.addPost}
+            size={50}
+          /> : null}
+      </View>
     );
   }
 }
-
 
 
 const styles = StyleSheet.create({

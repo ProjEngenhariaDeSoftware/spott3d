@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Image,
-  TouchableOpacity,
   AsyncStorage,
   Dimensions,
   Text,
@@ -11,8 +10,9 @@ import {
   FlatList,
   RefreshControl,
 } from 'react-native';
-import { Icon as IconBase, Button as ButtonBase, Card, CardItem } from 'native-base'
-import { Icon, Button } from 'react-native-elements';
+import { Icon as IconBase, Button as ButtonBase } from 'native-base'
+import ActionButton from 'react-native-action-button';
+import { Icon } from 'react-native-elements';
 import { GoogleSignin } from 'react-native-google-signin';
 import { Actions } from 'react-native-router-flux';
 import { ListItem } from 'react-native-elements'
@@ -95,62 +95,6 @@ export default class Perfil extends Component {
 
   buttonConfigurations(visible) {
     this.setState({ transparent: true, modalVisibleStatus: visible, configurationVisibleStatus: visible })
-  }
-  renderConfigurations() {
-    return (
-
-      <View>
-        <TouchableOpacity style={{ flex: 1, justifyContent: 'flex-start' }} onPress={() => this.showModal(false)}>
-        </TouchableOpacity>
-        <View style={styles.configurations}>
-          <Button
-            icon={
-              <Icon
-                type="material-icons"
-                size={23} color='#fff'
-                name="edit"
-              />
-            }
-            buttonStyle={{ width: viewportWidth, backgroundColor: '#00B6D9', elevation: 0 }}
-            title='Editar nome de usuário'
-          />
-          <Button
-            icon={
-              <Icon
-                type="material-icons"
-                size={23} color='#fff'
-                name="edit"
-              />
-            }
-            buttonStyle={{ width: viewportWidth, backgroundColor: '#00B6D9', elevation: 0 }}
-            title='Editar curso                     '
-          />
-          <Button
-            icon={
-              <Icon
-                type="material-icons"
-                size={23} color='#fff'
-                name="report"
-              />
-            }
-            buttonStyle={{ width: viewportWidth, backgroundColor: '#00B6D9', elevation: 0 }}
-            title='Visualizar denúncias     '
-          />
-          <Button
-            icon={
-              <Icon
-                type="material-community"
-                size={23} color='#fff'
-                name="logout"
-              />
-            }
-            buttonStyle={{ width: viewportWidth, backgroundColor: '#00B6D9', elevation: 0 }}
-            title='Sair da conta                  '
-            onPress={() => this.googleLogout()}
-          />
-        </View>
-      </View>
-    );
   }
 
   showModal(visible) {
@@ -235,13 +179,12 @@ export default class Perfil extends Component {
       <View style={styles.container}>
         <View style={styles.topView}>
           {this.iconNotification()}
-          <Icon type="material-community" size={26} color='#00B6D9' name="settings-outline" button onPress={() => this.buttonConfigurations(!this.state.configurationVisibleStatus)} />
         </View >
 
         <View style={styles.photoRow}>
-          <TouchableOpacity activeOpacity={0.75} style={styles.profilepicWrap} onPress={() => alert("Cliquei na photo")}>
+          <View style={styles.profilepicWrap}>
             <Image source={{ uri: this.state.userphoto }} style={styles.profilepic} />
-          </TouchableOpacity>
+          </View>
         </View>
         <View style={styles.descriptionContainer}>
           <Text styles={styles.textDescription}>Nome de usuário: {this.state.username}</Text>
@@ -256,11 +199,26 @@ export default class Perfil extends Component {
           onRequestClose={() => { this.showModal(!this.state.modalVisibleStatus) }} >
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <View>
-              {this.state.notificationVisibleStatus ? this.renderNotifications() : this.renderConfigurations()}
+              {this.state.notificationVisibleStatus ? this.renderNotifications() : null}
             </View>
           </View>
 
         </Modal>
+        <ActionButton bgColor='rgba(0, 0, 0, 0.3)' activeOpacity={0} verticalOrientation='down' offsetX={2} offsetY={8} buttonColor="rgba(0, 182, 217, 0)" renderIcon={actionIcon => <Icon type="material-community" size={25} color='#00B6D9' name="settings-outline"/>}>
+        <ActionButton.Item buttonColor='#738A98' textContainerStyle={{backgroundColor: '#738A98'}} textStyle={{color: '#fff'}} title="Visualizar denúncias" onPress={() => {}}>
+        <Icon type="material-icons" size={23} color='#fff' name="report" />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#5AD0BA' textContainerStyle={{backgroundColor: '#5AD0BA'}} textStyle='#fff' title="Editar nome de usuário" onPress={() => {}}>
+          <Icon type="material-icons" size={23} color='#fff' name="edit" />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#00B6D9' textContainerStyle={{backgroundColor: '#00B6D9'}} textStyle={{color: '#fff'}} title="Editar curso" onPress={() => {}}>
+          <Icon type="mmaterial-icons" size={23} color='#fff' name="edit" />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#EC5D73' textContainerStyle={{backgroundColor: '#EC5D73'}} textStyle={{color: '#fff'}} title="Sair da conta" onPress={() => this.googleLogout()}>
+            <Icon type="material-community" size={23} color='#fff' name="logout" />
+          </ActionButton.Item>
+        </ActionButton>
+
       </View>
 
     );
@@ -268,6 +226,11 @@ export default class Perfil extends Component {
 }
 
 const styles = StyleSheet.create({
+  actionButtonIcon: {
+    fontSize: 20,
+    height: 22,
+    color: 'white',
+  },
   container: {
     flex: 1,
     justifyContent: 'space-between',
