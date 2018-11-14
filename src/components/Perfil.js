@@ -10,13 +10,40 @@ import {
   FlatList,
   RefreshControl,
 } from 'react-native';
-import { Icon as IconBase, Button as ButtonBase } from 'native-base'
-import ActionButton from 'react-native-action-button';
+import { FloatingAction } from 'react-native-floating-action';
 import { Icon } from 'react-native-elements';
 import { GoogleSignin } from 'react-native-google-signin';
 import { Actions } from 'react-native-router-flux';
 import { ListItem } from 'react-native-elements'
+import ProgressBar from '../components/ProgressBar';
+
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+
+const actions = [{
+  text: 'Editar nome de usuário',
+  icon: <Icon type="material-icons" size={23} color='#fff' name="edit" />,
+  name: 'bt_accessibility',
+  color: '#5AD0BA',
+  position: 4
+}, {
+  text: 'Editar curso',
+  icon: <Icon type="material-icons" size={23} color='#fff' name="edit" />,
+  name: 'bt_language',
+  color: '#00B6D9',
+  position: 3
+}, {
+  text: 'Visualizar Denúncias',
+  icon: <Icon type="material-icons" size={23} color='#fff' name="report" />,
+  name: 'bt_report',
+  color: '#738A98',
+  position: 2
+}, {
+  text: 'Sair da conta',
+  icon: <Icon type="material-community" size={23} color='#fff' name="logout" />,
+  name: 'bt_exit',
+  color: '#EC5D73',
+  position: 1
+}];
 
 
 
@@ -27,8 +54,9 @@ export default class Perfil extends Component {
 
     super();
     this.state = {
+
       userNotifications: [],
-      userphoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgTajOSQOEn79tT6EqTxU2ngWkZeoi2Ft8frau_vQII6x4PPKh',
+      userphoto: '',
       username: '',
       email: '',
       notification: false,
@@ -40,6 +68,7 @@ export default class Perfil extends Component {
       color: '#00B6D9',
       transparent: false,
       showLoader: false,
+      isLoading: true,
     };
   }
 
@@ -47,7 +76,6 @@ export default class Perfil extends Component {
     try {
 
       const photoURL = await AsyncStorage.getItem('photoURL');
-      const displayName = await AsyncStorage.getItem('displayName');
       const email = await AsyncStorage.getItem('email');
 
 
@@ -57,11 +85,11 @@ export default class Perfil extends Component {
           const size = data.notifications.length;
           this.state.notification = size > 0;
           const newData = data.notifications;
-          this.setState({ notificationSize: size, userphoto: photoURL, username: displayName, email: email, userNotifications: newData });
+          this.setState({ notificationSize: size, userphoto: photoURL, username: data.username, email: email, userNotifications: newData, isLoading: false });
         });
 
 
-   
+
 
     } catch (error) { }
 
@@ -80,7 +108,7 @@ export default class Perfil extends Component {
     return (
       <View style={styles.badgeIconView}>
         {this.state.notification ? <Text style={styles.badge}>{this.state.notificationSize}</Text> : null}
-        <Icon size={26} color={this.state.color} type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} button onPress={() => this.buttonNotification(!this.state.notificationVisibleStatus)} />
+        <Icon size={26} color='#fff' type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} button onPress={() => this.buttonNotification(!this.state.notificationVisibleStatus)} />
       </View>
     );
   }
@@ -91,10 +119,6 @@ export default class Perfil extends Component {
 
   buttonNotification(visible) {
     this.setState({ transparent: false, modalVisibleStatus: visible, notification: false, notificationVisibleStatus: visible })
-  }
-
-  buttonConfigurations(visible) {
-    this.setState({ transparent: true, modalVisibleStatus: visible, configurationVisibleStatus: visible })
   }
 
   showModal(visible) {
@@ -121,9 +145,9 @@ export default class Perfil extends Component {
     e.distanceFromEnd === 0 ? this.setState({ showLoader: true }) : this.setState({ showLoader: false });
   };
 
- 
 
- 
+
+
 
   renderNotifications() {
 
@@ -138,7 +162,7 @@ export default class Perfil extends Component {
 
               item.commenter !== this.state.email &&
               <View>
-             
+
                 <ListItem
                   containerStyle={{ marginLeft: 0 }}
                   title={'@' + item.commenter.username}
@@ -147,7 +171,7 @@ export default class Perfil extends Component {
                     <Text >Mencionou você em um Comentário</Text>
 
                   </View>}
-                  leftAvatar={{ source: { uri: item.commenter.image}}}
+                  leftAvatar={{ source: { uri: item.commenter.image } }}
                 >
                 </ListItem>
               </View>
@@ -171,27 +195,43 @@ export default class Perfil extends Component {
         /> : <View><Text>Nenhuma Notificação!</Text></View>);
   }
 
-
-
-
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.topView}>
-          {this.iconNotification()}
-        </View >
-
-        <View style={styles.photoRow}>
-          <View style={styles.profilepicWrap}>
-            <Image source={{ uri: this.state.userphoto }} style={styles.profilepic} />
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
+        {this.state.isLoading ? <ProgressBar color={this.state.color} /> :
+        <View style={{flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: this.state.borderColor}}>
+          <View style={styles.topView}>
+            {this.iconNotification()}
+          </View >
+          <View style={styles.photoRow}>
+            <View style={styles.profilepicWrap}>
+              <Image source={{ uri: this.state.userphoto }} style={styles.profilepic} />
+            </View>
           </View>
-        </View>
-        <View style={styles.descriptionContainer}>
-          <Text styles={styles.textDescription}>Nome de usuário: {this.state.username}</Text>
-          <Text styles={styles.textDescription}>Email: {this.state.email}</Text>
-        </View>
-        <View style={{ flex: 0.2 }}>
-        </View>
+          </View>
+          <View style={{flex: 1, paddingTop: 40, alignItems: 'center'}}>
+          <Text style={{fontFamily: 'ProductSans Bold', fontSize: 24, color: this.state.color }}>Nome de usuário </Text>
+          <Text style={{fontFamily: 'ProductSans', fontSize: 24, color: this.state.color }}>@{this.state.username}</Text>
+          <Text style={{fontFamily: 'ProductSans Bold', fontSize: 24, color: this.state.color, paddingTop: 10 }}>E-mail </Text>
+          <Text style={{fontFamily: 'ProductSans', fontSize: 24, color: this.state.color }}>{this.state.email}</Text>
+          </View>
+          </View>}
+        <FloatingAction
+          actions={actions}
+          color={'rgba(0, 182, 217, 1)'}
+          floatingIcon={<Icon type="material-community" size={25} color='#fff' name="settings-outline" />}
+          position="right"
+          onPressItem={
+            (name) => {
+              console.log(`Pressed action: ${name}`);
+            }
+          }
+          actionsPaddingTopBottom={0}
+          overlayColor="rgba(0, 0, 0, 0.7)"
+
+          distanceToEdge={16}
+        />
         <Modal
           transparent={this.state.transparent}
           animationType={"slide"}
@@ -204,20 +244,6 @@ export default class Perfil extends Component {
           </View>
 
         </Modal>
-        <ActionButton bgColor='rgba(0, 0, 0, 0.3)' activeOpacity={0} verticalOrientation='down' offsetX={2} offsetY={8} buttonColor="rgba(0, 182, 217, 0)" renderIcon={actionIcon => <Icon type="material-community" size={25} color='#00B6D9' name="settings-outline"/>}>
-        <ActionButton.Item buttonColor='#738A98' textContainerStyle={{backgroundColor: '#738A98'}} textStyle={{color: '#fff'}} title="Visualizar denúncias" onPress={() => {}}>
-        <Icon type="material-icons" size={23} color='#fff' name="report" />
-          </ActionButton.Item>
-          <ActionButton.Item buttonColor='#5AD0BA' textContainerStyle={{backgroundColor: '#5AD0BA'}} textStyle='#fff' title="Editar nome de usuário" onPress={() => {}}>
-          <Icon type="material-icons" size={23} color='#fff' name="edit" />
-          </ActionButton.Item>
-          <ActionButton.Item buttonColor='#00B6D9' textContainerStyle={{backgroundColor: '#00B6D9'}} textStyle={{color: '#fff'}} title="Editar curso" onPress={() => {}}>
-          <Icon type="mmaterial-icons" size={23} color='#fff' name="edit" />
-          </ActionButton.Item>
-          <ActionButton.Item buttonColor='#EC5D73' textContainerStyle={{backgroundColor: '#EC5D73'}} textStyle={{color: '#fff'}} title="Sair da conta" onPress={() => this.googleLogout()}>
-            <Icon type="material-community" size={23} color='#fff' name="logout" />
-          </ActionButton.Item>
-        </ActionButton>
 
       </View>
 
@@ -235,6 +261,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
     backgroundColor: '#fff',
   },
   badgeIconView: {
@@ -286,8 +313,8 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 120,
-    borderColor: '#5bd7ed',
-    borderWidth: 8,
+    borderColor: 'rgba(4, 3, 2, 0.3)',
+    borderWidth: 10,
   },
   profilepic: {
     flex: 1,
@@ -301,15 +328,17 @@ const styles = StyleSheet.create({
     flex: 0.3,
     width: viewportWidth,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    backgroundColor: '#5bd7ed',
     elevation: 2,
     borderRadius: 10
   },
   textDescription: {
-    fontSize: 8,
-    color: 'gray',
-    fontFamily: 'ProductSans',
-    textAlign: 'center'
+    fontSize: 16,
+    color: '#fff',
+    fontFamily: 'ProductSans Bold',
+    textAlign: 'center',
+
   },
   googleButton: {
     flexDirection: 'row',

@@ -15,6 +15,7 @@
     "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^1.0.0-beta6",
     "react-native-firebase": "^5.0.0",
+    "react-native-floating-action": "^1.13.0",
     "react-native-google-signin": "^1.0.0-rc6",
     "react-native-image-picker": "^0.27.1",
     "react-native-material-bottom-navigation": "^1.0.1",
