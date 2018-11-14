@@ -10,18 +10,20 @@ import { Button, Icon, View, Spinner } from 'native-base';
 import SpottedCard from '../components/SpottedCard';
 import ProgressBar from '../components/ProgressBar';
 import { Actions } from 'react-native-router-flux';
-import ActionButton from 'react-native-action-button';
+import { FloatingAction } from 'react-native-floating-action';
 import LZString from 'lz-string';
 
 export default class SpottedList extends Component {
   
   constructor(props) {
     super(props);
+    this._listViewOffset = 0
     this.state = {
       color: props.color,
       subcolor: props.subcolor,
       spotteds: props.dataPosts,
       isLoading: true,
+      isActionButtonVisible: true,
       refreshing: false
     }
   }
@@ -64,6 +66,19 @@ export default class SpottedList extends Component {
     } catch (error) {}
   };
 
+  _onScroll = (event) => {
+    const currentOffset = event.nativeEvent.contentOffset.y
+    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
+      ? 'down'
+      : 'up'
+    const isActionButtonVisible = direction === 'up'
+    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
+      this.setState({ isActionButtonVisible: isActionButtonVisible })
+    }
+    this._listViewOffset = currentOffset
+  }
+  
+
   addPost = () => {
     Actions.jump('addspotted');
   };
@@ -98,6 +113,7 @@ export default class SpottedList extends Component {
           }
           keyExtractor={item => item.id + ''}
           onEndReachedThreshold={1}
+          onScroll={this._onScroll}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -108,11 +124,16 @@ export default class SpottedList extends Component {
           ListFooterComponent={this.renderLoader}
           ListEmptyComponent={this.renderEmptyData}
         />
-        <ActionButton
-          buttonColor="rgba(236,93,115,1)"
-          onPress={this.addPost}
-          size={50}
-        />
+         <FloatingAction
+            color={this.state.color}
+            floatingIcon={<Icon type="MaterialCommunityIcons"style={{color: '#fff'}} name="plus"/>}
+            position="right"
+            visible={this.state.isActionButtonVisible}
+            showBackground={false}
+            onPressMain={this.addPost}
+            overlayColor="#F2F2F2"
+            distanceToEdge={16}
+          />
         </View>
     );
   }

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Button, Icon, View, Spinner, Left } from 'native-base'
 import ImagePicker from 'react-native-image-picker';
-import ActionButton from 'react-native-action-button';
+import { FloatingAction } from 'react-native-floating-action';
 import PostCard from '../components/PostCard';
 import ProgressBar from '../components/ProgressBar';
 
@@ -249,7 +249,7 @@ export default class PostList extends PureComponent {
       : 'up'
     const isActionButtonVisible = direction === 'up'
     if (isActionButtonVisible !== this.state.isActionButtonVisible) {
-      this.setState({ isActionButtonVisible })
+      this.setState({ isActionButtonVisible: isActionButtonVisible })
     }
     this._listViewOffset = currentOffset
   }
@@ -291,13 +291,16 @@ export default class PostList extends PureComponent {
             ListFooterComponent={this.renderLoader}
           />}
         {this.renderModal()}
-        {this.state.isActionButtonVisible ?
-          <ActionButton
-            buttonColor={this.state.color}
-            position='center'
-            onPress={this.addPost}
-            size={50}
-          /> : null}
+          <FloatingAction
+            color={this.state.color}
+            floatingIcon={<Icon type="MaterialCommunityIcons"style={{color: '#fff'}} name="plus"/>}
+            position="right"
+            visible={this.state.isActionButtonVisible}
+            showBackground={false}
+            onPressMain={this.addPost}
+            overlayColor="#F2F2F2"
+            distanceToEdge={16}
+          />
       </View>
     );
   }
