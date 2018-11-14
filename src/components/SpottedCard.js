@@ -142,9 +142,11 @@ export default class SpottedCard extends Component {
 				let userEmail = await AsyncStorage.getItem('email');
 				let userPhoto = await AsyncStorage.getItem('photoURL');
 				let nickname = await AsyncStorage.getItem('username');
-				let usersMentioned = this.state.newComment;
-				if (usersMentioned.indexOf('@') != -1) {
-					usersMentioned = this.state.newComment.match(/@\w+/g).map(e => e.substr(1));
+				let userMentioned = this.state.newComment;
+				if (userMentioned.indexOf('@') != -1) {
+					userMentioned = this.state.newComment.match(/@\w+/g).map(e => e.substr(1));
+				} else {
+					userMentioned = [];
 				}
 				await fetch('https://api-spotted.herokuapp.com/api/spotted/' + this.state.id + '/comment', {
 					method: 'PUT',
@@ -153,7 +155,7 @@ export default class SpottedCard extends Component {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						userMentioned: usersMentioned,
+						usersMentioned: userMentioned,
 						comment: this.state.newComment,
 						commenter: {
 							email: userEmail,
@@ -164,7 +166,7 @@ export default class SpottedCard extends Component {
 				}).then(a => {
 					this.data.item.comments.push({
 						id: a.id,
-						userMentioned: usersMentioned,
+						usersMentioned: userMentioned,
 						comment: this.state.newComment,
 						commenter: {
 							email: userEmail,
