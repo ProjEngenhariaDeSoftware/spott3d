@@ -218,14 +218,13 @@ export default class Perfil extends Component {
   setVisualized = async () => {
     const notVisualized = this.state.userNotifications.filter((item) => { return !item.visualized });
 
-
     notVisualized.forEach(element => {
 
       try {
 
         element.visualized = true;
 
-        await fetch('https://api-spotted.herokuapp.com/api/user/' + this.state.email + '/notify', {
+      fetch('https://api-spotted.herokuapp.com/api/user/' + this.state.email + '/notify', {
           method: 'PUT',
           headers: {
             Accept: 'application/json',
