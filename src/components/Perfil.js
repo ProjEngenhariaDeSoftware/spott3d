@@ -15,7 +15,8 @@ import { Icon as IconBase, Button as ButtonBase, Card, CardItem } from 'native-b
 import { Icon, Button } from 'react-native-elements';
 import { GoogleSignin } from 'react-native-google-signin';
 import { Actions } from 'react-native-router-flux';
-import { ListItem } from 'react-native-elements'
+import { ListItem } from 'react-native-elements';
+import PostCard from '../components/PostCard';
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
 
@@ -28,6 +29,7 @@ export default class Perfil extends Component {
     super();
     this.state = {
       userNotifications: [],
+      posts: [],
       userphoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgTajOSQOEn79tT6EqTxU2ngWkZeoi2Ft8frau_vQII6x4PPKh',
       username: '',
       email: '',
@@ -35,6 +37,7 @@ export default class Perfil extends Component {
       notificationSize: 0,
       notificationVisibleStatus: false,
       configurationVisibleStatus: false,
+      postVisibleStatus: false,
       modalVisibleStatus: false,
       refreshing: false,
       color: '#00B6D9',
@@ -51,20 +54,32 @@ export default class Perfil extends Component {
       const email = await AsyncStorage.getItem('email');
 
 
-      await fetch('https://api-spotted.herokuapp.com/api/user/' + email + '/notify')
+      await fetch('https://api-spotted.herokuapp.com/api/user/' + 'hemillainy.santos@ccc.ufcg.edu.br' + '/notify')
         .then(res => res.json())
         .then(data => {
-          const size = data.notifications.length;
+          const notVisualized = data.notification.filter((item) => { return !item.visualized });
+          const size = notVisualized.length;
           this.state.notification = size > 0;
           const newData = data.notifications;
           this.setState({ notificationSize: size, userphoto: photoURL, username: displayName, email: email, userNotifications: newData });
         });
 
 
-   
 
     } catch (error) { }
 
+  }
+
+  fetch = async () => {
+    try {
+      await fetch('https://api-spotted.herokuapp.com/api/post')
+        .then(res => res.json())
+        .then(data => {
+          this.setState({ refreshing: false, posts: data });
+        });
+    } catch (error) { }
+
+    this.fetch();
   }
 
   googleLogout = async () => {
@@ -157,11 +172,17 @@ export default class Perfil extends Component {
     this.setState({ modalVisibleStatus: visible, configurationVisibleStatus: false, notificationVisibleStatus: false })
   }
 
+  showPost(visible) {
+    this.setState({ postVisibleStatus: visible })
+  }
+
 
   headerNotifications() {
+
+    this.setVisualized();
     return (
       <View>
-        <Text style={{ color: '#00B6D9', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold', marginTop:10 }}>Notificações</Text>
+        <Text style={{ color: '#00B6D9', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold', marginTop: 10 }}>Notificações</Text>
       </View>
     );
   }
@@ -177,54 +198,125 @@ export default class Perfil extends Component {
     e.distanceFromEnd === 0 ? this.setState({ showLoader: true }) : this.setState({ showLoader: false });
   };
 
- 
+  postDeleted() {
+    this.handleRefresh();
+  }
 
- 
+  getPostById = async (id) => {
+
+    const post = await this.state.posts.filter((item) => {
+      return item.id.includes(id);
+    });
+
+
+    return post;
+
+
+  }
+
+
+  setVisualized = async () => {
+    const notVisualized = this.state.userNotifications.filter((item) => { return !item.visualized });
+
+
+    notVisualized.forEach(element => {
+
+      try {
+
+        element.visualized = true;
+
+        await fetch('https://api-spotted.herokuapp.com/api/user/' + this.state.email + '/notify', {
+          method: 'PUT',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(element)
+        }).then(a => {
+
+        });
+
+      } catch (error) {
+      }
+
+    });
+
+
+  }
+
 
   renderNotifications() {
 
     return (
 
-      this.state.userNotifications.length > 0 ?
 
-        <FlatList
-          data={this.state.userNotifications}
-          renderItem={({ item }) => {
-            return (
+      <FlatList
+        data={this.state.userNotifications}
+        renderItem={({ item }) => {
+          return (
 
-              item.commenter !== this.state.email &&
-              <View>
-             
+            item.commenter !== this.state.email &&
+            <View>
+              <TouchableOpacity activeOpacity={0.9} onPress={() => this.showPost(!this.state.postVisibleStatus)}>
+
                 <ListItem
                   containerStyle={{ marginLeft: 0 }}
                   title={'@' + item.commenter.username}
-                  titleStyle={styles.title}
+                  titleStyle={{
+                    fontFamily: 'ProductSans',
+                    color: item.visualized ? 'black' : '#00B6D9',
+                    fontSize: 14
+                  }}
                   subtitle={<View style={styles.subtitleView}>
                     <Text >Mencionou você em um Comentário</Text>
 
+                    <Text></Text>
+
+                    <Modal
+                      transparent={this.state.transparent}
+                      animationType={"slide"}
+                      visible={this.state.postVisibleStatus}
+                      onRequestClose={() => { this.showPost(!this.state.postVisibleStatus) }} >
+                      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+
+                        <PostCard
+                          data={this.getPostById(item.publicationId)}
+                          subcolor={'#cfd8dc'}
+                          color={'#29434e'}
+                          username={this.state.username}
+                          userphoto={this.state.userPhoto}
+                          email={this.state.email}
+                          deleted={this.postDeleted.bind(this)}
+                        />
+                      </View>
+
+
+                    </Modal>
+
                   </View>}
-                  leftAvatar={{ source: { uri: item.commenter.image}}}
+                  leftAvatar={{ source: { uri: item.commenter.image } }}
                 >
                 </ListItem>
-              </View>
+              </TouchableOpacity>
+            </View>
 
-            );
-          }}
-          keyExtractor={item => item.id + ''}
-          onEndReachedThreshold={1}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.handleRefresh}
-              colors={["#00B6D9"]}
-            />
-          }
-          onEndReached={(event) => this.hideLoader(event)}
-          ListEmptyComponent={<View></View>}
-          ListHeaderComponent={this.headerNotifications}
-          ListFooterComponent={this.renderLoader}
-          contentContainerStyle={{ width: viewportWidth }}
-        /> : <View><Text>Nenhuma Notificação!</Text></View>);
+          );
+        }}
+        keyExtractor={item => item.id + ''}
+        onEndReachedThreshold={1}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+            colors={["#00B6D9"]}
+          />
+        }
+        onEndReached={(event) => this.hideLoader(event)}
+        ListEmptyComponent={<Text style={{ fontFamily: 'ProductSans', textAlign: 'center', marginTop: 200, fontSize: 25 }}> Nenhuma Notificação!</Text>}
+        ListHeaderComponent={this.headerNotifications}
+        ListFooterComponent={this.renderLoader}
+        contentContainerStyle={{ width: viewportWidth }}
+      />);
   }
 
 
@@ -372,11 +464,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginLeft: 10,
     marginRight: 10,
-  },
-  title: {
-    fontFamily: 'ProductSans',
-    color: 'black',
-    fontSize: 14
   },
   subtitleView: {
     flexDirection: 'row',
