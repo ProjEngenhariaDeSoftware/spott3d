@@ -13,6 +13,8 @@ import {
 import { Button, Icon, View, Spinner, Left } from 'native-base'
 import ImagePicker from 'react-native-image-picker';
 import { FloatingAction } from 'react-native-floating-action';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import moment from 'moment';
 import PostCard from '../components/PostCard';
 import ProgressBar from '../components/ProgressBar';
 
@@ -37,6 +39,9 @@ export default class PostList extends PureComponent {
       refreshing: false,
       modalVisibleStatus: false,
       isActionButtonVisible: true,
+      isDateTimePickerVisible: false,
+      start: false,
+      end: false,
       userPhoto: '',
       username: '',
       dataSource: [],
@@ -50,6 +55,8 @@ export default class PostList extends PureComponent {
       image: null,
       startDate: null,
       endDate: null,
+      startDateExibition: '',
+      endDateExibition: '',
     }
 
   }
@@ -85,6 +92,8 @@ export default class PostList extends PureComponent {
     const text = this.state.description;
     const image = this.state.sendImage;
     const title = this.state.title;
+    const startEvent = this.state.startDate;
+    const endEvent = this.state.endDate;
     try {
       await fetch('https://api-spotted.herokuapp.com/api/post', {
         headers: {
@@ -94,12 +103,14 @@ export default class PostList extends PureComponent {
         method: 'POST',
         body: JSON.stringify({
           title: title,
-          parent: {
+          user: {
             email: email,
           },
           type: type,
           text: text,
           image: image,
+          startDate: startEvent,
+          endDate: endEvent
         })
       }).then(res => {
         if (res.status == 200) {
@@ -142,6 +153,25 @@ export default class PostList extends PureComponent {
     });
   }
 
+  _showDateTimePicker = (define) => {
+    define === 'start' ? this.setState({ isDateTimePickerVisible: true, start: true, end: false }) : this.setState({ isDateTimePickerVisible: true, start: false, end: true });
+  }
+
+  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false, start: false, end: false });
+
+  _handleDatePicked = (datetime) => {
+    // moment.locale("pt-br"); FUTURO
+    const date = moment(datetime).format('DD-MM-YYYY HH:mm:ss')
+    if (this.state.start) {
+      // this.setState({startDateExibition: moment(datetime).format('LLLL')}); FUTURO
+      this.setState({ startDate: date })
+    } else if (this.state.end) {
+      // this.setState({endDateExibition: moment(datetime).format('LLLL')}); FUTURO
+      this.setState({ endDate: date })
+
+    }
+    this._hideDateTimePicker();
+  };
 
   renderModal = () => {
     return (
@@ -180,7 +210,29 @@ export default class PostList extends PureComponent {
               returnKeyType="send"
               blurOnSubmit={true}
             />
-            <View style={{ flexDirection: 'row', alignSelf: 'flex-start', paddingLeft: 10 }}>
+            {this.state.type === 'EVENT_ACADEMIC' ?
+              <View style={{alignSelf: 'flex-start', paddingLeft: 10 }}>
+                <DateTimePicker
+                  isVisible={this.state.isDateTimePickerVisible}
+                  mode='datetime'
+                  locale='pt_BR'
+                  onConfirm={this._handleDatePicked}
+                  onCancel={this._hideDateTimePicker}
+                />
+                <Button transparent button onPress={() => { this._showDateTimePicker('start') }} >
+                  <Icon type="MaterialIcons" name="event-available" style={{ fontSize: 25, color: this.state.color }} />
+                  <Text style={{ fontFamily: 'ProductSans', color: this.state.color }}>Ínicio do evento: {this.state.startDate}</Text>
+                </Button>
+
+                <Button transparent button onPress={() => { this._showDateTimePicker('end') }} >
+                  <Icon type="MaterialIcons" name="event-busy" style={{ fontSize: 25, color: this.state.color }} />
+                  <Text style={{ fontFamily: 'ProductSans', color: this.state.color }}>Fim do evento: {this.state.endDate}</Text>
+                </Button>
+              </View>
+              : null}
+
+            <View style={{ flexDirection: 'row', alignSelf: 'flex-start', paddingLeft: 29}}>
+              <Text style={{ color: this.state.color, textAlignVertical: 'center'}}>Adicionar imagem:</Text>
               <Button transparent button onPress={() => { this.galleryImage() }} >
                 <Icon type="MaterialCommunityIcons" name="image-plus" style={{ fontSize: 25, color: this.state.color }} />
               </Button>
@@ -199,7 +251,7 @@ export default class PostList extends PureComponent {
             </Button>
           </View>
         </View>
-      </Modal>
+      </Modal >
     );
   };
 
@@ -221,7 +273,8 @@ export default class PostList extends PureComponent {
       await fetch('https://api-spotted.herokuapp.com/api/post/type/' + this.state.type)
         .then(res => res.json())
         .then(data => {
-          this.setState({ refreshing: false, dataSource: data });
+          const dataSorted = data.sort((a, b) => b.id - a.id);
+          this.setState({ refreshing: false, dataSource: dataSorted });
         });
     } catch (error) { }
   }
@@ -233,7 +286,7 @@ export default class PostList extends PureComponent {
   renderEmptyData() {
     return (
       <View style={{ alignItems: 'center', marginTop: 25 }}>
-        <Text style={{ fontSize: 18, fontFamily: 'ProductSans' }}>{'Desculpe, \nmas não temos nada aqui :('}</Text>
+        <Text style={{ fontSize: 18, fontFamily: 'ProductSans' }}>{'Desculpe, \nmas não temos nada aqui :(\n\n\nAproveite e adicione um novo!'}</Text>
       </View>
     );
   }
@@ -253,7 +306,7 @@ export default class PostList extends PureComponent {
     }
     this._listViewOffset = currentOffset
   }
-  
+
 
   render() {
     return (
@@ -291,16 +344,16 @@ export default class PostList extends PureComponent {
             ListFooterComponent={this.renderLoader}
           />}
         {this.renderModal()}
-          <FloatingAction
-            color={this.state.color}
-            floatingIcon={<Icon type="MaterialCommunityIcons"style={{color: '#fff'}} name="plus"/>}
-            position="right"
-            visible={this.state.isActionButtonVisible}
-            showBackground={false}
-            onPressMain={this.addPost}
-            overlayColor="#F2F2F2"
-            distanceToEdge={16}
-          />
+        <FloatingAction
+          color={this.state.color}
+          floatingIcon={<Icon type="MaterialCommunityIcons" style={{ color: '#fff' }} name="plus" />}
+          position="right"
+          visible={this.state.isActionButtonVisible}
+          showBackground={false}
+          onPressMain={this.addPost}
+          overlayColor="#F2F2F2"
+          distanceToEdge={16}
+        />
       </View>
     );
   }

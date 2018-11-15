@@ -14,8 +14,9 @@ import { FloatingAction } from 'react-native-floating-action';
 import { Icon } from 'react-native-elements';
 import { GoogleSignin } from 'react-native-google-signin';
 import { Actions } from 'react-native-router-flux';
-import { ListItem } from 'react-native-elements'
-import ProgressBar from '../components/ProgressBar';
+import { ListItem } from 'react-native-elements';
+import PostCard from '../components/PostCard';
+import ProgressBar from '../components/ProgressBar'
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
@@ -54,7 +55,7 @@ export default class Perfil extends Component {
 
     super();
     this.state = {
-
+      posts: [],
       userNotifications: [],
       userphoto: '',
       username: '',
@@ -63,9 +64,10 @@ export default class Perfil extends Component {
       notificationSize: 0,
       notificationVisibleStatus: false,
       configurationVisibleStatus: false,
+      postVisibleStatus: false,
       modalVisibleStatus: false,
       refreshing: false,
-      color: '#00B6D9',
+      color: '#0086a7',
       transparent: false,
       showLoader: false,
       isLoading: true,
@@ -82,17 +84,28 @@ export default class Perfil extends Component {
       await fetch('https://api-spotted.herokuapp.com/api/user/' + email + '/notify')
         .then(res => res.json())
         .then(data => {
-          const size = data.notifications.length;
+          // const notVisualized = data.notification.filter((item) => { return !item.visualized });
+          // const size = notVisualized.length;
+          const size = 0;
           this.state.notification = size > 0;
           const newData = data.notifications;
           this.setState({ notificationSize: size, userphoto: photoURL, username: data.username, email: email, userNotifications: newData, isLoading: false });
         });
 
+    } catch (error) { }
+    console.log(error.status)
+  }
 
-
-
+  fetch = async () => {
+    try {
+      await fetch('https://api-spotted.herokuapp.com/api/post')
+        .then(res => res.json())
+        .then(data => {
+          this.setState({ refreshing: false, posts: data });
+        });
     } catch (error) { }
 
+    this.fetch();
   }
 
   googleLogout = async () => {
@@ -125,11 +138,17 @@ export default class Perfil extends Component {
     this.setState({ modalVisibleStatus: visible, configurationVisibleStatus: false, notificationVisibleStatus: false })
   }
 
+  showPost(visible) {
+    this.setState({ postVisibleStatus: visible })
+  }
+
 
   headerNotifications() {
+
+    this.setVisualized();
     return (
       <View>
-        <Text style={{ color: '#00B6D9', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold', marginTop: 10 }}>Notificações</Text>
+        <Text style={{ color: this.state.color, textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold', marginTop: 10 }}>Notificações</Text>
       </View>
     );
   }
@@ -145,54 +164,125 @@ export default class Perfil extends Component {
     e.distanceFromEnd === 0 ? this.setState({ showLoader: true }) : this.setState({ showLoader: false });
   };
 
+  postDeleted() {
+    this.handleRefresh();
+  }
+
+  getPostById = async (id) => {
+
+    const post = await this.state.posts.filter((item) => {
+      return item.id.includes(id);
+    });
 
 
+    return post;
 
+
+  }
+
+
+  setVisualized = async () => {
+    const notVisualized = this.state.userNotifications.filter((item) => { return !item.visualized });
+
+    notVisualized.forEach(element => {
+
+      try {
+
+        element.visualized = true;
+
+      fetch('https://api-spotted.herokuapp.com/api/user/' + this.state.email + '/notify', {
+          method: 'PUT',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(element)
+        }).then(a => {
+
+        });
+
+      } catch (error) {
+      }
+
+    });
+
+
+  }
 
   renderNotifications() {
 
     return (
 
-      this.state.userNotifications.length > 0 ?
+      <View>
+      <FlatList
+        data={this.state.userNotifications}
+        renderItem={({ item }) => {
+          return (
 
-        <FlatList
-          data={this.state.userNotifications}
-          renderItem={({ item }) => {
-            return (
-
+            item.commenter !== this.state.email &&
+              <TouchableOpacity activeOpacity={0.9} onPress={() => this.showPost(!this.state.postVisibleStatus)}>
               item.commenter !== this.state.email &&
               <View>
-
                 <ListItem
                   containerStyle={{ marginLeft: 0 }}
                   title={'@' + item.commenter.username}
-                  titleStyle={styles.title}
+                  titleStyle={{
+                    fontFamily: 'ProductSans',
+                    color: item.visualized ? 'black' : '#00B6D9',
+                    fontSize: 14
+                  }}
                   subtitle={<View style={styles.subtitleView}>
                     <Text >Mencionou você em um Comentário</Text>
+
+                    <Text></Text>
+
+                    <Modal
+                      transparent={this.state.transparent}
+                      animationType={"slide"}
+                      visible={this.state.postVisibleStatus}
+                      onRequestClose={() => { this.showPost(!this.state.postVisibleStatus) }} >
+                      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+
+                        <PostCard
+                          data={this.getPostById(item.publicationId)}
+                          subcolor={'#cfd8dc'}
+                          color={'#0086a7'}
+                          username={this.state.username}
+                          userphoto={this.state.userPhoto}
+                          email={this.state.email}
+                          deleted={this.postDeleted.bind(this)}
+                        />
+                      </View>
+
+
+                    </Modal>
 
                   </View>}
                   leftAvatar={{ source: { uri: item.commenter.image } }}
                 >
                 </ListItem>
-              </View>
+            </View>
+              </TouchableOpacity>
 
-            );
-          }}
-          keyExtractor={item => item.id + ''}
-          onEndReachedThreshold={1}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.handleRefresh}
-              colors={["#00B6D9"]}
-            />
-          }
-          onEndReached={(event) => this.hideLoader(event)}
-          ListEmptyComponent={<View></View>}
-          ListHeaderComponent={this.headerNotifications}
-          ListFooterComponent={this.renderLoader}
-          contentContainerStyle={{ width: viewportWidth }}
-        /> : <View><Text>Nenhuma Notificação!</Text></View>);
+          );
+        }}
+        keyExtractor={item => item.id + ''}
+        onEndReachedThreshold={1}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+            colors={["#0086a7"]}
+          />
+        }
+        onEndReached={(event) => this.hideLoader(event)}
+        ListEmptyComponent={<Text style={{ fontFamily: 'ProductSans', textAlign: 'center', marginTop: 200, fontSize: 25 }}> Nenhuma Notificação!</Text>}
+        ListHeaderComponent={this.headerNotifications}
+        ListFooterComponent={this.renderLoader}
+        contentContainerStyle={{ width: viewportWidth }}
+        
+      />
+      </View>);
   }
 
   render() {
@@ -200,7 +290,7 @@ export default class Perfil extends Component {
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         {this.state.isLoading ? <ProgressBar color={this.state.color} /> :
         <View style={{flex: 1 }}>
-        <View style={{ flex: 1, backgroundColor: this.state.borderColor}}>
+        <View style={{ flex: 1, backgroundColor: this.state.color}}>
           <View style={styles.topView}>
             {this.iconNotification()}
           </View >
@@ -211,20 +301,22 @@ export default class Perfil extends Component {
           </View>
           </View>
           <View style={{flex: 1, paddingTop: 40, alignItems: 'center'}}>
-          <Text style={{fontFamily: 'ProductSans Bold', fontSize: 24, color: this.state.color }}>Nome de usuário </Text>
-          <Text style={{fontFamily: 'ProductSans', fontSize: 24, color: this.state.color }}>@{this.state.username}</Text>
-          <Text style={{fontFamily: 'ProductSans Bold', fontSize: 24, color: this.state.color, paddingTop: 10 }}>E-mail </Text>
-          <Text style={{fontFamily: 'ProductSans', fontSize: 24, color: this.state.color }}>{this.state.email}</Text>
+          <Text style={{fontFamily: 'ProductSans', fontSize: 16, color: 'gray' }}>Nome de usuário </Text>
+          <Text style={{fontFamily: 'ProductSans', fontSize: 16, color:  this.state.color }}>@{this.state.username}</Text>
+          <Text style={{fontFamily: 'ProductSans', fontSize: 16, color: 'gray', paddingTop: 10 }}>E-mail </Text>
+          <Text style={{fontFamily: 'ProductSans', fontSize: 16, color: this.state.color }}>{this.state.email}</Text>
           </View>
           </View>}
         <FloatingAction
           actions={actions}
-          color={'rgba(0, 182, 217, 1)'}
+          color={'#0086a7'}
           floatingIcon={<Icon type="material-community" size={25} color='#fff' name="settings-outline" />}
           position="right"
           onPressItem={
             (name) => {
-              console.log(`Pressed action: ${name}`);
+              if (name === 'bt_exit') {
+                this.googleLogout();
+              }
             }
           }
           actionsPaddingTopBottom={0}
@@ -312,17 +404,17 @@ const styles = StyleSheet.create({
   profilepicWrap: {
     width: 180,
     height: 180,
-    borderRadius: 120,
-    borderColor: 'rgba(4, 3, 2, 0.3)',
-    borderWidth: 10,
+    borderRadius: 180/2,
+     borderColor: '#fff',
+     borderWidth: 8,
   },
   profilepic: {
     flex: 1,
     width: null,
     alignSelf: 'stretch',
     borderRadius: 120,
-    borderColor: '#fff',
-    borderWidth: 2
+    // borderColor: '#fff',
+    // borderWidth: 2
   },
   descriptionContainer: {
     flex: 0.3,
@@ -364,11 +456,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginLeft: 10,
     marginRight: 10,
-  },
-  title: {
-    fontFamily: 'ProductSans',
-    color: 'black',
-    fontSize: 14
   },
   subtitleView: {
     flexDirection: 'row',
