@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "lz-string": "^1.4.4",
+    "moment": "^2.22.2",
     "native-base": "^2.8.1",
     "react": "16.4.1",
     "react-native": "0.56.1",
@@ -20,6 +21,7 @@
     "react-native-image-picker": "^0.27.1",
     "react-native-material-bottom-navigation": "^1.0.1",
     "react-native-material-dropdown": "^0.11.1",
+    "react-native-modal-datetime-picker": "^6.0.0",
     "react-native-paper": "^2.1.3",
     "react-native-router-flux": "^4.0.5",
     "react-native-search-header": "^0.3.0",

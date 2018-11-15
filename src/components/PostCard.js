@@ -37,7 +37,7 @@ export default class PostCard extends PureComponent {
     }
 
     async componentDidMount() {
-        this.setState({ author: this.state.data.item.parent});
+        this.setState({ author: this.state.data.item.user});
     }
 
     renderImage() {

@@ -85,7 +85,7 @@ export default class Search extends Component {
 
   emptyData = () => {
     return (
-      this.state.search ? <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#fff' }}><Text style={{ fontFamily: 'ProductSans', fontSize: 16 }}> Nenhum resultado encontrado.</Text></View> : null
+      this.state.search ? <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#fff' }}><Text style={{ fontFamily: 'ProductSans', fontSize: 16 }}>{'\n\n\n Nenhum resultado encontrado.'}</Text></View> : null
     );
   }
 
