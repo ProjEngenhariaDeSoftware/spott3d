@@ -52,23 +52,27 @@ export default class AddSpotted extends Component {
 
   submitSpotted = async () => {
     try {
-      this.setState({ sending: true, textWarning: false });
-      await fetch('https://api-spotted.herokuapp.com/api/spotted', {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          location: this.state.location,
-          course: this.state.course,
-          text: this.state.text,
-          image: this.state.sendImage
-        })
-      }).then(res => {
-        console.error(res);
-        Actions.pop();
-      });
+      if (this.state.textWarning.trim().length != 0) {
+        this.setState({ sending: true });
+        await fetch('https://api-spotted.herokuapp.com/api/spotted', {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            location: this.state.location,
+            course: this.state.course,
+            text: this.state.text,
+            image: this.state.sendImage
+          })
+        }).then(res => {
+          console.error(res);
+          Actions.pop();
+        });
+      } else {
+        this.setState({ textWarning: true });
+      }
     } catch(error) {
       this.setState({ sending: false, textWarning: true });
     }

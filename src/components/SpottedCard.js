@@ -5,6 +5,7 @@ import {
 	StyleSheet,
 	Dimensions,
 	TouchableOpacity,
+	TouchableHighlight,
 	TextInput,
 	Modal,
 	AsyncStorage,
@@ -12,7 +13,7 @@ import {
 } from 'react-native';
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base';
 import { ListItem } from 'react-native-elements';
-import ProgressiveImage from '../components/ProgressiveImage';
+import Dialog, { DialogButton, SlideAnimation, ScaleAnimation, DialogContent } from 'react-native-popup-dialog';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const dimensions = Dimensions.get('window');
@@ -31,6 +32,8 @@ export default class SpottedCard extends Component {
 			modalVisibleStatus: false,
 			id: this.data.item.id,
 			sending: false,
+			edit: false,
+			openImage: false
 		}
 	}
 
@@ -94,11 +97,13 @@ export default class SpottedCard extends Component {
 	renderImage() {
 		return (
 			<CardItem cardBody>
-				<View style={{ alignItems: 'center' }}>
-					<Image source={{ uri: this.data.item.image }}
-						style={{ width: imageWidth-10, height: imageHeight-10, borderRadius: 15 }}
-					/>
-				</View>
+				<TouchableHighlight style={{ borderRadius: 15 }} onLongPress={() => this.setState({ openImage: true })} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+					<View style={{ alignItems: 'center' }}>
+						<Image source={{ uri: this.data.item.image }}
+							style={{ width: imageWidth-10, height: imageHeight-10, borderRadius: 15 }}
+						/>
+					</View>
+				</TouchableHighlight>
 			</CardItem>
 		);
 	}
@@ -133,6 +138,15 @@ export default class SpottedCard extends Component {
 				ListFooterComponent={this.renderFooter()}
 			/>
 		);
+	}
+
+	async commentOptions(value) {
+		try {
+			const user = await AsyncStorage.getItem('username');
+			if (value.commenter.username === user) {
+				this.setState({ edit: !this.state.edit });
+			}
+		} catch(error) {}
 	}
 
 	sendComment = async () => {
@@ -241,6 +255,46 @@ export default class SpottedCard extends Component {
 		);
 	}
 
+	renderCommentOptions() {
+		return (
+			<TouchableOpacity onPress={() => this.setState({ edit: false })}>
+				<Dialog
+    			visible={this.state.edit}
+    			onTouchOutside={() => {
+      			this.setState({ edit: false });
+	    		}}
+  	  		dialogAnimation={new SlideAnimation({
+    	  		slideFrom: 'bottom',
+    			})}
+  			>
+    			<DialogContent>
+      			<Text style={{fontFamily: 'ProductSans', color: 'black'}}>Olá</Text>
+    			</DialogContent>
+  			</Dialog>
+  		</TouchableOpacity>
+		)
+	}
+
+	renderOpenImage()	 {
+		return (
+			<View>
+				<Dialog
+    			visible={this.state.openImage}
+    			onTouchOutside={() => {this.setState({ openImage: false })}}
+  	  		dialogAnimation={new ScaleAnimation({})}
+  	  		dialogStyle={{ width: imageWidth-150, height: imageHeight-150, alignItems: 'center', borderRadius: 15, backgroundColor: 'rgba(0,0,0,0)' }}
+  	  		containerStyle={{ blurRadius: 1 }}
+  			>
+    			<DialogContent>
+    				<Image source={{ uri: this.data.item.image }}
+							style={{ width: imageWidth-150, height: imageHeight-150, borderRadius: 15 }}
+						/>
+    			</DialogContent>
+  			</Dialog>
+  		</View>	
+		);
+	}
+
 	render() {
 		return (
 			<View style={{ flex: 1, backgroundColor: this.color }}>
@@ -251,7 +305,8 @@ export default class SpottedCard extends Component {
 							transparent={false}
 							animationType={"slide"}
 							visible={this.state.modalVisibleStatus}
-							onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
+							onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }}
+							>
 							<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 								<View>
 									{this.renderComments()}
@@ -260,6 +315,7 @@ export default class SpottedCard extends Component {
 						</Modal>
 					</View>
 				</TouchableOpacity>
+				{this.renderOpenImage()}
 			</View>
 		);
 	}
