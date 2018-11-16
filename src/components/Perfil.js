@@ -143,6 +143,10 @@ export default class Perfil extends Component {
   }
 
   showModal(visible) {
+
+    if(this.state.notificationVisibleStatus)
+      this.setVisualized();
+
     this.setState({ modalVisibleStatus: visible, configurationVisibleStatus: false, notificationVisibleStatus: false })
   }
 
@@ -191,6 +195,7 @@ export default class Perfil extends Component {
 
   setVisualized() {
     const notVisualized = this.state.userNotifications.filter((item) => { return !item.visualized });
+    var  notifications = [];
 
     try {
       notVisualized.forEach(element => {
@@ -206,6 +211,24 @@ export default class Perfil extends Component {
 
 
       });
+
+      
+    this.state.userNotifications.forEach(element => {
+
+      const notificationItem = {
+        id: element.id,
+        publicationType: element.publicationType,
+        publicationId: element.publicationId,
+        commenter: element.commenter,
+        markedEmail: element.markedEmail,
+        visualized: true
+      };
+     
+      notifications.push(notificationItem);
+    });
+
+    this.setState({userNotifications: notifications, notificationSize: 0, notification: false});
+
     } catch (error) {
     }
 
@@ -222,7 +245,7 @@ export default class Perfil extends Component {
 
           animationType={"slide"}
           visible={this.state.postVisibleStatus}
-          onRequestClose={() => { this.showPost(!this.state.postVisibleStatus), this.setVisualized(); }} >
+          onRequestClose={() => { this.showPost(!this.state.postVisibleStatus)}} >
 
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: viewportWidth, height: viewportHeight }}>
 
