@@ -85,7 +85,7 @@ export default class Perfil extends Component {
         .then(res => res.json())
         .then(data => {
           const user = data.filter((item) => { return item.email === email; });
-        
+
           this.setState({ username: user[0].username });
         });
 
@@ -96,7 +96,10 @@ export default class Perfil extends Component {
           const notVisualized = data.filter((item) => { return !item.visualized });
           const size = notVisualized.length;
           const notification = size > 0;
-          const newData = data;
+          const newData = data.sort(function (a, b) {
+            return b.id - a.id;
+          });
+
           this.setState({ notificationSize: size, userphoto: photoURL, email: email, userNotifications: newData, isLoading: false, notification: notification });
         });
 
@@ -143,14 +146,14 @@ export default class Perfil extends Component {
     this.setState({ modalVisibleStatus: visible, configurationVisibleStatus: false, notificationVisibleStatus: false })
   }
 
-  showPost(visible,itemId) {
-    
-    if (visible){
-      const post = { item: this.getPostById(itemId)[0]};
-      this.setState({ postVisibleStatus: visible , postNotify: post});
+  showPost(visible, itemId) {
+
+    if (visible) {
+      const post = { item: this.getPostById(itemId)[0] };
+      this.setState({ postVisibleStatus: visible, postNotify: post });
     }
     else
-      this.setState({ postVisibleStatus: visible});
+      this.setState({ postVisibleStatus: visible });
   }
 
 
@@ -211,42 +214,40 @@ export default class Perfil extends Component {
 
   renderNotifications() {
 
-    this.setVisualized();
-
     return (
 
       <View>
 
         <Modal
-                 
-                  animationType={"slide"}
-                  visible={this.state.postVisibleStatus}
-                  onRequestClose={() => { this.showPost(!this.state.postVisibleStatus) }} >
 
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: viewportWidth, height:viewportHeight }}>
+          animationType={"slide"}
+          visible={this.state.postVisibleStatus}
+          onRequestClose={() => { this.showPost(!this.state.postVisibleStatus), this.setVisualized(); }} >
 
-                    <PostCard
-                      data={this.state.postNotify}
-                      subcolor={'#cfd8dc'}
-                      color={'#29434e'}
-                      username={this.state.username}
-                      userphoto={this.state.userPhoto}
-                      email={this.state.email}
-                      deleted={this.postDeleted.bind(this)}
-                    />
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: viewportWidth, height: viewportHeight }}>
 
-                    </View>
+            <PostCard
+              data={this.state.postNotify}
+              subcolor={'#cfd8dc'}
+              color={'#29434e'}
+              username={this.state.username}
+              userphoto={this.state.userPhoto}
+              email={this.state.email}
+              deleted={this.postDeleted.bind(this)}
+            />
+
+          </View>
 
 
-                </Modal>
-                
+        </Modal>
+
         <FlatList
           data={this.state.userNotifications}
           renderItem={({ item }) => {
             return (
 
               item.commenter !== this.state.email &&
-              <TouchableOpacity activeOpacity={0.9} onPress={() => this.showPost(!this.state.postVisibleStatus,item.publicationId)}>
+              <TouchableOpacity activeOpacity={0.9} onPress={() => this.showPost(!this.state.postVisibleStatus, item.publicationId)}>
 
                 <ListItem
                   containerStyle={{ marginLeft: 0 }}
@@ -267,7 +268,7 @@ export default class Perfil extends Component {
                 >
                 </ListItem>
 
-                
+
 
               </TouchableOpacity>
 
