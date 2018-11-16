@@ -52,8 +52,8 @@ export default class AddSpotted extends Component {
 
   submitSpotted = async () => {
     try {
-      if (this.state.textWarning.trim().length != 0) {
-        this.setState({ sending: true });
+      if (this.state.text.trim().length != 0) {
+        this.setState({ sending: true, textWarning: false });
         await fetch('https://api-spotted.herokuapp.com/api/spotted', {
           headers: {
             Accept: 'application/json',
