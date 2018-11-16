@@ -1,6 +1,5 @@
 import React, { PureComponent } from "react";
 import {
-    Text,
     FlatList,
     StyleSheet,
     Dimensions,
@@ -10,8 +9,8 @@ import {
     Image,
     Modal,
 } from "react-native";
-import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base'
-import { ListItem } from 'react-native-elements'
+import { Card, CardItem, Left, Right, Body, Thumbnail, Text, Icon, Button, View } from 'native-base';
+import OtherProfile from '../components/OhterProfile';
 //import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
@@ -28,24 +27,26 @@ export default class PostCard extends PureComponent {
             userPhoto: props.userphoto,
             username: props.username,
             author: '',
+            otherProfile: '',
             email: props.email,
             newComment: "",
             modalVisibleStatus: false,
+            openProfile: false,
             refreshing: false,
             send: false,
         }
     }
 
     async componentDidMount() {
-        this.setState({ author: this.state.data.item.user});
+        this.setState({ author: this.state.data.item.user });
     }
 
     renderImage() {
         return (
             <CardItem cardBody>
-                <View style={{ alignItems: 'center'}}>
+                <View style={{ alignItems: 'center' }}>
                     <Image source={{ uri: this.data.item.image }}
-                        style={{ width: viewportWidth, height: viewportHeight - 30}}
+                        style={{ width: viewportWidth, height: viewportHeight - 30 }}
                     />
                 </View>
             </CardItem>
@@ -54,11 +55,13 @@ export default class PostCard extends PureComponent {
 
     renderCard() {
         return (
-            <Card style={{ marginBottom: 1, flex: 1}}>
+            <Card style={{ marginBottom: 1, flex: 1 }}>
                 <CardItem style={{ backgroundColor: this.subcolor }}>
                     <View style={{ flexDirection: 'column', flex: 2, alignItems: 'flex-start' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Thumbnail small source={{ uri: this.state.author.image }} />
+                            <TouchableOpacity onPress={() => this.changeOtherProfile(this.state.author.email)} >
+                                <Thumbnail small source={{ uri: this.state.author.image }} />
+                            </TouchableOpacity>
                             <View style={{ flexDirection: 'column', justifyContent: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
                                 <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color }}>{this.data.item.title.toUpperCase()}</Text>
                                 <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
@@ -116,6 +119,11 @@ export default class PostCard extends PureComponent {
         } catch (erro) { }
     };
 
+    changeOtherProfile(profileEmail) {
+        console.log(profileEmail);
+        this.setState({ otherProfile: profileEmail, openProfile: true })
+    }
+
     renderComments() {
         return (
             <FlatList
@@ -134,18 +142,17 @@ export default class PostCard extends PureComponent {
                 onEndReachedThreshold={1}
                 renderItem={({ item }) => {
                     return (
-                        <View style={styles.item}>
-                            <ListItem
-                                containerStyle={{ marginLeft: 0 }}
-                                title={'@' + item.commenter.username}
-                                titleStyle={styles.userComment}
-                                subtitle={<View style={styles.subtitleView}>
-                                    <Text style={styles.text}>{item.comment}</Text>
-                                </View>}
-                                leftAvatar={{ source: { uri: item.commenter.image } }}
-                            >
-                            </ListItem>
-                        </View>
+                        < View style={styles.item} >
+                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
+                                <Thumbnail small source={{ uri: item.commenter.image }} />
+                            </TouchableOpacity>
+                            <View style={{ flex: 1, flexWrap: 'wrap', }}>
+                                <TouchableOpacity activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
+                                    <Text style={{ fontFamily: 'ProductSans Bold', color: 'black' }}>{'@' + item.commenter.username + ' '}</Text>
+                                </TouchableOpacity>
+                                <Text style={{ fontFamily: 'ProductSans' }}>{item.comment}</Text>
+                            </View>
+                        </ View>
                     );
                 }}
                 // onContentSizeChange={() => this.commentsFlatList.scrollToEnd({animated: true})}
@@ -165,7 +172,7 @@ export default class PostCard extends PureComponent {
             } else {
                 usersMentioned = [];
             }
-            
+
             console.log(usersMentioned);
             const id = this.data.item.id;
             const email = this.state.email;
@@ -253,33 +260,48 @@ export default class PostCard extends PureComponent {
         );
     }
 
+    showOtherProfile(visible) {
+        this.setState({ openProfile: visible });
+    }
+
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: this.color,  paddingLeft: 1, paddingRight: 1, paddingBottom: 1 }}>
-            <TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
-                <View>
-                    {this.renderCard()}
-                    <Modal
-                        transparent={false}
-                        animationType={"slide"}
-                        visible={this.state.modalVisibleStatus}
-                        onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <View>
-                                {this.renderComments()}
+            <View style={{ flex: 1, backgroundColor: this.color, paddingLeft: 1, paddingRight: 1, paddingBottom: 1 }}>
+                <TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+                    <View>
+                        {this.renderCard()}
+                        <Modal
+                            transparent={false}
+                            animationType={"slide"}
+                            visible={this.state.modalVisibleStatus}
+                            onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <View>
+                                    {this.renderComments()}
+                                </View>
                             </View>
-                        </View>
-                    </Modal>
-                </View>
-            </TouchableOpacity>
+                        </Modal>
+                        <Modal
+                            transparent={false}
+                            animationType={"slide"}
+                            visible={this.state.openProfile}
+                            onRequestClose={() => { this.showOtherProfile(!this.state.openProfile) }} >
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <OtherProfile email={this.state.otherProfile} />
+                            </View>
+                        </Modal>
+                    </View>
+                </TouchableOpacity>
             </View>
         );
     }
 }
 const styles = StyleSheet.create({
     item: {
+        flex: 1,
+        flexDirection: 'row',
         backgroundColor: 'white',
-        margin: 2
+        margin: 2,
     },
     box: {
         flex: 1,

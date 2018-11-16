@@ -6,7 +6,7 @@ import Spotted from '../components/Spotted';
 import Search from '../components/Search';
 import Events from '../components/Event';
 import Entertainment from '../components/Entertainment';
-import Perfil from '../components/Perfil';
+import Profile from '../components/Profile';
 import Warnings from '../components/Warnings';
 
 export default class Navbar extends Component {
@@ -46,7 +46,7 @@ export default class Navbar extends Component {
           color: '#29434e'
         },
         {
-          key: 'perfil',
+          key: 'profile',
           title: 'Perfil',
           icon: 'person',
           color: '#0086a7'
@@ -71,7 +71,7 @@ export default class Navbar extends Component {
     event: Events,
     entertainment: Entertainment,
     search: Search,
-    perfil: Perfil,
+    profile: Profile,
   });
 
   render() {
