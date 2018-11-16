@@ -175,17 +175,6 @@ export default class Profile extends Component {
     this.handleRefresh();
   }
 
-  async getPostById(id) {
-    return await fetch('https://api-spotted.herokuapp.com/api/post/id/' + id)
-    .then(res => res.json())
-    .then(data => {
-      post = data;
-    });
-
-    return post;
-  }
-
-
   setVisualized() {
     const notVisualized = this.state.userNotifications.filter((item) => { return !item.visualized });
 
@@ -305,7 +294,7 @@ export default class Profile extends Component {
                 </View>
               </View>
             </View>
-            <View style={{ flex: 1, paddingTop: 40, alignItems: 'center' }}>
+            <View style={{ flex: 1, paddingTop: '1%', alignItems: 'center' }}>
               <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray' }}>Nome de usuário </Text>
               <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: this.state.color }}>@{this.state.username}</Text>
               <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray', paddingTop: 10 }}>E-mail </Text>

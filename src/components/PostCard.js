@@ -120,7 +120,6 @@ export default class PostCard extends PureComponent {
     };
 
     changeOtherProfile(profileEmail) {
-        console.log(profileEmail);
         this.setState({ otherProfile: profileEmail, openProfile: true })
     }
 
@@ -143,16 +142,30 @@ export default class PostCard extends PureComponent {
                 renderItem={({ item }) => {
                     return (
                         < View style={styles.item} >
-                            <TouchableOpacity activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
+                            <TouchableOpacity style={{marginRight: '3%', marginBottom: '3%'}} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
                                 <Thumbnail small source={{ uri: item.commenter.image }} />
                             </TouchableOpacity>
                             <View style={{ flex: 1, flexWrap: 'wrap', }}>
                                 <TouchableOpacity activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
                                     <Text style={{ fontFamily: 'ProductSans Bold', color: 'black' }}>{'@' + item.commenter.username + ' '}</Text>
                                 </TouchableOpacity>
-                                <Text style={{ fontFamily: 'ProductSans' }}>{item.comment}</Text>
+                                <Text style={{ fontFamily: 'ProductSans', color: 'gray'}}>{item.comment}</Text>
                             </View>
                         </ View>
+                        // <View style={styles.item}>
+						// 	<ListItem
+						// 		containerStyle={{ margin: 1 }}
+						// 		title={'@' + item.commenter.username}
+						// 		titleStyle={styles.userComment}
+						// 		subtitle={
+						// 			<View style={styles.subtitleView}>
+						// 				<Text style={styles.comment}>{item.comment}</Text>
+						// 			</View>
+						// 		}
+						// 		leftAvatar={{ source: { uri: item.commenter.image } }}
+						// 	>
+						// 	</ListItem>
+						// </View>
                     );
                 }}
                 // onContentSizeChange={() => this.commentsFlatList.scrollToEnd({animated: true})}
