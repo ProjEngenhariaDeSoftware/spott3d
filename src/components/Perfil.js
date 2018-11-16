@@ -9,6 +9,7 @@ import {
   Modal,
   FlatList,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import { FloatingAction } from 'react-native-floating-action';
 import { Icon } from 'react-native-elements';
@@ -46,8 +47,6 @@ const actions = [{
   position: 1
 }];
 
-
-
 export default class Perfil extends Component {
 
   constructor(props) {
@@ -56,6 +55,7 @@ export default class Perfil extends Component {
     super();
     this.state = {
       posts: [],
+      postNotify: undefined,
       userNotifications: [],
       userphoto: '',
       username: '',
@@ -79,34 +79,42 @@ export default class Perfil extends Component {
 
       const photoURL = await AsyncStorage.getItem('photoURL');
       const email = await AsyncStorage.getItem('email');
+      const displayName = await AsyncStorage.getItem('displayName');
 
-
-      await fetch('https://api-spotted.herokuapp.com/api/user/' + email + '/notify')
+      await fetch('https://api-spotted.herokuapp.com/api/user')
         .then(res => res.json())
         .then(data => {
-          // const notVisualized = data.notification.filter((item) => { return !item.visualized });
-          // const size = notVisualized.length;
-          const size = 0;
-          this.state.notification = size > 0;
-          const newData = data.notifications;
-          this.setState({ notificationSize: size, userphoto: photoURL, username: data.username, email: email, userNotifications: newData, isLoading: false });
+          const user = data.filter((item) => { return item.email === email; });
+
+          this.setState({ username: user[0].username });
         });
 
-    } catch (error) { }
-    console.log(error.status)
-  }
 
-  fetch = async () => {
-    try {
+      await fetch('https://api-spotted.herokuapp.com/api/notification/' + email)
+        .then(res => res.json())
+        .then(data => {
+          const notVisualized = data.filter((item) => { return !item.visualized });
+          const size = notVisualized.length;
+          const notification = size > 0;
+          const newData = data.sort(function (a, b) {
+            return b.id - a.id;
+          });
+
+          this.setState({ notificationSize: size, userphoto: photoURL, email: email, userNotifications: newData, isLoading: false, notification: notification });
+        });
+
       await fetch('https://api-spotted.herokuapp.com/api/post')
         .then(res => res.json())
         .then(data => {
           this.setState({ refreshing: false, posts: data });
         });
+
+
+
     } catch (error) { }
 
-    this.fetch();
   }
+
 
   googleLogout = async () => {
     try {
@@ -135,20 +143,29 @@ export default class Perfil extends Component {
   }
 
   showModal(visible) {
+
+    if(this.state.notificationVisibleStatus)
+      this.setVisualized();
+
     this.setState({ modalVisibleStatus: visible, configurationVisibleStatus: false, notificationVisibleStatus: false })
   }
 
-  showPost(visible) {
-    this.setState({ postVisibleStatus: visible })
+  showPost(visible, itemId) {
+
+    if (visible) {
+      const post = { item: this.getPostById(itemId)[0] };
+      this.setState({ postVisibleStatus: visible, postNotify: post });
+    }
+    else
+      this.setState({ postVisibleStatus: visible });
   }
 
 
   headerNotifications() {
 
-    this.setVisualized();
     return (
       <View>
-        <Text style={{ color: this.state.color, textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold', marginTop: 10 }}>Notificações</Text>
+        <Text style={{ color: '#0086a7', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold', marginTop: 10 }}>Notificações</Text>
       </View>
     );
   }
@@ -168,43 +185,52 @@ export default class Perfil extends Component {
     this.handleRefresh();
   }
 
-  getPostById = async (id) => {
-
-    const post = await this.state.posts.filter((item) => {
-      return item.id.includes(id);
+  getPostById(id) {
+    const post = this.state.posts.filter((item) => {
+      return item.id === id;
     });
-
-
     return post;
-
-
   }
 
 
-  setVisualized = async () => {
+  setVisualized() {
     const notVisualized = this.state.userNotifications.filter((item) => { return !item.visualized });
+    var  notifications = [];
 
-    notVisualized.forEach(element => {
-
-      try {
-
+    try {
+      notVisualized.forEach(element => {
         element.visualized = true;
-
-      fetch('https://api-spotted.herokuapp.com/api/user/' + this.state.email + '/notify', {
+        fetch('https://api-spotted.herokuapp.com/api/notification/' + element.id, {
           method: 'PUT',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(element)
-        }).then(a => {
-
         });
 
-      } catch (error) {
-      }
 
+      });
+
+      
+    this.state.userNotifications.forEach(element => {
+
+      const notificationItem = {
+        id: element.id,
+        publicationType: element.publicationType,
+        publicationId: element.publicationId,
+        commenter: element.commenter,
+        markedEmail: element.markedEmail,
+        visualized: true
+      };
+     
+      notifications.push(notificationItem);
     });
+
+    this.setState({userNotifications: notifications, notificationSize: 0, notification: false});
+
+    } catch (error) {
+    }
 
 
   }
@@ -214,15 +240,38 @@ export default class Perfil extends Component {
     return (
 
       <View>
-      <FlatList
-        data={this.state.userNotifications}
-        renderItem={({ item }) => {
-          return (
 
-            item.commenter !== this.state.email &&
-              <TouchableOpacity activeOpacity={0.9} onPress={() => this.showPost(!this.state.postVisibleStatus)}>
+        <Modal
+
+          animationType={"slide"}
+          visible={this.state.postVisibleStatus}
+          onRequestClose={() => { this.showPost(!this.state.postVisibleStatus)}} >
+
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: viewportWidth, height: viewportHeight }}>
+
+            <PostCard
+              data={this.state.postNotify}
+              subcolor={'#cfd8dc'}
+              color={'#29434e'}
+              username={this.state.username}
+              userphoto={this.state.userPhoto}
+              email={this.state.email}
+              deleted={this.postDeleted.bind(this)}
+            />
+
+          </View>
+
+
+        </Modal>
+
+        <FlatList
+          data={this.state.userNotifications}
+          renderItem={({ item }) => {
+            return (
+
               item.commenter !== this.state.email &&
-              <View>
+              <TouchableOpacity activeOpacity={0.9} onPress={() => this.showPost(!this.state.postVisibleStatus, item.publicationId)}>
+
                 <ListItem
                   containerStyle={{ marginLeft: 0 }}
                   title={'@' + item.commenter.username}
@@ -236,52 +285,34 @@ export default class Perfil extends Component {
 
                     <Text></Text>
 
-                    <Modal
-                      transparent={this.state.transparent}
-                      animationType={"slide"}
-                      visible={this.state.postVisibleStatus}
-                      onRequestClose={() => { this.showPost(!this.state.postVisibleStatus) }} >
-                      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
-                        <PostCard
-                          data={this.getPostById(item.publicationId)}
-                          subcolor={'#cfd8dc'}
-                          color={'#0086a7'}
-                          username={this.state.username}
-                          userphoto={this.state.userPhoto}
-                          email={this.state.email}
-                          deleted={this.postDeleted.bind(this)}
-                        />
-                      </View>
-
-
-                    </Modal>
 
                   </View>}
                   leftAvatar={{ source: { uri: item.commenter.image } }}
                 >
                 </ListItem>
-            </View>
+
+
+
               </TouchableOpacity>
 
-          );
-        }}
-        keyExtractor={item => item.id + ''}
-        onEndReachedThreshold={1}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this.handleRefresh}
-            colors={["#0086a7"]}
-          />
-        }
-        onEndReached={(event) => this.hideLoader(event)}
-        ListEmptyComponent={<Text style={{ fontFamily: 'ProductSans', textAlign: 'center', marginTop: 200, fontSize: 25 }}> Nenhuma Notificação!</Text>}
-        ListHeaderComponent={this.headerNotifications}
-        ListFooterComponent={this.renderLoader}
-        contentContainerStyle={{ width: viewportWidth }}
-        
-      />
+            );
+          }}
+          keyExtractor={item => item.id + ''}
+          onEndReachedThreshold={1}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.handleRefresh}
+              colors={["#0086a7"]}
+            />
+          }
+          onEndReached={(event) => this.hideLoader(event)}
+          ListEmptyComponent={<Text style={{ fontFamily: 'ProductSans', textAlign: 'center', marginTop: 200, fontSize: 25 }}> Nenhuma Notificação!</Text>}
+          ListHeaderComponent={this.headerNotifications}
+          ListFooterComponent={this.renderLoader}
+          contentContainerStyle={{ width: viewportWidth }}
+
+        />
       </View>);
   }
 
@@ -289,23 +320,23 @@ export default class Perfil extends Component {
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         {this.state.isLoading ? <ProgressBar color={this.state.color} /> :
-        <View style={{flex: 1 }}>
-        <View style={{ flex: 1, backgroundColor: this.state.color}}>
-          <View style={styles.topView}>
-            {this.iconNotification()}
-          </View >
-          <View style={styles.photoRow}>
-            <View style={styles.profilepicWrap}>
-              <Image source={{ uri: this.state.userphoto }} style={styles.profilepic} />
+          <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.state.color }}>
+              <View style={styles.topView}>
+                {this.iconNotification()}
+              </View >
+              <View style={styles.photoRow}>
+                <View style={styles.profilepicWrap}>
+                  <Image source={{ uri: this.state.userphoto }} style={styles.profilepic} />
+                </View>
+              </View>
             </View>
-          </View>
-          </View>
-          <View style={{flex: 1, paddingTop: 40, alignItems: 'center'}}>
-          <Text style={{fontFamily: 'ProductSans', fontSize: 16, color: 'gray' }}>Nome de usuário </Text>
-          <Text style={{fontFamily: 'ProductSans', fontSize: 16, color:  this.state.color }}>@{this.state.username}</Text>
-          <Text style={{fontFamily: 'ProductSans', fontSize: 16, color: 'gray', paddingTop: 10 }}>E-mail </Text>
-          <Text style={{fontFamily: 'ProductSans', fontSize: 16, color: this.state.color }}>{this.state.email}</Text>
-          </View>
+            <View style={{ flex: 1, paddingTop: 40, alignItems: 'center' }}>
+              <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray' }}>Nome de usuário </Text>
+              <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: this.state.color }}>@{this.state.username}</Text>
+              <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray', paddingTop: 10 }}>E-mail </Text>
+              <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: this.state.color }}>{this.state.email}</Text>
+            </View>
           </View>}
         <FloatingAction
           actions={actions}
@@ -404,9 +435,9 @@ const styles = StyleSheet.create({
   profilepicWrap: {
     width: 180,
     height: 180,
-    borderRadius: 180/2,
-     borderColor: '#fff',
-     borderWidth: 8,
+    borderRadius: 180 / 2,
+    borderColor: '#fff',
+    borderWidth: 8,
   },
   profilepic: {
     flex: 1,
