@@ -51,7 +51,7 @@ export default class OtherProfile extends PureComponent {
                                 </View>
                             </View>
                         </View>
-                        <View style={{ flex: 1, paddingTop: 40, alignItems: 'center' }}>
+                        <View style={{ flex: 1, paddingTop: '1%', alignItems: 'center' }}>
                             <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray' }}>Nome de usuário </Text>
                             <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: this.state.color }}>@{this.state.username}</Text>
                             <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray', paddingTop: 10 }}>E-mail </Text>
