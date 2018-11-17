@@ -328,6 +328,9 @@ export default class Profile extends Component {
               if (name === 'bt_exit') {
                 this.googleLogout();
               }
+              if (name === 'bt_report') {
+                Actions.adm();
+              }
             }
           }
           actionsPaddingTopBottom={0}

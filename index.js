@@ -9,6 +9,7 @@ import Home from './src/components/Home';
 import Navbar from './src/components/Navbar';
 import Register from './src/components/Register';
 import AddSpotted from './src/components/AddSpotted';
+import AdmView from './src/components/AdmView';
 
 
 export default class Spotted extends Component {
@@ -41,10 +42,15 @@ export default class Spotted extends Component {
               title="Enviar novo spotted"
               hideNavBar={true}
             />
-            <View
+            <Scene
               key="aplicacoes"
               component={Navbar}
               hideNavBar={true}
+            />
+            <Scene
+              key="adm"
+              hideNavBar={true}
+              component={AdmView}
             />
           </Scene>
         </Router>

@@ -148,7 +148,7 @@ export default class PostCard extends PureComponent {
                             </TouchableOpacity>
                             <View style={{ flex: 1, flexWrap: 'wrap', }}>
                                 <TouchableOpacity activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
-                                    <Text style={{ fontFamily: 'ProductSans Bold', color: 'black' }}>{'@' + item.commenter.username + ' '}</Text>
+                                    <Text style={{ fontFamily: 'ProductSans', color: 'black' }}>{'@' + item.commenter.username + ' '}</Text>
                                 </TouchableOpacity>
                                 <Text style={{ fontFamily: 'ProductSans', color: 'gray'}}>{item.comment}</Text>
                             </View>
