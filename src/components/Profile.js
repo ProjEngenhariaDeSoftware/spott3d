@@ -98,7 +98,7 @@ export default class Profile extends Component {
           const notVisualized = data.filter((item) => { return !item.visualized });
           const size = notVisualized.length;
           const notification = size > 0;
-          const newData = data;
+          const newData = data.sort((a,b) => {return b.id - a.id });
           this.setState({ notificationSize: size, userphoto: photoURL, email: email, userNotifications: newData, isLoading: false, notification: notification });
         });
 
@@ -134,6 +134,8 @@ export default class Profile extends Component {
   }
 
   showModal(visible) {
+    if (this.state.notificationVisibleStatus)
+      this.setVisualized();
     this.setState({ modalVisibleStatus: visible, notificationVisibleStatus: false })
   }
 
@@ -141,10 +143,10 @@ export default class Profile extends Component {
 
     if (visible) {
       await fetch('https://api-spotted.herokuapp.com/api/post/id/' + itemId)
-    .then(res => res.json())
-    .then(data => {
-      this.setState({ postVisibleStatus: visible, postNotify: { item: data } });
-    });
+        .then(res => res.json())
+        .then(data => {
+          this.setState({ postVisibleStatus: visible, postNotify: { item: data } });
+        });
     }
     else
       this.setState({ postVisibleStatus: visible });
@@ -177,6 +179,20 @@ export default class Profile extends Component {
 
   setVisualized() {
     const notVisualized = this.state.userNotifications.filter((item) => { return !item.visualized });
+    var notificationsVisualized = [];
+    this.state.userNotifications.forEach((element) => {
+      const notificationItem = {
+        id: element.id,
+        publicationType: element.publicationType,
+        publicationId: element.publicationId,
+        commenter: element.commenter,
+        markedEmail: element.markedEmail,
+        visualized: true
+      };
+      notificationsVisualized.push(notificationItem);
+    });
+
+    this.setState({ userNotifications: notificationsVisualized, notificationSize: 0, notification: false });
 
     try {
       notVisualized.forEach(element => {
@@ -200,11 +216,11 @@ export default class Profile extends Component {
 
   renderNotifications() {
 
-    this.setVisualized();
+
 
     return (
 
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
 
         <Modal
 
@@ -219,8 +235,9 @@ export default class Profile extends Component {
               subcolor={'#cfd8dc'}
               color={'#29434e'}
               username={this.state.username}
-              userphoto={this.state.userPhoto}
+              userphoto={this.state.userphoto}
               email={this.state.email}
+              renderWithComments={true}
               deleted={this.postDeleted.bind(this)}
             />
 
