@@ -31,6 +31,7 @@ const actions = [{
 export default class Search extends Component {
   constructor(props) {
     super();
+    this._listViewOffset = 0
     this.state = {
       dataSource: [],
       dataFilter: [],
@@ -44,6 +45,7 @@ export default class Search extends Component {
       refreshing: false,
       search: false,
       filterUser: false,
+      isActionButtonVisible: true,
     }
   };
 
@@ -150,6 +152,19 @@ export default class Search extends Component {
     this.setState({ otherProfile: profileEmail, openProfile: true })
   }
 
+  _onScroll = (event) => {
+    const currentOffset = event.nativeEvent.contentOffset.y
+    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
+      ? 'down'
+      : 'up'
+    const isActionButtonVisible = direction === 'up'
+    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
+      this.setState({ isActionButtonVisible: isActionButtonVisible })
+    }
+    this._listViewOffset = currentOffset
+  }
+
+
 
   render() {
     return (
@@ -157,6 +172,7 @@ export default class Search extends Component {
         <FlatList
           data={this.state.dataFilter}
           extraData={this.state.search}
+          onScroll={this._onScroll}
           renderItem={(item) => {
             return (
               this.state.filterUser ?
@@ -216,7 +232,7 @@ export default class Search extends Component {
           }
           actionsPaddingTopBottom={0}
           overlayColor="rgba(0, 0, 0, 0.7)"
-
+          visible={this.state.isActionButtonVisible}
           distanceToEdge={16}
         />
       </View>

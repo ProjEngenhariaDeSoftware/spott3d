@@ -211,7 +211,7 @@ export default class PostList extends PureComponent {
               blurOnSubmit={true}
             />
             {this.state.type === 'EVENT_ACADEMIC' ?
-              <View style={{alignSelf: 'flex-start', paddingLeft: 10 }}>
+              <View style={{ alignSelf: 'flex-start', paddingLeft: 10 }}>
                 <DateTimePicker
                   isVisible={this.state.isDateTimePickerVisible}
                   mode='datetime'
@@ -231,8 +231,8 @@ export default class PostList extends PureComponent {
               </View>
               : null}
 
-            <View style={{ flexDirection: 'row', alignSelf: 'flex-start', paddingLeft: 29}}>
-              <Text style={{ color: this.state.color, textAlignVertical: 'center'}}>Adicionar imagem:</Text>
+            <View style={{ flexDirection: 'row', alignSelf: 'flex-start', paddingLeft: 29 }}>
+              <Text style={{ color: this.state.color, textAlignVertical: 'center' }}>Adicionar imagem:</Text>
               <Button transparent button onPress={() => { this.galleryImage() }} >
                 <Icon type="MaterialCommunityIcons" name="image-plus" style={{ fontSize: 25, color: this.state.color }} />
               </Button>
@@ -300,9 +300,9 @@ export default class PostList extends PureComponent {
     const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
       ? 'down'
       : 'up'
-    const isActionButtonVisible = direction === 'up'
-    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
-      this.setState({ isActionButtonVisible: isActionButtonVisible })
+    const buttonVisible = direction === 'up'
+    if (buttonVisible !== this.state.isActionButtonVisible) {
+      this.setState({ isActionButtonVisible: buttonVisible })
     }
     this._listViewOffset = currentOffset
   }
@@ -346,6 +346,7 @@ export default class PostList extends PureComponent {
           />}
         {this.renderModal()}
         <FloatingAction
+          ref={(ref) => { this.action = ref; }}
           color={this.state.color}
           floatingIcon={<Icon type="MaterialCommunityIcons" style={{ color: '#fff' }} name="plus" />}
           position="right"

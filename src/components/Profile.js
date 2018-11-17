@@ -73,11 +73,6 @@ export default class Profile extends Component {
     };
   }
 
-
-  //   } catch (error) { }
-
-  // }
-
   async componentDidMount() {
     try {
 
