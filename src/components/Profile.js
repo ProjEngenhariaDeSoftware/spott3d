@@ -98,7 +98,7 @@ export default class Profile extends Component {
           const notVisualized = data.filter((item) => { return !item.visualized });
           const size = notVisualized.length;
           const notification = size > 0;
-          const newData = data;
+          const newData = data.sort((a,b) => {return b.id - a.id });
           this.setState({ notificationSize: size, userphoto: photoURL, email: email, userNotifications: newData, isLoading: false, notification: notification });
         });
 
