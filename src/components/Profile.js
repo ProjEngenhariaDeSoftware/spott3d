@@ -221,6 +221,7 @@ export default class Profile extends Component {
               username={this.state.username}
               userphoto={this.state.userPhoto}
               email={this.state.email}
+              renderWithComments={true}
               deleted={this.postDeleted.bind(this)}
             />
 

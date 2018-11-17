@@ -22,6 +22,7 @@ export default class PostCard extends PureComponent {
         this.data = props.data;
         this.subcolor = props.subcolor;
         this.color = props.color;
+        this.renderWithComments = props.renderWithComments;
         this.state = {
             data: props.data,
             userPhoto: props.userphoto,
@@ -278,7 +279,13 @@ export default class PostCard extends PureComponent {
     }
 
     render() {
+        
         return (
+            this.renderWithComments ?  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View>
+                {this.renderComments()}
+            </View>
+        </View>:
             <View style={{ flex: 1, backgroundColor: this.color, paddingLeft: 1, paddingRight: 1, paddingBottom: 1 }}>
                 <TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
                     <View>
