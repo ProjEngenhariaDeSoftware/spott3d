@@ -113,7 +113,7 @@ export default class Search extends Component {
                 username={this.state.username}
                 userphoto={this.state.userPhoto}
                 email={this.state.email}
-                renderWithComments={true}
+                renderWithComments={false}
                 deleted={this.postDeleted.bind(this)}
               />
             )
