@@ -35,7 +35,8 @@ export default class SpottedCard extends Component {
 			edit: false,
 			openImage: false,
 			username: '',
-			delete: true
+			delete: true,
+			viewRef: null
 		}
 	}
 
@@ -76,8 +77,8 @@ export default class SpottedCard extends Component {
 							</View>
 						</Body>
 					</Left>
-					<Right style={{ flex: 1, fontSize: 19 }} onPress={this.report}>
-						<Icon type="MaterialCommunityIcons" name="alert-box" onPress={this.report} />
+					<Right onPress={this.report}>
+						<Icon style={{ flex: 1, fontSize: 22 }} type="MaterialCommunityIcons" name="alert-box" onPress={this.report} />
 					</Right>
 				</CardItem>
 				<Body>
@@ -300,12 +301,12 @@ export default class SpottedCard extends Component {
 					visible={this.state.openImage}
 					onTouchOutside={() => { this.setState({ openImage: false }) }}
 					dialogAnimation={new ScaleAnimation({})}
-					dialogStyle={{ width: imageWidth - 150, height: imageHeight - 150, alignItems: 'center', borderRadius: 15, backgroundColor: 'rgba(0,0,0,0)' }}
+					dialogStyle={{ width: imageWidth - 50, height: imageHeight - 50, alignItems: 'center', borderRadius: 15, backgroundColor: 'rgba(0,0,0,0)' }}
 					containerStyle={{ blurRadius: 1 }}
 				>
 					<DialogContent>
 						<Image source={{ uri: this.data.item.image }}
-							style={{ width: imageWidth - 150, height: imageHeight - 150, borderRadius: 15 }}
+							style={{ width: imageWidth - 50, height: imageHeight - 50, resizeMode: 'contain', borderRadius: 15 }}
 						/>
 					</DialogContent>
 				</Dialog>
@@ -335,6 +336,7 @@ export default class SpottedCard extends Component {
 				</TouchableOpacity>
 				{this.renderOpenImage()}
 			</View>
+			
 		);
 	}
 }
@@ -401,6 +403,10 @@ const styles = StyleSheet.create({
 		textAlign: 'justify',
 		margin: 5,
 		fontSize: 16
-	}
+	},
+	absolute: {
+    position: 'absolute',
+    top: 0, left: 0, bottom: 0, right: 0,
+  }
 });
 
