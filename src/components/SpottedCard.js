@@ -34,7 +34,8 @@ export default class SpottedCard extends Component {
 			sending: false,
 			edit: false,
 			openImage: false,
-			username: ''
+			username: '',
+			delete: true
 		}
 	}
 
@@ -131,9 +132,9 @@ export default class SpottedCard extends Component {
 												<Icon style={styles.timeComment} type="MaterialIcons" name="access-time" />
 												<Text style={styles.timeComment}>{' ' + item.datetime}</Text>
 											</View>
-											{this.verifyComment(item) ?
+											{this.verifyComment(item) && this.state.delete ?
 												<Right onPress={() => this.deleteComment(item)}>
-													<Icon onPress={() => this.deleteComment(item)} style={{ fontSize: 21, color: 'gray', margin: 1 }} type="MaterialCommunityIcons" name="delete-forever" />
+													<Icon onPress={() => this.deleteComment(item)} style={{ fontSize: 21, color: 'gray' }} type="MaterialCommunityIcons" name="delete-forever" />
 												</Right>
 												: null}
 										</View>
@@ -165,23 +166,17 @@ export default class SpottedCard extends Component {
 
 	deleteComment(value) {
 		try {
-			alert('Deletado');
+			this.setState({ delete: false });
+			this.data.item.comments.splice(this.data.item.comments.findIndex(item => item.id == value.id), 1);
+			this.renderComments(this.data);
 			fetch('https://api-spotted.herokuapp.com/api/comment/' + value.id, {
 				method: 'DELETE',
 				headers: {
 					Accept: 'application/json',
 					'Content-Type': 'application/json'
 				},
-			}).then(res => {
-				let result = [];
-				this.data.item.comments.map(a => {
-					if (a.id != value.id) {
-						result.push(a);
-					}
-				});
-				this.setState({ modalVisibleStatus: false });
-				this.data.item.comments = result;
-				this.renderComments(this.data);
+			}).then(res => {				
+				this.setState({ delete: true });
 			});
 		} catch (error) { }
 	}
@@ -238,7 +233,7 @@ export default class SpottedCard extends Component {
 
 	report = async () => {
 		try {
-			await fetch('https://api-spotted.herokuapp.com/api/spotted/' + this.state.id + '/to-report', {
+			await fetch('https://api-spotted.herokuapp.com/api/spotted/' + this.state.id, {
 				method: 'PUT',
 				headers: {
 					Accept: 'application/json',

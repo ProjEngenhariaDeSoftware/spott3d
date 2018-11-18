@@ -67,7 +67,6 @@ export default class AddSpotted extends Component {
             image: this.state.sendImage
           })
         }).then(res => {
-          console.error(res);
           Actions.pop();
         });
       } else {
