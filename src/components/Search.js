@@ -5,8 +5,9 @@ import {
   FlatList,
   TouchableOpacity,
   Text,
-  Modal
 } from 'react-native';
+
+import Modal from 'react-native-modal';
 import { SearchBar, Icon } from 'react-native-elements'
 import { FloatingAction } from 'react-native-floating-action';
 import { View, Spinner, Thumbnail } from 'native-base'
@@ -31,6 +32,7 @@ const actions = [{
 export default class Search extends Component {
   constructor(props) {
     super();
+    this._listViewOffset = 0
     this.state = {
       dataSource: [],
       dataFilter: [],
@@ -44,6 +46,7 @@ export default class Search extends Component {
       refreshing: false,
       search: false,
       filterUser: false,
+      isActionButtonVisible: true,
     }
   };
 
@@ -150,6 +153,19 @@ export default class Search extends Component {
     this.setState({ otherProfile: profileEmail, openProfile: true })
   }
 
+  _onScroll = (event) => {
+    const currentOffset = event.nativeEvent.contentOffset.y
+    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
+      ? 'down'
+      : 'up'
+    const isActionButtonVisible = direction === 'up'
+    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
+      this.setState({ isActionButtonVisible: isActionButtonVisible })
+    }
+    this._listViewOffset = currentOffset
+  }
+
+
 
   render() {
     return (
@@ -157,18 +173,19 @@ export default class Search extends Component {
         <FlatList
           data={this.state.dataFilter}
           extraData={this.state.search}
+          onScroll={this._onScroll}
           renderItem={(item) => {
             return (
               this.state.filterUser ?
-                  <TouchableOpacity style={styles.item} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.item.email)}>
-                    <View style={{ marginRight: '3%', marginBottom: '3%' }} >
-                      <Thumbnail small source={{ uri: item.item.image }} />
-                    </View>
-                    <View style={{ flex: 1, flexWrap: 'wrap', }}>
-                      <Text style={{ fontFamily: 'ProductSans', color: 'black' }}>{'@' + item.item.username + ' '}</Text>
-                      <Text style={{ fontFamily: 'ProductSans', color: 'gray' }}>{item.item.email}</Text>
-                    </View>
-                  </TouchableOpacity>
+                <TouchableOpacity style={styles.item} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.item.email)}>
+                  <View style={{ marginRight: '3%', marginBottom: '3%' }} >
+                    <Thumbnail small source={{ uri: item.item.image }} />
+                  </View>
+                  <View style={{ flex: 1, flexWrap: 'wrap', }}>
+                    <Text style={{ fontFamily: 'ProductSans', color: 'black' }}>{'@' + item.item.username + ' '}</Text>
+                    <Text style={{ fontFamily: 'ProductSans', color: 'gray' }}>{item.item.email}</Text>
+                  </View>
+                </TouchableOpacity>
                 :
                 <PostCard
                   data={item}
@@ -190,11 +207,16 @@ export default class Search extends Component {
           ListFooterComponent={this.renderLoader}
         />
         <Modal
-          transparent={false}
-          animationType={"slide"}
-          visible={this.state.openProfile}
-          onRequestClose={() => { this.showOtherProfile(!this.state.openProfile) }} >
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          animationIn='slideInUp'
+          animationInTiming={1000}
+          animationOut="slideOutDown"
+          animationOutTiming={1000}
+          backdropTransitionOutTiming={1000}
+          isVisible={this.state.openProfile}
+          avoidKeyboard={true}
+          style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
+          onBackButtonPress={() => { this.showOtherProfile(!this.state.openProfile) }} >
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
             <OtherProfile email={this.state.otherProfile} />
           </View>
         </Modal>
@@ -216,7 +238,7 @@ export default class Search extends Component {
           }
           actionsPaddingTopBottom={0}
           overlayColor="rgba(0, 0, 0, 0.7)"
-
+          visible={this.state.isActionButtonVisible}
           distanceToEdge={16}
         />
       </View>

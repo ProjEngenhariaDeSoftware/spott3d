@@ -7,9 +7,9 @@ import {
     TouchableOpacity,
     TextInput,
     Image,
-    Modal,
 } from "react-native";
 import { Card, CardItem, Left, Right, Body, Thumbnail, Text, Icon, Button, View } from 'native-base';
+import Modal from 'react-native-modal';
 import OtherProfile from '../components/OhterProfile';
 //import ProgressiveImage from '../components/ProgressiveImage';
 
@@ -143,30 +143,30 @@ export default class PostCard extends PureComponent {
                 renderItem={({ item }) => {
                     return (
                         < View style={styles.item} >
-                            <TouchableOpacity style={{marginRight: '3%', marginBottom: '3%'}} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
+                            <TouchableOpacity style={{ marginRight: '3%', marginBottom: '3%' }} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
                                 <Thumbnail small source={{ uri: item.commenter.image }} />
                             </TouchableOpacity>
                             <View style={{ flex: 1, flexWrap: 'wrap', }}>
                                 <TouchableOpacity activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
                                     <Text style={{ fontFamily: 'ProductSans', color: 'black' }}>{'@' + item.commenter.username + ' '}</Text>
                                 </TouchableOpacity>
-                                <Text style={{ fontFamily: 'ProductSans', color: 'gray'}}>{item.comment}</Text>
+                                <Text style={{ fontFamily: 'ProductSans', color: 'gray' }}>{item.comment}</Text>
                             </View>
                         </ View>
                         // <View style={styles.item}>
-						// 	<ListItem
-						// 		containerStyle={{ margin: 1 }}
-						// 		title={'@' + item.commenter.username}
-						// 		titleStyle={styles.userComment}
-						// 		subtitle={
-						// 			<View style={styles.subtitleView}>
-						// 				<Text style={styles.comment}>{item.comment}</Text>
-						// 			</View>
-						// 		}
-						// 		leftAvatar={{ source: { uri: item.commenter.image } }}
-						// 	>
-						// 	</ListItem>
-						// </View>
+                        // 	<ListItem
+                        // 		containerStyle={{ margin: 1 }}
+                        // 		title={'@' + item.commenter.username}
+                        // 		titleStyle={styles.userComment}
+                        // 		subtitle={
+                        // 			<View style={styles.subtitleView}>
+                        // 				<Text style={styles.comment}>{item.comment}</Text>
+                        // 			</View>
+                        // 		}
+                        // 		leftAvatar={{ source: { uri: item.commenter.image } }}
+                        // 	>
+                        // 	</ListItem>
+                        // </View>
                     );
                 }}
                 // onContentSizeChange={() => this.commentsFlatList.scrollToEnd({animated: true})}
@@ -279,40 +279,50 @@ export default class PostCard extends PureComponent {
     }
 
     render() {
-        
+
         return (
-            this.renderWithComments ?  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <View>
-                {this.renderComments()}
-            </View>
-        </View>:
-            <View style={{ flex: 1, backgroundColor: this.color, paddingLeft: 1, paddingRight: 1, paddingBottom: 1 }}>
-                <TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
-                    <View>
-                        {this.renderCard()}
-                        <Modal
-                            transparent={false}
-                            animationType={"slide"}
-                            visible={this.state.modalVisibleStatus}
-                            onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
-                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                <View>
-                                    {this.renderComments()}
+            this.renderWithComments ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <View>
+                    {this.renderComments()}
+                </View>
+            </View> :
+                <View style={{ flex: 1, backgroundColor: this.color, paddingLeft: 1, paddingRight: 1, paddingBottom: 1 }}>
+                    <TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+                        <View>
+                            {this.renderCard()}
+                            <Modal
+                                animationIn='slideInUp'
+                                animationInTiming={1000}
+                                animationOut="slideOutDown"
+                                animationOutTiming={1000}
+                                backdropTransitionOutTiming={1000}
+                                isVisible={this.state.modalVisibleStatus}
+                                avoidKeyboard={true}
+                                style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
+                                onBackButtonPress={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+                                    <View>
+                                        {this.renderComments()}
+                                    </View>
                                 </View>
-                            </View>
-                        </Modal>
-                        <Modal
-                            transparent={false}
-                            animationType={"slide"}
-                            visible={this.state.openProfile}
-                            onRequestClose={() => { this.showOtherProfile(!this.state.openProfile) }} >
-                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                <OtherProfile email={this.state.otherProfile} />
-                            </View>
-                        </Modal>
-                    </View>
-                </TouchableOpacity>
-            </View>
+                            </Modal>
+                            <Modal
+                                animationIn='slideInUp'
+                                animationInTiming={1000}
+                                animationOut="slideOutDown"
+                                animationOutTiming={1000}
+                                backdropTransitionOutTiming={1000}
+                                isVisible={this.state.openProfile}
+                                avoidKeyboard={true}
+                                style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
+                                onBackButtonPress={() => { this.showOtherProfile(!this.state.openProfile) }} >
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+                                    <OtherProfile email={this.state.otherProfile} />
+                                </View>
+                            </Modal>
+                        </View>
+                    </TouchableOpacity>
+                </View>
         );
     }
 }
