@@ -4,14 +4,14 @@ import {
   Dimensions,
   FlatList,
   RefreshControl,
-  Modal,
   TextInput,
   AsyncStorage,
   Image,
   Text
 } from 'react-native';
-import { Button, Icon, View, Spinner, Left } from 'native-base'
+import { Button, Icon, View, Spinner } from 'native-base'
 import ImagePicker from 'react-native-image-picker';
+import Modal from 'react-native-modal';
 import { FloatingAction } from 'react-native-floating-action';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
@@ -176,18 +176,22 @@ export default class PostList extends PureComponent {
   renderModal = () => {
     return (
       <Modal
-        transparent={false}
-        animationType={"slide"}
-        visible={this.state.modalVisibleStatus}
-        onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
-        <View style={{ flex: 1, justifyContent: 'flex-start' }}>
+        animationIn='slideInUp'
+        animationInTiming={1000}
+        animationOut="slideOutDown"
+        animationOutTiming={1000}
+        backdropTransitionOutTiming={1000}
+        isVisible={this.state.modalVisibleStatus}
+        avoidKeyboard={true}
+        style={{flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0}}
+        onBackButtonPress={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
+        <View style={{ flex: 1, justifyContent: 'flex-start', backgroundColor: '#fff' }}>
           <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', elevation: 2 }}>
             <Text style={{ padding: 10, fontFamily: 'ProductSans Bold', textAlign: 'center', fontSize: 24, color: this.state.color }}>Adicionar  {this.state.pageTitle}</Text>
           </View>
           <View style={{ alignItems: 'center', paddingTop: 40, paddingLeft: -1 }}>
             <Text style={{ color: this.state.color }}>Título:</Text>
             <TextInput
-              autoFocus
               keyboardType="default"
               autoCorrect={false}
               autoCapitalize="none"
@@ -273,8 +277,7 @@ export default class PostList extends PureComponent {
       await fetch('https://api-spotted.herokuapp.com/api/post/type/' + this.state.type)
         .then(res => res.json())
         .then(data => {
-          const dataSorted = data.sort((a, b) => b.id - a.id);
-          this.setState({ refreshing: false, dataSource: dataSorted });
+          this.setState({ refreshing: false, dataSource: data });
         });
     } catch (error) { }
   }
