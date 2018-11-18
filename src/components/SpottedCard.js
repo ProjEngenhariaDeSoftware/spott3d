@@ -21,7 +21,7 @@ const imageHeight = Math.round(dimensions.height);
 const imageWidth = dimensions.width;
 
 export default class SpottedCard extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.data = props.data;
@@ -33,12 +33,17 @@ export default class SpottedCard extends Component {
 			id: this.data.item.id,
 			sending: false,
 			edit: false,
-			openImage: false
+			openImage: false,
+			username: '',
+			delete: true,
+			viewRef: null
 		}
 	}
 
 	async componentDidMount() {
 		try {
+			const user = await AsyncStorage.getItem('username');
+			this.setState({ username: user });
 		} catch (error) { }
 	}
 
@@ -53,15 +58,15 @@ export default class SpottedCard extends Component {
 					<Left style={{ flex: 2 }}>
 						<Body style={{ justifyContent: 'center', margin: 1 }}>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-								<Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialIcons" name="pin-drop" />
+								<Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialCommunityIcons" name="map-marker-radius" />
 								<Text style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-									{this.validadeData(this.data.item.location) ? ' ' + this.data.item.location.toUpperCase() : 'DESCONHECIDO'}
+									{this.validadeData(this.data.item.location) ? ' ' + this.data.item.location.toUpperCase() : ' DESCONHECIDO'}
 								</Text>
 							</View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
 								<Icon style={styles.datetime} type="MaterialIcons" name="school" />
 								<Text style={styles.datetime}>
-									{this.validadeData(this.data.item.course) ? ' ' + this.data.item.course : 'Desconhecido'}
+									{this.validadeData(this.data.item.course) ? ' ' + this.data.item.course : ' Desconhecido'}
 								</Text>
 							</View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
@@ -72,8 +77,8 @@ export default class SpottedCard extends Component {
 							</View>
 						</Body>
 					</Left>
-					<Right style={{ flex: 1, fontSize: 17 }} onPress={this.report}>
-						<Icon type="MaterialCommunityIcons" name="alert-box" />
+					<Right onPress={this.report}>
+						<Icon style={{ flex: 1, fontSize: 22 }} type="MaterialCommunityIcons" name="alert-box" onPress={this.report} />
 					</Right>
 				</CardItem>
 				<Body>
@@ -97,10 +102,10 @@ export default class SpottedCard extends Component {
 	renderImage() {
 		return (
 			<CardItem cardBody>
-				<TouchableHighlight style={{ borderRadius: 15 }} onLongPress={() => this.setState({ openImage: true })} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+				<TouchableHighlight style={{ borderRadius: 15 }} onLongPress={() => this.setState({ openImage: true })} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)} onPressOut={() => this.setState({ openImage: false })}>
 					<View style={{ alignItems: 'center' }}>
 						<Image source={{ uri: this.data.item.image }}
-							style={{ width: imageWidth-10, height: imageHeight-10, borderRadius: 15 }}
+							style={{ width: imageWidth - 10, height: imageHeight - 10, borderRadius: 15 }}
 						/>
 					</View>
 				</TouchableHighlight>
@@ -108,10 +113,10 @@ export default class SpottedCard extends Component {
 		);
 	}
 
-	renderComments() {
+	renderComments(data) {
 		return (
 			<FlatList
-				data={this.data.item.comments.sort((a, b) => a.id - b.id)}
+				data={data.item.comments.sort((a, b) => a.id - b.id)}
 				extraData={this.state}
 				keyExtractor={item => item.id}
 				onEndReachedThreshold={1}
@@ -120,11 +125,23 @@ export default class SpottedCard extends Component {
 						<View style={styles.item}>
 							<ListItem
 								containerStyle={{ margin: 1 }}
-								title={'@' + item.commenter.username}
-								titleStyle={styles.userComment}
 								subtitle={
-									<View style={styles.subtitleView}>
-										<Text style={styles.comment}>{item.comment}</Text>
+									<View>
+										<View style={{ alignItems: 'center', flexDirection: 'row' }}>
+											<Text style={styles.userComment}>{'@' + item.commenter.username + ' '}</Text>
+											<View style={{ alignItems: 'center', flexDirection: 'row' }}>
+												<Icon style={styles.timeComment} type="MaterialIcons" name="access-time" />
+												<Text style={styles.timeComment}>{' ' + item.datetime}</Text>
+											</View>
+											{this.verifyComment(item) && this.state.delete ?
+												<Right onPress={() => this.deleteComment(item)}>
+													<Icon onPress={() => this.deleteComment(item)} style={{ fontSize: 21, color: 'gray' }} type="MaterialCommunityIcons" name="delete-forever" />
+												</Right>
+												: null}
+										</View>
+										<View style={styles.subtitleView}>
+											<Text style={styles.comment}>{item.comment}</Text>
+										</View>
 									</View>
 								}
 								leftAvatar={{ source: { uri: item.commenter.image } }}
@@ -140,13 +157,29 @@ export default class SpottedCard extends Component {
 		);
 	}
 
-	async commentOptions(value) {
+	verifyComment(value) {
+		if (this.state.username != null && value.commenter.username === this.state.username) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	deleteComment(value) {
 		try {
-			const user = await AsyncStorage.getItem('username');
-			if (value.commenter.username === user) {
-				this.setState({ edit: !this.state.edit });
-			}
-		} catch(error) {}
+			this.setState({ delete: false });
+			this.data.item.comments.splice(this.data.item.comments.findIndex(item => item.id == value.id), 1);
+			this.renderComments(this.data);
+			fetch('https://api-spotted.herokuapp.com/api/comment/' + value.id, {
+				method: 'DELETE',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json'
+				},
+			}).then(res => {				
+				this.setState({ delete: true });
+			});
+		} catch (error) { }
 	}
 
 	sendComment = async () => {
@@ -178,16 +211,19 @@ export default class SpottedCard extends Component {
 						}
 					})
 				}).then(a => {
+					let time = new Date();
 					this.data.item.comments.push({
 						id: a.id,
 						usersMentioned: userMentioned,
 						comment: this.state.newComment,
+						datetime: time.toLocaleTimeString(),
 						commenter: {
 							email: userEmail,
 							username: nickname,
 							image: userPhoto
 						}
 					});
+					this.renderComments(this.data);
 					this.setState({ newComment: '', sending: false });
 				});
 			}
@@ -198,7 +234,7 @@ export default class SpottedCard extends Component {
 
 	report = async () => {
 		try {
-			await fetch('https://api-spotted.herokuapp.com/api/spotted/' + this.state.id + '/to-report', {
+			await fetch('https://api-spotted.herokuapp.com/api/spotted/' + this.state.id, {
 				method: 'PUT',
 				headers: {
 					Accept: 'application/json',
@@ -228,12 +264,15 @@ export default class SpottedCard extends Component {
 						value={this.state.newComment}
 					/>
 					<TouchableOpacity
-						style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "20%", height: 40, margin: 2, marginRight: 4 }}
+						style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "18%", height: 40, margin: 2, marginRight: 4 }}
 						onPress={this.sendComment}
 						activeOpacity={0.8}
 						disabled={this.state.sending}>
 						<Text style={styles.inputText}>
-							{this.state.sending ? 'enviando' : 'enviar'}
+							{this.state.sending ?
+								<Icon style={{ alignItems: 'center', fontSize: 17, color: 'white', margin: 1 }} type="MaterialCommunityIcons" name="checkbox-marked-circle-outline" /> :
+								<Icon style={{ alignItems: 'center', fontSize: 17, color: 'white', margin: 1 }} type="FontAwesome" name="send-o" />
+							}
 						</Text>
 					</TouchableOpacity>
 				</View>
@@ -255,43 +294,23 @@ export default class SpottedCard extends Component {
 		);
 	}
 
-	renderCommentOptions() {
-		return (
-			<TouchableOpacity onPress={() => this.setState({ edit: false })}>
-				<Dialog
-    			visible={this.state.edit}
-    			onTouchOutside={() => {
-      			this.setState({ edit: false });
-	    		}}
-  	  		dialogAnimation={new SlideAnimation({
-    	  		slideFrom: 'bottom',
-    			})}
-  			>
-    			<DialogContent>
-      			<Text style={{fontFamily: 'ProductSans', color: 'black'}}>Olá</Text>
-    			</DialogContent>
-  			</Dialog>
-  		</TouchableOpacity>
-		)
-	}
-
-	renderOpenImage()	 {
+	renderOpenImage() {
 		return (
 			<View>
 				<Dialog
-    			visible={this.state.openImage}
-    			onTouchOutside={() => {this.setState({ openImage: false })}}
-  	  		dialogAnimation={new ScaleAnimation({})}
-  	  		dialogStyle={{ width: imageWidth-150, height: imageHeight-150, alignItems: 'center', borderRadius: 15, backgroundColor: 'rgba(0,0,0,0)' }}
-  	  		containerStyle={{ blurRadius: 1 }}
-  			>
-    			<DialogContent>
-    				<Image source={{ uri: this.data.item.image }}
-							style={{ width: imageWidth-150, height: imageHeight-150, borderRadius: 15 }}
+					visible={this.state.openImage}
+					onTouchOutside={() => { this.setState({ openImage: false }) }}
+					dialogAnimation={new ScaleAnimation({})}
+					dialogStyle={{ width: imageWidth - 50, height: imageHeight - 50, alignItems: 'center', borderRadius: 15, backgroundColor: 'rgba(0,0,0,0)' }}
+					containerStyle={{ blurRadius: 1 }}
+				>
+					<DialogContent>
+						<Image source={{ uri: this.data.item.image }}
+							style={{ width: imageWidth - 50, height: imageHeight - 50, resizeMode: 'contain', borderRadius: 15 }}
 						/>
-    			</DialogContent>
-  			</Dialog>
-  		</View>	
+					</DialogContent>
+				</Dialog>
+			</View>
 		);
 	}
 
@@ -306,10 +325,10 @@ export default class SpottedCard extends Component {
 							animationType={"slide"}
 							visible={this.state.modalVisibleStatus}
 							onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }}
-							>
+						>
 							<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 								<View>
-									{this.renderComments()}
+									{this.renderComments(this.data)}
 								</View>
 							</View>
 						</Modal>
@@ -317,6 +336,7 @@ export default class SpottedCard extends Component {
 				</TouchableOpacity>
 				{this.renderOpenImage()}
 			</View>
+			
 		);
 	}
 }
@@ -333,6 +353,12 @@ const styles = StyleSheet.create({
 	datetime: {
 		fontFamily: 'ProductSans',
 		fontSize: 13,
+		color: 'gray',
+		margin: 1
+	},
+	timeComment: {
+		fontFamily: 'ProductSans',
+		fontSize: 9,
 		color: 'gray',
 		margin: 1
 	},
@@ -377,6 +403,10 @@ const styles = StyleSheet.create({
 		textAlign: 'justify',
 		margin: 5,
 		fontSize: 16
-	}
+	},
+	absolute: {
+    position: 'absolute',
+    top: 0, left: 0, bottom: 0, right: 0,
+  }
 });
 

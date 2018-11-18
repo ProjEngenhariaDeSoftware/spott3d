@@ -17,37 +17,37 @@ export default class Navbar extends Component {
       routes: [
         {
           key: 'spotted',
-          title: 'Spotteds',
+          title: 'spotteds',
           icon: require('./../../assets/images/spotted.png'),
           color: '#EC5D73'
         },
         {
           key: 'event',
-          title: 'Eventos',
+          title: 'eventos',
           icon: require('./../../assets/images/eventos.png'),
           color: '#5AD0BA'
         },
         {
           key: 'warnings',
-          title: 'Avisos',
+          title: 'avisos',
           icon: require('./../../assets/images/avisos.png'),
           color: '#738A98'
         },
         {
           key: 'entertainment',
-          title: 'Diversos',
+          title: 'diversos',
           icon: require('./../../assets/images/entretenimento.png'), //Vinicius arruma esse icone
           color: '#00B6D9'
         },
         {
           key: 'search',
-          title: 'Pesquisar',
+          title: 'pesquisar',
           icon: 'search',
           color: '#29434e'
         },
         {
           key: 'profile',
-          title: 'Perfil',
+          title: 'perfil',
           icon: 'person',
           color: '#0086a7'
         },
