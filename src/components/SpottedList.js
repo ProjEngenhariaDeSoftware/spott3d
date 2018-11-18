@@ -48,15 +48,16 @@ export default class SpottedList extends Component {
     let request = [];
     let posts = [];
     try {
-      await fetch('https://api-spotted.herokuapp.com/api/spotted')
+      await fetch('https://api-spotted.herokuapp.com/api/spotted/visible')
         .then(res => res.json())
         .then(data => {
           request = data;
-          request.forEach(spotted => {
-            if (spotted.visible) {
-              posts.push(spotted);
-            }
-          });
+          posts = request;
+          //request.forEach(spotted => {
+          //  if (spotted.visible) {
+          //    posts.push(spotted);
+          //  }
+          //});
           //posts.map(item => {
           //  item.image = LZString.decompress(item.image);
           //}).sort((a, b) => b.id - a.id);
