@@ -66,7 +66,7 @@ export default class PostCard extends PureComponent {
                             <View style={{ flexDirection: 'column', justifyContent: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
                                 <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color }}>  {this.data.item.title.toUpperCase()}</Text>
                                 <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                                    <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
+                                    <Icon style={styles.datetimeIcon} type="MaterialIcons" name="access-time" />
                                     <Text style={styles.datetime}>
                                         {' ' + this.data.item.datetime}
                                     </Text>
@@ -340,6 +340,12 @@ const styles = StyleSheet.create({
     },
     datetime: {
         fontFamily: 'ProductSans',
+        fontSize: 13,
+        color: 'gray',
+        margin: 1
+    },
+    datetimeIcon: {
+        paddingLeft: 6,
         fontSize: 13,
         color: 'gray',
         margin: 1
