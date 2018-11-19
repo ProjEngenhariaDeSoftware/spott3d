@@ -191,7 +191,7 @@ export default class PostList extends PureComponent {
             <Text style={{ padding: 10, fontFamily: 'ProductSans Bold', textAlign: 'center', fontSize: 24, color: this.state.color }}>Adicionar  {this.state.pageTitle}</Text>
           </View>
           <View style={{ alignItems: 'center', paddingTop: 40,}}>
-            <Text style={{ fontFamily: 'ProductSans' ,color: this.state.color, alignSelf: 'flex-start', marginLeft: '6%', fontSize: 17 }}>Título</Text>
+            <Text style={{ fontFamily: 'ProductSans' ,color: this.state.color, alignSelf: 'flex-start', marginLeft: '6%', marginBottom: '3%', fontSize: 17 }}>Título</Text>
             <TextInput
               keyboardType="default"
               autoCorrect={false}
@@ -203,7 +203,7 @@ export default class PostList extends PureComponent {
               returnKeyType="next"
               blurOnSubmit={true}
             />
-            <Text style={{ fontFamily: 'ProductSans', color: this.state.color, alignSelf: 'flex-start', marginLeft: '6%', fontSize: 17 }}>Descrição</Text>
+            <Text style={{ fontFamily: 'ProductSans', color: this.state.color, alignSelf: 'flex-start', marginBottom: '3%', marginLeft: '6%', fontSize: 17 }}>Descrição</Text>
             <TextInput
               keyboardType="default"
               autoCorrect={false}
@@ -390,6 +390,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     marginBottom: 10,
     height: 40,
+    elevation: 1,
     borderColor: '#e0e0e0',
     borderWidth: 1,
     borderRadius: 10,
@@ -400,7 +401,9 @@ const styles = StyleSheet.create({
   descriptionInput: {
     marginLeft: 8,
     marginBottom: 10,
-    height: 120,
+    padding: 3,
+    elevation: 1,
+    height: '25%',
     borderColor: '#e0e0e0',
     borderWidth: 1,
     borderRadius: 10,
@@ -409,8 +412,8 @@ const styles = StyleSheet.create({
 
   },
   imagePreview: {
-    width: (viewportWidth*0.4),
-    height: (viewportWidth*0.4),
+    width: (viewportWidth*0.25),
+    height: (viewportWidth*0.25),
     borderRadius: 5,
     resizeMode: 'contain',
     alignItems: 'center',
