@@ -66,10 +66,12 @@ export default class PostList extends PureComponent {
       const photoURL = await AsyncStorage.getItem('photoURL');
       const displayName = await AsyncStorage.getItem('displayName');
       const mail = await AsyncStorage.getItem('email');
+      const user = await AsyncStorage.getItem('username');
+	
 
       await this.refreshingData();
 
-      this.setState({ username: displayName, userPhoto: photoURL, email: mail, isLoading: false, });
+      this.setState({ username:user, userPhoto: photoURL, email: mail, isLoading: false, });
     } catch (error) { }
   }
 
@@ -190,7 +192,7 @@ export default class PostList extends PureComponent {
             <Text style={{ padding: 10, fontFamily: 'ProductSans Bold', textAlign: 'center', fontSize: 24, color: this.state.color }}>Adicionar  {this.state.pageTitle}</Text>
           </View>
           <View style={{ alignItems: 'center', paddingTop: 40, paddingLeft: -1 }}>
-            <Text style={{ color: this.state.color }}>Título:</Text>
+            <Text style={{ fontFamily: 'ProductSans' ,color: this.state.color }}>Título:</Text>
             <TextInput
               keyboardType="default"
               autoCorrect={false}
@@ -202,7 +204,7 @@ export default class PostList extends PureComponent {
               returnKeyType="next"
               blurOnSubmit={true}
             />
-            <Text style={{ color: this.state.color }}>Descrição:</Text>
+            <Text style={{ fontFamily: 'ProductSans', color: this.state.color }}>Descrição:</Text>
             <TextInput
               keyboardType="default"
               autoCorrect={false}

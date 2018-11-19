@@ -83,13 +83,7 @@ export default class Profile extends Component {
 
       const photoURL = await AsyncStorage.getItem('photoURL');
       const email = await AsyncStorage.getItem('email');
-
-      await fetch('https://api-spotted.herokuapp.com/api/user/email/' + email)
-        .then(res => res.json())
-        .then(data => {
-
-          this.setState({ username: data.username });
-        });
+      const user = await AsyncStorage.getItem('username');
 
 
       await fetch('https://api-spotted.herokuapp.com/api/notification/' + email)
@@ -99,7 +93,7 @@ export default class Profile extends Component {
           const size = notVisualized.length;
           const notification = size > 0;
           const newData = data.sort((a, b) => { return b.id - a.id });
-          this.setState({ notificationSize: size, userphoto: photoURL, email: email, userNotifications: newData, isLoading: false, notification: notification });
+          this.setState({ username: user, notificationSize: size, userphoto: photoURL, email: email, userNotifications: newData, isLoading: false, notification: notification });
         });
 
 
