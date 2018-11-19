@@ -168,6 +168,18 @@ export default class Search extends Component {
     this._listViewOffset = currentOffset
   }
 
+  selectColorType(type) {
+    switch (type) {
+      case 'NEWS':
+        return '#dee7ed';
+      case 'NOTICE':
+        return '#dee7ed';
+      case 'EVENT_ACADEMIC':
+        return '#ebf9f7';
+      case 'ENTERTAINMENT':
+        return '#e6fbff';
+    }
+  }
 
 
   render() {
@@ -192,7 +204,7 @@ export default class Search extends Component {
                 :
                 <PostCard
                   data={item}
-                  subcolor={'#cfd8dc'}
+                  subcolor={this.selectColorType(item.item.type)}
                   color={'#29434e'}
                   username={this.state.username}
                   userphoto={this.state.userPhoto}
@@ -231,7 +243,7 @@ export default class Search extends Component {
           onPressItem={
             (name) => {
               if (name === 'bt_post') {
-                this.setState({ filterUser: false, dataFilter: [] , searching: 'Pesquisar postagens'});
+                this.setState({ filterUser: false, dataFilter: [], searching: 'Pesquisar postagens' });
               }
               if (name === 'bt_user') {
                 this.setState({ filterUser: true, dataFilter: [], searching: 'Pesquisar pessoas' });
