@@ -46,9 +46,9 @@ export default class PostCard extends PureComponent {
     renderImage() {
         return (
             <CardItem cardBody>
-                <TouchableOpacity activeOpacity={0.9} style={{ alignItems: 'center' }} onLongPress={() => this.setState({ openImage: true })} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)} onPressOut={() => this.setState({ openImage: false })}>
+                <TouchableOpacity activeOpacity={0.9} style={{ borderRadius: 10 }} onLongPress={() => this.setState({ openImage: true })} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)} onPressOut={() => this.setState({ openImage: false })}>
                     <Image source={{ uri: this.data.item.image }}
-                        style={{ width: viewportWidth - 10, height: viewportHeight - 10, }}
+                        style={{ width: viewportWidth - 10, height: viewportHeight - 10}}
                     />
                 </TouchableOpacity>
             </CardItem>
@@ -144,16 +144,16 @@ export default class PostCard extends PureComponent {
                 renderItem={({ item }) => {
                     return (
                         < View style={styles.item} >
-                            <TouchableOpacity style={{ marginRight: '3%', marginBottom: '3%' }} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
+                            <TouchableOpacity style={{ marginRight: '3%', marginBottom: '3%' }} activeOpacity={0.9} onPress={() => this.changeOtherProfile(item.commenter.email)}>
                                 <Thumbnail small source={{ uri: item.commenter.image }} />
                             </TouchableOpacity>
                             <View style={{ flex: 1, flexWrap: 'wrap', }}>
-                                <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
-                                    <Text style={{ fontFamily: 'ProductSans', color: 'black' }}>{'@' + item.commenter.username + ' '}</Text>
+                                <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} activeOpacity={0.9} onPress={() => this.changeOtherProfile(item.commenter.email)}>
+                                    <Text style={{ fontFamily: 'ProductSans', color: 'black', fontSize: 14 }}>{'@' + item.commenter.username + ' '}</Text>
                                     <Icon style={{fontSize: 9, color: 'gray'}} type="MaterialIcons" name="access-time" />
                                     <Text style={{ fontFamily: 'ProductSans', fontSize: 9, color: 'gray', margin: 1 }}>{' ' + item.datetime}</Text>
                                 </TouchableOpacity>
-                                <Text style={{ fontFamily: 'ProductSans', color: 'gray' }}>{item.comment}</Text>
+                                <Text style={{ fontFamily: 'ProductSans', color: 'gray', fontSize: 14 }}>{item.comment}</Text>
                             </View>
                         </ View>
                     );
@@ -261,11 +261,11 @@ export default class PostCard extends PureComponent {
                     animationOutTiming={300}
                     backdropTransitionOutTiming={200}
                     isVisible={this.state.openImage}
-                    style={{ flex: 1, marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
+                    style={{ flex: 1}}
                     onBackButtonPress={() => { this.setState({ openImage: false }) }} >
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                         <Image source={{ uri: this.data.item.image }}
-                            style={{ width: viewportWidth, height: viewportHeight, resizeMode: 'contain' }}
+                            style={{ width: viewportWidth, height: viewportHeight, resizeMode: 'contain'}}
                         />
                     </View>
                 </Modal>
@@ -395,7 +395,8 @@ const styles = StyleSheet.create({
     postText: {
         fontFamily: 'ProductSans',
         textAlign: 'justify',
+        color: 'gray',
         margin: 5,
-        fontSize: 16
+        fontSize: 14
     }
 });
