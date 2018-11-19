@@ -64,7 +64,7 @@ export default class PostCard extends PureComponent {
                                 <Thumbnail small source={{ uri: this.state.author.image }} />
                             </TouchableOpacity>
                             <View style={{ flexDirection: 'column', justifyContent: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
-                                <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color }}>{this.data.item.title.toUpperCase()}</Text>
+                                <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color }}>  {this.data.item.title.toUpperCase()}</Text>
                                 <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                                     <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
                                     <Text style={styles.datetime}>
