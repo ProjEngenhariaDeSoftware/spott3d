@@ -47,6 +47,7 @@ export default class Search extends Component {
       refreshing: false,
       search: false,
       filterUser: false,
+      changeEmpty: false,
       isActionButtonVisible: true,
     }
   };
@@ -72,7 +73,7 @@ export default class Search extends Component {
 
   searchType() {
     if (this.state.searchText.trim() !== '') {
-      this.setState({ search: false, dataFilter: [] });
+      this.setState({ search: false, dataFilter: [], changeEmpty: false });
       if (this.state.filterUser) {
         this.filterUser()
 
@@ -84,7 +85,7 @@ export default class Search extends Component {
 
   async searchData() {
     const newData = this.state.dataSource.filter(item => this.filterType(item));
-    this.setState({ dataFilter: newData, search: true, refreshing: false });
+    this.setState({ dataFilter: newData, search: true, refreshing: false, changeEmpty: true});
   }
 
   renderHeader = () => {
@@ -110,7 +111,7 @@ export default class Search extends Component {
 
   emptyData = () => {
     return (
-      this.state.search ? <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#fff' }}><Text style={{ fontFamily: 'ProductSans', fontSize: 16 }}>{'\n\n\n Nenhum resultado encontrado.'}</Text></View> : null
+      this.state.changeEmpty ? <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#fff' }}><Text style={{ fontFamily: 'ProductSans', fontSize: 16 }}>{'\n\n\n Nenhum resultado encontrado.'}</Text></View> : null
     );
   }
 
@@ -243,10 +244,10 @@ export default class Search extends Component {
           onPressItem={
             (name) => {
               if (name === 'bt_post') {
-                this.setState({ filterUser: false, dataFilter: [], searching: 'Pesquisar postagens' });
+                this.setState({ filterUser: false, dataFilter: [], searching: 'Pesquisar postagens', changeEmpty: false});
               }
               if (name === 'bt_user') {
-                this.setState({ filterUser: true, dataFilter: [], searching: 'Pesquisar pessoas' });
+                this.setState({ filterUser: true, dataFilter: [], searching: 'Pesquisar pessoas', changeEmpty: false});
 
               }
             }
