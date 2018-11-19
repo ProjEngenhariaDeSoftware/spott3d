@@ -53,6 +53,7 @@ export default class Start extends Component {
 	}
 
 	googleLogin = async () => {
+		// Actions.reset('home');
 		try {
 			await GoogleSignin.configure();
 			this.setState({ loading: true });

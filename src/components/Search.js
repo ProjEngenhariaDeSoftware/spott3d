@@ -16,13 +16,13 @@ import PostCard from '../components/PostCard';
 import OtherProfile from '../components/OhterProfile';
 
 const actions = [{
-  text: 'Usuários',
+  text: 'Pesquisar pessoas',
   icon: <Icon type="material-icons" size={23} color='#fff' name="person" />,
   name: 'bt_user',
   color: '#00B6D9',
   position: 2
 }, {
-  text: 'Postagens',
+  text: 'Pesquisar postagens',
   icon: <Icon type="entypo" size={23} color='#fff' name="news" />,
   name: 'bt_post',
   color: '#5AD0BA',
@@ -41,6 +41,7 @@ export default class Search extends Component {
       userPhoto: '',
       email: '',
       otherProfile: '',
+      searching: 'Pesquisar postagens',
       openProfile: false,
       showLoader: false,
       refreshing: false,
@@ -89,9 +90,11 @@ export default class Search extends Component {
   renderHeader = () => {
     return (
       <SearchBar
+        ref={search => this.search = search}
         platform='android'
         containerStyle={{ borderWidth: 1, borderColor: '#eceff1' }}
-        placeholder="Buscar"
+        placeholder={this.state.searching}
+        cancelIcon={false}
         showLoading={this.state.refreshing}
         onChangeText={(text) => this.setState({ searchText: text })}
         value={this.state.searchText}
@@ -216,7 +219,7 @@ export default class Search extends Component {
           avoidKeyboard={true}
           style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
           onBackButtonPress={() => { this.showOtherProfile(!this.state.openProfile) }} >
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
             <OtherProfile email={this.state.otherProfile} />
           </View>
         </Modal>
@@ -228,10 +231,10 @@ export default class Search extends Component {
           onPressItem={
             (name) => {
               if (name === 'bt_post') {
-                this.setState({ filterUser: false, dataFilter: [] });
+                this.setState({ filterUser: false, dataFilter: [] , searching: 'Pesquisar postagens'});
               }
               if (name === 'bt_user') {
-                this.setState({ filterUser: true, dataFilter: [] });
+                this.setState({ filterUser: true, dataFilter: [], searching: 'Pesquisar pessoas' });
 
               }
             }
