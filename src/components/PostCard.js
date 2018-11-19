@@ -8,7 +8,7 @@ import {
     TextInput,
     Image,
 } from "react-native";
-import { Card, CardItem, Left, Right, Body, Thumbnail, Text, Icon, Button, View } from 'native-base';
+import { Card, CardItem, Left, Right, Body, Thumbnail, Text, Icon, View } from 'native-base';
 import Modal from 'react-native-modal';
 import OtherProfile from '../components/OhterProfile';
 //import ProgressiveImage from '../components/ProgressiveImage';
@@ -34,6 +34,7 @@ export default class PostCard extends PureComponent {
             modalVisibleStatus: false,
             openProfile: false,
             refreshing: false,
+            openImage: false,
             send: false,
         }
     }
@@ -45,11 +46,11 @@ export default class PostCard extends PureComponent {
     renderImage() {
         return (
             <CardItem cardBody>
-                <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity activeOpacity={0.9} style={{ alignItems: 'center' }} onLongPress={() => this.setState({ openImage: true })} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)} onPressOut={() => this.setState({ openImage: false })}>
                     <Image source={{ uri: this.data.item.image }}
-                        style={{ width: viewportWidth, height: viewportHeight - 30 }}
+                        style={{ width: viewportWidth - 10, height: viewportHeight - 10, }}
                     />
-                </View>
+                </TouchableOpacity>
             </CardItem>
         );
     }
@@ -60,12 +61,12 @@ export default class PostCard extends PureComponent {
                 <CardItem style={{ backgroundColor: this.subcolor }}>
                     <View style={{ flexDirection: 'column', flex: 2, alignItems: 'flex-start' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <TouchableOpacity onPress={() => this.changeOtherProfile(this.state.author.email)} >
+                            <TouchableOpacity activeOpacity={0.9} style={{ marginRight: '1%' }} onPress={() => this.changeOtherProfile(this.state.author.email)} >
                                 <Thumbnail small source={{ uri: this.state.author.image }} />
                             </TouchableOpacity>
-                            <View style={{ flexDirection: 'column', justifyContent: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
+                            <View style={{ flexDirection: 'column', justifyContent: 'center', margin: 1 }}>
                                 <Text style={{ alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color }}>{this.data.item.title.toUpperCase()}</Text>
-                                <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
                                     <Text style={styles.datetime}>
                                         {' ' + this.data.item.datetime}
@@ -86,10 +87,10 @@ export default class PostCard extends PureComponent {
                 </Body>
                 <CardItem>
                     <Left>
-                        <Button transparent onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
+                        <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
                             <Icon type="MaterialCommunityIcons" name="comment-text-multiple" style={styles.comments} />
-                            <Text note style={styles.comments}> {this.data.item.comments.length == 0 ? 'Adicionar comentário' : this.data.item.comments.length + ' comentário(s)'}</Text>
-                        </Button>
+                            <Text style={styles.comments}> {this.data.item.comments.length == 0 ? 'Adicionar comentário' : this.data.item.comments.length + ' comentário(s)'}</Text>
+                        </TouchableOpacity>
                     </Left>
                     {this.state.author.email === this.state.email &&
                         <Right>
@@ -147,30 +148,16 @@ export default class PostCard extends PureComponent {
                                 <Thumbnail small source={{ uri: item.commenter.image }} />
                             </TouchableOpacity>
                             <View style={{ flex: 1, flexWrap: 'wrap', }}>
-                                <TouchableOpacity activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
+                                <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.commenter.email)}>
                                     <Text style={{ fontFamily: 'ProductSans', color: 'black' }}>{'@' + item.commenter.username + ' '}</Text>
+                                    <Icon style={{fontSize: 9, color: 'gray'}} type="MaterialIcons" name="access-time" />
+                                    <Text style={{ fontFamily: 'ProductSans', fontSize: 9, color: 'gray', margin: 1 }}>{' ' + item.datetime}</Text>
                                 </TouchableOpacity>
                                 <Text style={{ fontFamily: 'ProductSans', color: 'gray' }}>{item.comment}</Text>
                             </View>
                         </ View>
-                        // <View style={styles.item}>
-                        // 	<ListItem
-                        // 		containerStyle={{ margin: 1 }}
-                        // 		title={'@' + item.commenter.username}
-                        // 		titleStyle={styles.userComment}
-                        // 		subtitle={
-                        // 			<View style={styles.subtitleView}>
-                        // 				<Text style={styles.comment}>{item.comment}</Text>
-                        // 			</View>
-                        // 		}
-                        // 		leftAvatar={{ source: { uri: item.commenter.image } }}
-                        // 	>
-                        // 	</ListItem>
-                        // </View>
                     );
                 }}
-                // onContentSizeChange={() => this.commentsFlatList.scrollToEnd({animated: true})}
-                // onLayout={() => this.commentsFlatList.scrollToEnd({animated: true})}             
                 ListHeaderComponent={this.renderCard()}
                 ListFooterComponent={this.renderFooter()}
             />
@@ -264,6 +251,29 @@ export default class PostCard extends PureComponent {
         this.setState({ modalVisibleStatus: visible });
     }
 
+    renderOpenImage() {
+        return (
+            <View>
+                <Modal
+                    animationIn='zoomInUp'
+                    animationInTiming={300}
+                    animationOut="zoomOutDown"
+                    animationOutTiming={300}
+                    backdropTransitionOutTiming={200}
+                    isVisible={this.state.openImage}
+                    style={{ flex: 1, marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
+                    onBackButtonPress={() => { this.setState({ openImage: false }) }} >
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Image source={{ uri: this.data.item.image }}
+                            style={{ width: viewportWidth, height: viewportHeight, resizeMode: 'contain' }}
+                        />
+                    </View>
+                </Modal>
+            </View>
+        );
+    }
+
+
     renderText() {
         return (
             <CardItem>
@@ -290,6 +300,7 @@ export default class PostCard extends PureComponent {
                     <TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
                         <View>
                             {this.renderCard()}
+                            {this.renderOpenImage()}
                             <Modal
                                 animationIn='slideInUp'
                                 animationInTiming={1000}
@@ -298,6 +309,7 @@ export default class PostCard extends PureComponent {
                                 backdropTransitionOutTiming={1000}
                                 isVisible={this.state.modalVisibleStatus}
                                 avoidKeyboard={true}
+                                scrollOffset={1}
                                 style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
                                 onBackButtonPress={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>

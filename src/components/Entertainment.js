@@ -5,7 +5,7 @@ import PostList from '../components/PostList';
 export default class Entertainment extends Component {
   render() {
     return (
-        <PostList pageTitle='Entretenimento' type='ENTERTAINMENT' color='rgba(0, 182, 217, 1)' subcolor='#e6fbff'></PostList>
+        <PostList pageTitle='Entretenimento' type='ENTERTAINMENT' color='#00B6D9' subcolor='#e6fbff'></PostList>
     );
   }
 }

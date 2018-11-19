@@ -82,7 +82,7 @@ export default class PostList extends PureComponent {
   };
 
   async showModalFunction(visible) {
-    this.setState({ modalVisibleStatus: visible, sendPost: !visible });
+    this.setState({ modalVisibleStatus: visible, sendPost: !visible, sendImage: null, image: null  });
   }
 
 
@@ -118,12 +118,11 @@ export default class PostList extends PureComponent {
         if (res.status == 200) {
           this.handleRefresh();
           this.showModalFunction(!this.state.modalVisibleStatus);
-          this.setState({ sendPost: false });
+          this.setState({ sendPost: false});
         }
 
         else {
           alert("Falha ao Enviar!");
-          console.log(res.status);
         }
 
       });
@@ -179,10 +178,10 @@ export default class PostList extends PureComponent {
     return (
       <Modal
         animationIn='slideInUp'
-        animationInTiming={1000}
+        animationInTiming={800}
         animationOut="slideOutDown"
-        animationOutTiming={1000}
-        backdropTransitionOutTiming={1000}
+        animationOutTiming={800}
+        backdropTransitionOutTiming={800}
         isVisible={this.state.modalVisibleStatus}
         avoidKeyboard={true}
         style={{flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0}}
@@ -191,8 +190,8 @@ export default class PostList extends PureComponent {
           <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', elevation: 2 }}>
             <Text style={{ padding: 10, fontFamily: 'ProductSans Bold', textAlign: 'center', fontSize: 24, color: this.state.color }}>Adicionar  {this.state.pageTitle}</Text>
           </View>
-          <View style={{ alignItems: 'center', paddingTop: 40, paddingLeft: -1 }}>
-            <Text style={{ fontFamily: 'ProductSans' ,color: this.state.color }}>Título:</Text>
+          <View style={{ alignItems: 'center', paddingTop: 40,}}>
+            <Text style={{ fontFamily: 'ProductSans' ,color: this.state.color, alignSelf: 'flex-start', marginLeft: '6%', fontSize: 17 }}>Título</Text>
             <TextInput
               keyboardType="default"
               autoCorrect={false}
@@ -204,7 +203,7 @@ export default class PostList extends PureComponent {
               returnKeyType="next"
               blurOnSubmit={true}
             />
-            <Text style={{ fontFamily: 'ProductSans', color: this.state.color }}>Descrição:</Text>
+            <Text style={{ fontFamily: 'ProductSans', color: this.state.color, alignSelf: 'flex-start', marginLeft: '6%', fontSize: 17 }}>Descrição</Text>
             <TextInput
               keyboardType="default"
               autoCorrect={false}
@@ -238,7 +237,7 @@ export default class PostList extends PureComponent {
               : null}
 
             <View style={{ flexDirection: 'row', alignSelf: 'flex-start', paddingLeft: 29 }}>
-              <Text style={{ color: this.state.color, textAlignVertical: 'center' }}>Adicionar imagem:</Text>
+              <Text style={{ fontFamily: 'PorductSans',color: this.state.color, textAlignVertical: 'center' }}>Adicionar imagem:</Text>
               <Button transparent button onPress={() => { this.galleryImage() }} >
                 <Icon type="MaterialCommunityIcons" name="image-plus" style={{ fontSize: 25, color: this.state.color }} />
               </Button>
@@ -349,9 +348,7 @@ export default class PostList extends PureComponent {
             ListEmptyComponent={this.renderEmptyData}
             ListFooterComponent={this.renderLoader}
           />}
-        {this.renderModal()}
         <FloatingAction
-          ref={(ref) => { this.action = ref; }}
           color={this.state.color}
           floatingIcon={<Icon type="MaterialCommunityIcons" style={{ color: '#fff' }} name="plus" />}
           position="right"
@@ -361,6 +358,7 @@ export default class PostList extends PureComponent {
           overlayColor="#F2F2F2"
           distanceToEdge={16}
         />
+        {this.renderModal()}
       </View>
     );
   }
@@ -387,13 +385,14 @@ const styles = StyleSheet.create({
     elevation: 5,
 
   },
+
   textInput: {
     marginLeft: 8,
     marginBottom: 10,
     height: 40,
     borderColor: '#e0e0e0',
     borderWidth: 1,
-    borderRadius: 45,
+    borderRadius: 10,
     width: "90%",
     fontFamily: 'ProductSans',
 
@@ -404,14 +403,16 @@ const styles = StyleSheet.create({
     height: 120,
     borderColor: '#e0e0e0',
     borderWidth: 1,
-    borderRadius: 30,
+    borderRadius: 10,
     width: "90%",
     fontFamily: 'ProductSans',
 
   },
   imagePreview: {
-    width: 120,
-    height: 120,
+    width: (viewportWidth*0.4),
+    height: (viewportWidth*0.4),
+    borderRadius: 5,
+    resizeMode: 'contain',
     alignItems: 'center',
     justifyContent: 'center',
     alignContent: 'flex-start',
