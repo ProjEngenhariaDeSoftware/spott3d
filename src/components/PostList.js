@@ -66,10 +66,12 @@ export default class PostList extends PureComponent {
       const photoURL = await AsyncStorage.getItem('photoURL');
       const displayName = await AsyncStorage.getItem('displayName');
       const mail = await AsyncStorage.getItem('email');
+      const user = await AsyncStorage.getItem('username');
+	
 
       await this.refreshingData();
 
-      this.setState({ username: displayName, userPhoto: photoURL, email: mail, isLoading: false, });
+      this.setState({ username:user, userPhoto: photoURL, email: mail, isLoading: false, });
     } catch (error) { }
   }
 
