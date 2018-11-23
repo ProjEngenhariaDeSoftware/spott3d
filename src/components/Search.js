@@ -7,13 +7,12 @@ import {
   Text,
 } from 'react-native';
 
-import Modal from 'react-native-modal';
 import { SearchBar, Icon } from 'react-native-elements'
 import { FloatingAction } from 'react-native-floating-action';
 import { View, Spinner, Thumbnail } from 'native-base'
 
 import PostCard from '../components/PostCard';
-import OtherProfile from '../components/OhterProfile';
+import { Actions } from 'react-native-router-flux';
 
 const actions = [{
   text: 'Pesquisar pessoas',
@@ -32,7 +31,6 @@ const actions = [{
 export default class Search extends Component {
   constructor(props) {
     super();
-    this._listViewOffset = 0
     this.state = {
       dataSource: [],
       dataFilter: [],
@@ -42,13 +40,11 @@ export default class Search extends Component {
       email: '',
       otherProfile: '',
       searching: 'Pesquisar postagens',
-      openProfile: false,
       showLoader: false,
       refreshing: false,
       search: false,
       filterUser: false,
       changeEmpty: false,
-      isActionButtonVisible: true,
     }
   };
 
@@ -149,27 +145,11 @@ export default class Search extends Component {
 
   }
 
-  showOtherProfile(visible) {
-    this.setState({ openProfile: visible });
+  changeOtherProfile(email) {
+    Actions.push('otherprofile', {email: email});
   }
 
-  changeOtherProfile(profileEmail) {
-    this.setState({ otherProfile: profileEmail, openProfile: true })
-  }
-
-  _onScroll = (event) => {
-    const currentOffset = event.nativeEvent.contentOffset.y
-    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
-      ? 'down'
-      : 'up'
-    const isActionButtonVisible = direction === 'up'
-    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
-      this.setState({ isActionButtonVisible: isActionButtonVisible })
-    }
-    this._listViewOffset = currentOffset
-  }
-
-  selectColorType(type) {
+  selectSubColorType(type) {
     switch (type) {
       case 'NEWS':
         return '#dee7ed';
@@ -182,6 +162,18 @@ export default class Search extends Component {
     }
   }
 
+  selectColorType(type) {
+    switch (type) {
+      case 'NEWS':
+        return '#738A98';
+      case 'NOTICE':
+        return '#738A98';
+      case 'EVENT_ACADEMIC':
+        return '#5AD0BA';
+      case 'ENTERTAINMENT':
+        return '#00B6D9';
+    }
+  }
 
   render() {
     return (
@@ -189,12 +181,11 @@ export default class Search extends Component {
         <FlatList
           data={this.state.dataFilter}
           extraData={this.state.search}
-          onScroll={this._onScroll}
           renderItem={(item) => {
             return (
               this.state.filterUser ?
                 <TouchableOpacity style={styles.item} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.item.email)}>
-                  <View style={{ marginRight: '3%', marginBottom: '3%' }} >
+                  <View style={{ marginRight: '3%', marginLeft: '3%', marginBottom: '3%' }} >
                     <Thumbnail small source={{ uri: item.item.image }} />
                   </View>
                   <View style={{ flex: 1, flexWrap: 'wrap', }}>
@@ -205,8 +196,8 @@ export default class Search extends Component {
                 :
                 <PostCard
                   data={item}
-                  subcolor={this.selectColorType(item.item.type)}
-                  color={'#29434e'}
+                  subcolor={this.selectSubColorType(item.item.type)}
+                  color={this.selectColorType(item.item.type)}
                   username={this.state.username}
                   userphoto={this.state.userPhoto}
                   email={this.state.email}
@@ -222,20 +213,6 @@ export default class Search extends Component {
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderLoader}
         />
-        <Modal
-          animationIn='slideInUp'
-          animationInTiming={1000}
-          animationOut="slideOutDown"
-          animationOutTiming={1000}
-          backdropTransitionOutTiming={1000}
-          isVisible={this.state.openProfile}
-          avoidKeyboard={true}
-          style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
-          onBackButtonPress={() => { this.showOtherProfile(!this.state.openProfile) }} >
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-            <OtherProfile email={this.state.otherProfile} />
-          </View>
-        </Modal>
         <FloatingAction
           actions={actions}
           color={'#29434e'}
@@ -273,6 +250,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     backgroundColor: 'white',
+    paddingTop: 8,
     margin: 2,
   },
   welcome: {

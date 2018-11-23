@@ -9,8 +9,9 @@ import Home from './src/components/Home';
 import Navbar from './src/components/Navbar';
 import Register from './src/components/Register';
 import AddSpotted from './src/components/AddSpotted';
+import AddPost from './src/components/AddPost';
 import AdmView from './src/components/AdmView';
-
+import OtherProfile from './src/components/OtherProfile';
 
 export default class Spotted extends Component {
   render() {
@@ -51,6 +52,18 @@ export default class Spotted extends Component {
               key="adm"
               hideNavBar={true}
               component={AdmView}
+            />
+            <Scene
+              key="addpost"
+              title="Adicionar nova postagem"
+              component={AddPost}
+              hideNavBar={true}
+            />
+            <Scene
+            key="otherprofile"
+            title="Perfil"
+            component={OtherProfile}
+            hideNavBar={true}
             />
           </Scene>
         </Router>
