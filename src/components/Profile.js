@@ -64,6 +64,7 @@ export default class Profile extends Component {
       userphoto: '',
       username: '',
       email: '',
+      newUserName: '',
       validationColor: 'gray',
       notification: false,
       notificationSize: 0,
@@ -84,10 +85,11 @@ export default class Profile extends Component {
   async componentDidMount() {
     try {
 
-      const photoURL = await AsyncStorage.getItem('photoURL');
-      const email = await AsyncStorage.getItem('email');
-      const user = await AsyncStorage.getItem('username');
-
+      const [photoURL, email, user] = await Promise.all([
+        AsyncStorage.getItem('photoURL'),
+        AsyncStorage.getItem('email'),
+        AsyncStorage.getItem('username')
+      ]);
 
       await fetch('https://api-spotted.herokuapp.com/api/notification/' + email)
         .then(res => res.json())
@@ -308,8 +310,9 @@ export default class Profile extends Component {
           username: newUserName,
           email: email
         })
-      }).then(res => {
+      }).then(async res => {
         if (res.status == 200) {
+          await AsyncStorage.setItem("username", newUserName);
           this.setState({ username: newUserName, validationColor: 'green', isValid: true, isInvalid: false })
         }
         else {
@@ -327,7 +330,7 @@ export default class Profile extends Component {
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         {this.state.isLoading ? <ProgressBar color={this.state.color} /> :
           <View style={{ flex: 1 }}>
-            <View style={{ flex: 1, backgroundColor: this.state.color }}>
+            <View style={{ flex: 1.1, backgroundColor: this.state.color }}>
               <View style={styles.topView}>
                 {this.iconNotification()}
               </View >
@@ -399,10 +402,13 @@ export default class Profile extends Component {
                 keyboardType="default"
                 autoCorrect={false}
                 autoCapitalize="none"
+                textContentType='username'
+                maxLength={25}
                 style={{ padding: 1, marginLeft: 1, flex: 1 }}
                 onChangeText={(text) => { this.setState({ newUserName: text }) }}
                 placeholder="Novo nome de usuário"
                 returnKeyType="send"
+                onSubmitEditing={() => this.sendNewUserName()}
               />
               <Icon type="material-community" size={25} color={this.state.validationColor} name="account-check" />
             </Item>
@@ -461,12 +467,9 @@ const styles = StyleSheet.create({
     width: viewportWidth,
   },
   topView: {
-    flex: 0,
     width: viewportWidth,
-    padding: 20,
-    marginRight: 10,
+    padding: '3%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   photoRow: {
     flex: 0.4,
@@ -474,13 +477,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     width: viewportWidth,
-    height: 180,
+    height: (viewportWidth * 0.45),
   },
 
   profilepicWrap: {
-    width: (viewportWidth * 0.5),
-    height: (viewportWidth * 0.5),
-    borderRadius: (viewportWidth * 0.5) / 2,
+    width: (viewportWidth * 0.45),
+    height: (viewportWidth * 0.45),
+    borderRadius: (viewportWidth * 0.45) / 2,
     borderColor: '#fff',
     borderWidth: 8,
   },

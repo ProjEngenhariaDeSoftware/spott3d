@@ -5,11 +5,10 @@ import {
     Image,
     Dimensions,
     Text,
-    TouchableOpacity,
 } from 'react-native';
 
 import ProgressBar from './ProgressBar'
-const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+const { width: viewportWidth } = Dimensions.get('window');
 
 export default class OtherProfile extends PureComponent {
 
@@ -30,7 +29,7 @@ export default class OtherProfile extends PureComponent {
             await fetch('https://api-spotted.herokuapp.com/api/user/email/' + this.state.email)
                 .then(res => res.json())
                 .then(data => {
-                    this.setState({ username: data.username, userphoto: data.image, isLoading: false});
+                    this.setState({ username: data.username, userphoto: data.image, isLoading: false });
                 });
 
         } catch (error) { }
@@ -42,7 +41,7 @@ export default class OtherProfile extends PureComponent {
             <View style={{ flex: 1, backgroundColor: '#fff' }}>
                 {this.state.isLoading ? <ProgressBar color={this.state.color} /> :
                     <View style={{ flex: 1 }}>
-                        <View style={{ flex: 1, backgroundColor: this.state.color }}>
+                        <View style={{ flex: 1.1, backgroundColor: this.state.color }}>
                             <View style={styles.topView}>
                             </View >
                             <View style={styles.photoRow}>
@@ -67,12 +66,9 @@ export default class OtherProfile extends PureComponent {
 
 const styles = StyleSheet.create({
     topView: {
-        flex: 0,
         width: viewportWidth,
-        padding: 20,
-        marginRight: 10,
+        padding: '3%',
         flexDirection: 'row',
-        justifyContent: 'space-between',
     },
     photoRow: {
         flex: 0.4,
@@ -80,13 +76,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-start',
         width: viewportWidth,
-        height: 180,
+        height: (viewportWidth * 0.45),
     },
 
     profilepicWrap: {
-        width: 180,
-        height: 180,
-        borderRadius: 180 / 2,
+        width: (viewportWidth * 0.45),
+        height: (viewportWidth * 0.45),
+        borderRadius: (viewportWidth * 0.45) / 2,
         borderColor: '#fff',
         borderWidth: 8,
     },
