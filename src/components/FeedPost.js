@@ -58,14 +58,7 @@ export default class FeedPost extends PureComponent {
   hideLoader = (e) => {
     e.distanceFromEnd === 0 ? this.setState({ showLoader: true }) : this.setState({ showLoader: false });
   };
-
-  // _onRefresh = () => {
-  //   this.setState({refreshing: true});
-  //   fetchData().then(() => {
-  //     this.setState({refreshing: false});
-  //   });
-  // }
-
+  
   _handleRefresh = () => {
     this.setState({ refreshing: true });
     this.refreshingData().then(() => {

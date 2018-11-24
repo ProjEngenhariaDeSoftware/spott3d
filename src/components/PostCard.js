@@ -14,7 +14,6 @@ import moment from 'moment';
 import ImageScale from 'react-native-scalable-image';
 import 'moment/locale/pt-br'
 import Dialog, { ScaleAnimation, DialogContent } from 'react-native-popup-dialog';
-//import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
@@ -34,7 +33,6 @@ export default class PostCard extends PureComponent {
             otherProfile: '',
             email: props.email,
             newComment: "",
-            infoEvent: false,
             modalVisibleStatus: false,
             showModalOptions: false,
             openProfile: false,
@@ -42,8 +40,6 @@ export default class PostCard extends PureComponent {
             openImage: false,
             send: false,
             heightInput: 40,
-            heightImage: 100,
-            widthImage: 100,
             tagColor: this.color,
         }
     }
@@ -70,10 +66,10 @@ export default class PostCard extends PureComponent {
         newDate.locale('pt-br');
         return newDate.calendar().toLowerCase();
     }
+
     returnDateEventString(start, end) {
         let startDate = moment(start, "DD-MM-YYYY HH:mm:ss");
         let endDate = moment(end, "DD-MM-YYYY HH:mm:ss");
-        startDate.isBetween()
         return ' De ' + startDate.format('DD[/]MM[/]YY ') + 'até ' + endDate.format('DD[/]MM[/]YY');
     }
 
@@ -285,13 +281,12 @@ export default class PostCard extends PureComponent {
                     }
                 })
             }).then(res => {
-                const date = new Date();
-                const dateTime = this.returnTimeString(moment(date).format('DD-MM-YYYY HH:mm:ss'));
+                let time = new Date();
                 this.data.item.comments.push({
                     id: res.id,
                     userMentioned: usersMentioned,
                     comment: newComment,
-                    datetime: dateTime,
+                    datetime: time,
                     commenter: {
                         email: email,
                         username: username,
@@ -334,7 +329,8 @@ export default class PostCard extends PureComponent {
                         margin: 4,
                         width: '75%',
                         fontFamily: 'ProductSans',
-                        textAlign: 'justify'
+                        textAlign: 'justify',
+                        alignItems: 'center'
 
                     }}
                     value={this.state.newComment}

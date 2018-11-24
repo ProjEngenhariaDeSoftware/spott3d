@@ -8,16 +8,22 @@ import {
     AsyncStorage,
     Text,
     Alert,
+    View,
     TouchableOpacity
 } from 'react-native';
-import { Button, Icon, View, Spinner } from 'native-base'
+import { Icon, Spinner, Thumbnail } from 'native-base'
 import ImagePicker from 'react-native-image-picker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
+import 'moment/locale/pt-br'
 import { Actions } from 'react-native-router-flux';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const options = {
+    title: null,
+    cancelButtonTitle: 'Cancelar',
+    chooseFromLibraryButtonTitle: 'Escolha uma imagem da sua galeria',
+    takePhotoButtonTitle: 'Tire uma foto',
     mediaType: 'photo',
     maxWidth: 800,
     quality: 1
@@ -40,8 +46,8 @@ export default class AddPost extends Component {
             start: false,
             end: false,
             description: '',
-            startDateExibition: '',
-            endDateExibition: '',
+            startDateExibition: 'Ínicio do evento',
+            endDateExibition: 'Fim do evento',
             title: '',
             flag: null,
 
@@ -89,7 +95,7 @@ export default class AddPost extends Component {
                 }
 
                 else {
-                    const showAlert = () => {Alert.alert('', 'Não foi possível adicionar a nova postagem. Por favor, verifique sua conexão com a internet e tente novamente.')};
+                    const showAlert = () => { Alert.alert('', 'Não foi possível adicionar a nova postagem. Por favor, verifique sua conexão com a internet e tente novamente.') };
                     showAlert();
                     this.setState({ sendPost: false });
                 }
@@ -99,29 +105,29 @@ export default class AddPost extends Component {
         }
     };
 
-    cameraImage = () => {
-        ImagePicker.launchCamera(options, (response) => {
-            if (response.error) {
-                alert('Algo de errado aconteceu');
-            } else if (!response.didCancel) {
-                const source = { uri: response.uri };
-                const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
-                this.setState({ image: source, sendImage: sourceData.uri });
-            }
-        });
-    }
+    // cameraImage = () => {
+    //     ImagePicker.launchCamera(options, (response) => {
+    //         if (response.error) {
+    //             alert('Algo de errado aconteceu');
+    //         } else if (!response.didCancel) {
+    //             const source = { uri: response.uri };
+    //             const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
+    //             this.setState({ image: source, sendImage: sourceData.uri });
+    //         }
+    //     });
+    // }
 
-    galleryImage = () => {
-        ImagePicker.launchImageLibrary(options, (response) => {
-            if (response.error) {
-                alert('Algo de errado aconteceu');
-            } else if (!response.didCancel) {
-                const source = { uri: response.uri };
-                const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
-                this.setState({ image: source, sendImage: sourceData.uri });
-            }
-        });
-    }
+    // galleryImage = () => {
+    //     ImagePicker.launchImageLibrary(options, (response) => {
+    //         if (response.error) {
+    //             alert('Algo de errado aconteceu');
+    //         } else if (!response.didCancel) {
+    //             const source = { uri: response.uri };
+    //             const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
+    //             this.setState({ image: source, sendImage: sourceData.uri });
+    //         }
+    //     });
+    // }
 
     _showDateTimePicker = (define) => {
         define === 'start' ? this.setState({ isDateTimePickerVisible: true, start: true, end: false }) : this.setState({ isDateTimePickerVisible: true, start: false, end: true });
@@ -130,53 +136,64 @@ export default class AddPost extends Component {
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false, start: false, end: false });
 
     _handleDatePicked = (datetime) => {
-        const date = moment(datetime).format('DD-MM-YYYY HH:mm:ss')
+        const date = moment(datetime).format('DD-MM-YYYY HH:mm:ss');
+        const dateExibition = moment(datetime).format('DD [de] MMM [de] YYYY [ás] HH:mm');
         if (this.state.start) {
-            this.setState({ startDate: date })
+            this.setState({ startDate: date, startDateExibition: dateExibition })
         } else if (this.state.end) {
-            this.setState({ endDate: date })
+            this.setState({ endDate: date, endDateExibition: dateExibition })
 
         }
         this._hideDateTimePicker();
     };
 
+    selectPhoto = () => {
+        ImagePicker.showImagePicker(options, (response) => {
+            if (response.error) {
+                alert('Algo de errado aconteceu');
+            } else if (!response.didCancel) {
+                const source = { uri: response.uri };
+                const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
+                this.setState({ image: source, sendImage: sourceData.uri });
+            }
+        });
+    }
+
+    // selectDateString(date) {
+    //     if (date !== 'Ínicio do evento' && date !== 'Fim do Evento') {
+    //         let newDate = moment(date, "DD-MM-YYYY HH:mm:ss");
+    //         console.log(newDate);
+    //         return newDate.format('DD [de] MMM [de] YYYY [ás] HH:mm');
+    //     }
+    // }
+
     render() {
         return (
-            <View style={{ flex: 1, justifyContent: 'flex-start', backgroundColor: '#fff' }}>
-                <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: this.state.color, elevation: 2 }}>
-                    <Text style={{ padding: 10, fontFamily: 'ProductSans', textAlign: 'center', fontSize: 24, color: '#fff' }}>Adicionar  {this.state.pageTitle}</Text>
+            <View style={styles.container}>
+                <View style={[styles.header, { backgroundColor: this.state.color }]}>
+                    <Text style={styles.title}>Adicionar  {this.state.pageTitle}</Text>
                 </View>
-                <View style={{ flex: 1, alignItems: 'center', paddingTop: 40, }}>
-                    <Text style={{ fontFamily: 'ProductSans', color: this.state.color, alignSelf: 'flex-start', marginLeft: '6%', fontSize: 17 }}>Título</Text>
-                    <TextInput
-                        keyboardType="default"
-                        autoCorrect={false}
-                        autoCapitalize="none"
-                        style={{
-                            margin: 5,
-                            color: 'gray',
-                            backgroundColor: 'white',
-                            height: 40,
-                            elevation: 3,
-                            borderColor: this.state.color,
-                            borderWidth: 1,
-                            padding: 10,
-                            borderRadius: 10,
-                            width: "90%",
-                            fontFamily: 'ProductSans',
-                        }}
-                        onChangeText={(text) => { this.setState({ title: text }) }}
-                        placeholder="Digite o Título..."
-                        returnKeyType="next"
-                        blurOnSubmit={true}
-                    />
+                <View style={styles.subContainer}>
+                    <View style={styles.row}>
+                        <Text style={[styles.label, { color: this.state.color }]}>Título</Text>
+                        <TextInput
+                            keyboardType="default"
+                            autoCorrect={false}
+                            autoCapitalize="none"
+                            style={styles.input}
+                            onChangeText={(text) => { this.setState({ title: text }) }}
+                            placeholder="Digite o título..."
+                            returnKeyType="next"
+                            value={this.state.title}
+                        />
+                    </View>
                     {this.state.type === 'NOTICE' &&
-                        <View style={{ width: viewportWidth, alignItems: 'center' }}>
-                            <Text style={{ fontFamily: 'ProductSans', marginTop: 8, marginBottom: 6, color: this.state.color, alignSelf: 'flex-start', marginLeft: '6%', fontSize: 17 }}>Tag</Text>
-                            <View style={{ width: '90%', backgroundColor: 'white', color: this.state.color, borderRadius: 10, borderWidth: 1, elevation: 3, borderColor: this.state.color }}>
+                        <View style={styles.row}>
+                            <Text style={[styles.label, { color: this.state.color }]}>Tag</Text>
+                            <View style={styles.picker}>
                                 <Picker
                                     selectedValue={this.state.flag}
-                                    style={{ flex: 1, padding: 19, color: 'gray' }}
+                                    style={{ height: 40, width: 330, color: 'gray' }}
                                     onValueChange={(itemValue, itemIndex) => this.setState({ flag: itemValue })}>
                                     <Picker.Item label="Selecione" color={this.state.color} value={null} />
                                     <Picker.Item label="Outros" color={this.state.color} value="outros" />
@@ -188,107 +205,196 @@ export default class AddPost extends Component {
                             </View>
                         </View>
                     }
-                    <Text style={{ fontFamily: 'ProductSans', color: this.state.color, alignSelf: 'flex-start', marginTop: '3%', marginLeft: '6%', fontSize: 17 }}>Descrição</Text>
-                    <TextInput
-                        keyboardType="default"
-                        autoCorrect={false}
-                        autoCapitalize="none"
-                        multiline={true}
-                        numberOfLines={4}
-                        style={{
-                            color: 'gray',
-                            fontFamily: 'ProductSans',
-                            backgroundColor: 'white',
-                            borderColor: this.state.color,
-                            borderWidth: 1,
-                            borderRadius: 10,
-                            elevation: 3,
-                            textAlignVertical: 'top',
-                            padding: 10,
-                            margin: 5,
-                            width: '90%',
-                            height: 120,
-                        }}
-                        onChangeText={(text) => { this.setState({ description: text }) }}
-                        placeholder="Digite a Descrição..."
-                        returnKeyType="default"
-                    />
-                    {this.state.type === 'EVENT_ACADEMIC' ?
-                        <View style={{ alignSelf: 'flex-start', paddingLeft: 10 }}>
+                    <View style={styles.row}>
+                        <Text style={[styles.label, { color: this.state.color }]}>Descrição</Text>
+                        <TextInput
+                            keyboardType="default"
+                            autoCorrect={false}
+                            underlineColorAndroid="transparent"
+                            autoCapitalize="none"
+                            multiline={true}
+                            numberOfLines={4}
+                            style={styles.textArea}
+                            onChangeText={(text) => { this.setState({ description: text }) }}
+                            placeholder="Digite a descrição..."
+                            value={this.state.text}
+                            returnKeyType="default"
+                        />
+                    </View>
+                    {this.state.type === 'EVENT_ACADEMIC' &&
+                        <View style={styles.row}>
                             <DateTimePicker
                                 isVisible={this.state.isDateTimePickerVisible}
                                 mode='datetime'
                                 locale='pt_BR'
+                                minimumDate={new Date()}
                                 onConfirm={this._handleDatePicked}
                                 onCancel={this._hideDateTimePicker}
                             />
-                            <Button transparent button onPress={() => { this._showDateTimePicker('start') }} >
-                                <Icon type="MaterialIcons" name="event-available" style={{ fontSize: 25, color: this.state.color }} />
-                                <Text style={{ fontFamily: 'ProductSans', color: this.state.color }}>Ínicio do evento: {this.state.startDate}</Text>
-                            </Button>
-
-                            <Button transparent button onPress={() => { this._showDateTimePicker('end') }} >
-                                <Icon type="MaterialIcons" name="event-busy" style={{ fontSize: 25, color: this.state.color }} />
-                                <Text style={{ fontFamily: 'ProductSans', color: this.state.color }}>Fim do evento: {this.state.endDate}</Text>
-                            </Button>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.dateButton} onPress={() => { this._showDateTimePicker('start') }} >
+                                <Text style={styles.selectDate}>{this.state.startDateExibition}</Text>
+                                <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                                    <Icon type="MaterialCommunityIcons" name="calendar-clock" style={{ fontSize: 25, color: this.state.color }} />
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity activeOpacity={0.8} style={styles.dateButton} onPress={() => { this._showDateTimePicker('end') }} >
+                                <Text style={styles.selectDate}>{this.state.endDateExibition}</Text>
+                                <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                                    <Icon type="MaterialCommunityIcons" name="calendar-clock" style={{ fontSize: 25, color: this.state.color }} />
+                                </View>
+                            </TouchableOpacity>
                         </View>
-                        : null}
-
-                    <View style={{ flexDirection: 'row', alignSelf: 'flex-start', paddingLeft: 29 }}>
-                        <Text style={{ fontFamily: 'PorductSans', color: this.state.color, textAlignVertical: 'center' }}>Adicionar imagem:</Text>
-                        <Button transparent button onPress={() => { this.galleryImage() }} >
-                            <Icon type="MaterialCommunityIcons" name="image-plus" style={{ fontSize: 25, color: this.state.color }} />
-                        </Button>
-                        <Button transparent button onPress={() => { this.cameraImage() }} >
-                            <Icon type="MaterialCommunityIcons" name="camera" style={{ fontSize: 25, color: this.state.color }} />
-                        </Button>
-                    </View>
-                    <View style={{ justifyContent: 'center' }}>
+                    }
+                    <View style={styles.imageArea}>
                         <View style={styles.badgeIconView}>
                             {(this.state.image !== null) ? <Text style={styles.badge} onPress={() => { this.removeImage() }}>X</Text> : <View style={styles.imagePreview} />}
-                            <Image style={styles.imagePreview} source={this.state.image !== null ? this.state.image : null} />
+                            <Thumbnail square large style={{borderRadius: 15}} source={this.state.image != null ? this.state.image : null} />
                         </View>
                     </View>
-                    {this.state.sendPost ? <Spinner style={{position: 'absolute', bottom: 8,}} color={this.state.color} /> : <TouchableOpacity
-                        style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            color: 'white',
-                            fontSize: 20,
-                            fontFamily: 'ProductSans',
-                            backgroundColor: this.state.color,
-                            borderColor: 'white',
-                            borderWidth: 1.5,
-                            borderRadius: 30,
-                            elevation: 3,
-                            width: 160,
-                            height: 40,
-                            margin: 3,
-                            position: 'absolute',
-                            bottom: 8,
-                        }}
-                        onPress={this.sendPost}
-                        activeOpacity={0.8}>
-                        <Text style={styles.text}>
-                            adicionar
-                        </Text>
-                    </TouchableOpacity>
-                    }
                 </View>
+                {this.state.sendPost ? <Spinner style={{ alignSelf: 'center', position: 'absolute', bottom: 8, }} color={this.state.color} /> :
+                    <View style={{justifyContent: 'space-around', margin: 10, flexDirection: 'row', position: 'absolute', bottom: 0, width: viewportWidth }}>
+                        <TouchableOpacity
+                            style={[styles.submit, { backgroundColor: this.state.color }]}
+                            onPress={this.selectPhoto}
+                            activeOpacity={0.8}>
+                            <Text style={styles.text}>
+                                adicionar imagem
+                                    </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.submit, { backgroundColor: this.state.color }]}
+                            onPress={this.sendPost}
+                            activeOpacity={0.8}>
+                            <Text style={styles.text}>
+                                enviar
+                                </Text>
+                        </TouchableOpacity>
+                    </View>
+                }
             </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#e2ebef'
+    },
+    subContainer: {
+        flex: 1,
+        margin: 15,
+        alignItems: 'center'
+    },
+    header: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 2,
+        height: 50,
+
+    },
+    title: {
+        fontFamily: 'ProductSans',
+        fontSize: 24,
+        color: '#fff'
+    },
+    row: {
+        margin: 1,
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start'
+    },
+    imageArea: {
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        margin: 5
+    },
+    label: {
+        fontSize: 17,
+        fontFamily: 'ProductSans',
+        marginLeft: 5,
+        margin: 3
+    },
+    dateArea: {
+        width: 330,
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'space-between',
+        margin: 3
+
+    },
+    selectDate: {
+        fontFamily: 'ProductSans',
+        fontSize: 17,
+        color: 'gray',
+        marginVertical: 4
+    },
+    input: {
+        color: 'gray',
+        fontSize: 17,
+        fontFamily: 'ProductSans',
+        backgroundColor: 'white',
+        borderColor: '#e7e7e7',
+        borderWidth: 2,
+        borderRadius: 10,
+        elevation: 3,
+        padding: 10,
+        margin: 5,
+        width: 330,
+        height: 40,
+    },
+    textArea: {
+        color: 'gray',
+        fontSize: 17,
+        fontFamily: 'ProductSans',
+        backgroundColor: 'white',
+        borderColor: '#e7e7e7',
+        borderWidth: 2,
+        borderRadius: 10,
+        elevation: 3,
+        padding: 10,
+        margin: 5,
+        width: 330,
+        height: 120,
+        textAlignVertical: 'top'
+
+    },
+    dateButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderRadius: 15,
+        elevation: 3,
+        padding: 5,
+        margin: 6,
+        borderWidth: 2,
+        borderColor: '#e7e7e7',
+        backgroundColor: '#fff',
+        width: 330,
+        height: 40,
+    },
+    picker: {
+        height: 40,
+        width: 330,
+        borderRadius: 10,
+        backgroundColor: 'white',
+        color: 'gray',
+        fontSize: 17,
+        fontFamily: 'ProductSans',
+        elevation: 3,
+        borderColor: '#e7e7e7',
+        borderWidth: 2,
+        margin: 5,
+        justifyContent: 'center'
+    },
     imagePreview: {
-        width: (viewportWidth * 0.25),
-        height: (viewportWidth * 0.25),
-        borderRadius: 5,
-        resizeMode: 'contain',
+        width: 140,
+        height: 140,
+        borderRadius: 15,
         alignItems: 'center',
         justifyContent: 'center',
-        alignContent: 'flex-start',
+        margin: 2
     },
     badgeIconView: {
         position: 'relative',
@@ -313,6 +419,20 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 17,
         fontFamily: 'ProductSans',
+        margin: 3
+    },
+    submit: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'white',
+        fontSize: 20,
+        fontFamily: 'ProductSans',
+        borderColor: 'white',
+        borderWidth: 1.5,
+        borderRadius: 30,
+        elevation: 3,
+        width: 160,
+        height: 40,
         margin: 3
     },
 });
