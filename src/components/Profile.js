@@ -142,10 +142,14 @@ export default class Profile extends Component {
     this.setState({ modalVisibleStatus: visible, notificationVisibleStatus: false })
   }
 
-  async showPost(visible, itemId) {
+  async showPost(visible, itemId, itemType) {
 
     if (visible) {
-      await fetch('https://api-spotted.herokuapp.com/api/post/id/' + itemId)
+
+      var type = itemType == 'spotted' ? 'spotted' : 'post';
+
+    
+      await fetch('https://api-spotted.herokuapp.com/api/' + type + '/id/' + itemId)
         .then(res => res.json())
         .then(data => {
           this.setState({ postVisibleStatus: visible, postNotify: { item: data } });
@@ -232,6 +236,8 @@ export default class Profile extends Component {
           style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
           onBackButtonPress={() => { this.showPost(!this.state.postVisibleStatus) }} >
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: viewportWidth, height: viewportHeight, backgroundColor: '#fff' }}>
+        
+           
             <PostCard
               data={this.state.postNotify}
               subcolor={'#cfd8dc'}
@@ -250,7 +256,7 @@ export default class Profile extends Component {
             return (
 
               item.commenter !== this.state.email &&
-              <TouchableOpacity activeOpacity={0.9} onPress={() => this.showPost(!this.state.postVisibleStatus, item.publicationId)}>
+              <TouchableOpacity activeOpacity={0.9} onPress={() => this.showPost(!this.state.postVisibleStatus, item.publicationId, item.publicationType)}>
 
                 <ListItem
                   containerStyle={{ marginLeft: 0 }}
