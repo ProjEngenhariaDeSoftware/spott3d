@@ -6,11 +6,14 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
-  Picker
+  Picker,
+  Dimensions
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import ImagePicker from 'react-native-image-picker';
 import LZString from 'lz-string';
+
+const widthPage = Dimensions.get('window').width;
 
 const options = {
   title: 'Opções',
@@ -80,12 +83,15 @@ export default class AddSpotted extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={{flex: 1, margin: 15}}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Adicionar spotted</Text>
+          </View>
           <View style={styles.row}>
             <View>
               <Text style={styles.label}>Local em que foi visto(a)</Text>
               <TextInput
-                placeholder='BG, CAA, Praça de Alimentação...'
+                placeholder='BG, CAA, CIA, Praça de Alimentação...'
                 style={styles.input}
                 onChangeText={(location) => this.setState({ location })}
                 value={this.state.location}
@@ -161,7 +167,12 @@ export default class AddSpotted extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#dadada'
+    backgroundColor: '#e2ebef'
+  },
+  title: {
+    fontFamily: 'ProductSans',
+    fontSize: 22,
+    color: 'white'
   },
   imagePreview: {
     width: 140,
@@ -192,7 +203,7 @@ const styles = StyleSheet.create({
   },
   course: {
     height: 40,
-    width: 330,
+    width: widthPage - 20,
     borderRadius: 10,
     backgroundColor: 'white',
     color: 'gray',
@@ -205,6 +216,7 @@ const styles = StyleSheet.create({
   },
   input: {
     color: 'gray',
+    alignItems: 'center',
     fontSize: 17,
     fontFamily: 'ProductSans',
     backgroundColor: 'white',
@@ -214,7 +226,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     padding: 10,
     margin: 5,
-    width: 330,
+    width: widthPage - 20,
     height: 40,
   },
   textArea: {
@@ -228,7 +240,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     padding: 10,
     margin: 5,
-    width: 330,
+    width: widthPage - 20,
     height: 120,
   },
   submit: {
@@ -251,5 +263,13 @@ const styles = StyleSheet.create({
     margin: 150,
     borderRadius: 30,
     margin: 5
+  },
+  header: {
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    backgroundColor: '#EC5D73', 
+    width: widthPage, 
+    height: 50,
+    marginBottom: 15
   }
 });
