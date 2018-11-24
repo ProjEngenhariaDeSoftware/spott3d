@@ -14,6 +14,8 @@ import {
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base';
 import { ListItem } from 'react-native-elements';
 import Dialog, { DialogButton, SlideAnimation, ScaleAnimation, DialogContent } from 'react-native-popup-dialog';
+import moment from 'moment';
+import 'moment/locale/pt-br';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 const dimensions = Dimensions.get('window');
@@ -34,9 +36,7 @@ export default class SpottedCard extends Component {
 			sending: false,
 			edit: false,
 			openImage: false,
-			username: '',
-			delete: true,
-			viewRef: null
+			username: ''
 		}
 	}
 
@@ -44,6 +44,13 @@ export default class SpottedCard extends Component {
 		try {
 			const user = await AsyncStorage.getItem('username');
 			this.setState({ username: user });
+			this.data.item.comments.map(item => {
+				if (this.verifyComment(item)) {
+					item.delete = true;
+				} else {
+					item.delete = false;
+				}
+			});
 		} catch (error) { }
 	}
 
@@ -55,7 +62,7 @@ export default class SpottedCard extends Component {
 		return (
 			<Card style={{ marginBottom: 1, flex: 1 }}>
 				<CardItem style={{ backgroundColor: this.subcolor }}>
-					<Left style={{ flex: 2 }}>
+					<Left style={{ flex: 2, left: -10 }}>
 						<Body style={{ justifyContent: 'center', margin: 1 }}>
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
 								<Icon style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }} type="MaterialCommunityIcons" name="map-marker-radius" />
@@ -115,6 +122,7 @@ export default class SpottedCard extends Component {
 
 	renderComments(data) {
 		return (
+		<View style={{ flex: 1 }}>
 			<FlatList
 				data={data.item.comments.sort((a, b) => a.id - b.id)}
 				extraData={this.state}
@@ -131,11 +139,11 @@ export default class SpottedCard extends Component {
 											<Text style={styles.userComment}>{'@' + item.commenter.username + ' '}</Text>
 											<View style={{ alignItems: 'center', flexDirection: 'row' }}>
 												<Icon style={styles.timeComment} type="MaterialIcons" name="access-time" />
-												<Text style={styles.timeComment}>{' ' + item.datetime}</Text>
+												<Text style={styles.timeComment}>{' ' + item.datetime }</Text>
 											</View>
-											{this.verifyComment(item) && this.state.delete ?
+											{item.delete ?
 												<Right onPress={() => this.deleteComment(item)}>
-													<Icon onPress={() => this.deleteComment(item)} style={{ fontSize: 21, color: 'gray' }} type="MaterialCommunityIcons" name="delete-forever" />
+													<Icon onPress={() => this.deleteComment(item)} style={{ fontSize: 21, color: 'gray' }} type="MaterialCommunityIcons" name="comment-remove-outline" />
 												</Right>
 												: null}
 										</View>
@@ -152,8 +160,9 @@ export default class SpottedCard extends Component {
 				}}
 				contentContainerStyle={{ width: viewportWidth }}
 				ListHeaderComponent={this.renderCard()}
-				ListFooterComponent={this.renderFooter()}
 			/>
+			{this.renderFooter()}
+		</View>
 		);
 	}
 
@@ -167,17 +176,14 @@ export default class SpottedCard extends Component {
 
 	deleteComment(value) {
 		try {
-			this.setState({ delete: false });
 			this.data.item.comments.splice(this.data.item.comments.findIndex(item => item.id == value.id), 1);
-			this.renderComments(this.data);
+			this.componentDidMount();
 			fetch('https://api-spotted.herokuapp.com/api/comment/' + value.id, {
 				method: 'DELETE',
 				headers: {
 					Accept: 'application/json',
 					'Content-Type': 'application/json'
 				},
-			}).then(res => {				
-				this.setState({ delete: true });
 			});
 		} catch (error) { }
 	}
@@ -214,6 +220,7 @@ export default class SpottedCard extends Component {
 					let time = new Date();
 					this.data.item.comments.push({
 						id: a.id,
+						delete: false,
 						usersMentioned: userMentioned,
 						comment: this.state.newComment,
 						datetime: time.toLocaleTimeString(),
@@ -223,6 +230,7 @@ export default class SpottedCard extends Component {
 							image: userPhoto
 						}
 					});
+				}).then(a => {
 					this.renderComments(this.data);
 					this.setState({ newComment: '', sending: false });
 				});
@@ -253,8 +261,9 @@ export default class SpottedCard extends Component {
 
 	renderFooter() {
 		return (
-			<View style={{ flex: 1, alignItems: 'center' }}>
-				<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', margin: 2 }}>
+			<View style={{ alignItems: 'center' }}>
+			<View style={{ flex: 1, padding: 8, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center' }}>
+				<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
 					<TextInput
 						keyboardType="default"
 						autoCorrect={false}
@@ -277,12 +286,19 @@ export default class SpottedCard extends Component {
 					</TouchableOpacity>
 				</View>
 			</View>
+			</View>
 		);
 	}
 
 	showModalFunction(visible) {
 		this.setState({ modalVisibleStatus: visible });
 	}
+
+	returnTimeString(date) {
+    let newDate = moment(date, "DD-MM-YYYY HH:mm:ss");
+    newDate.locale('pt-br');
+    return newDate.fromNow().toLowerCase();
+  }
 
 	renderText() {
 		return (
@@ -385,8 +401,9 @@ const styles = StyleSheet.create({
 		borderColor: '#e0e0e0',
 		borderWidth: 1,
 		borderRadius: 10,
-		width: "80%",
-		fontFamily: 'ProductSans'
+		width: '80%',
+		fontFamily: 'ProductSans',
+		backgroundColor: 'white'
 	},
 	inputText: {
 		fontFamily: 'ProductSans',
