@@ -18,6 +18,7 @@ import Modal from 'react-native-modal';
 import { Actions } from 'react-native-router-flux';
 import { ListItem } from 'react-native-elements';
 import PostCard from './PostCard';
+import SpottedCard from './SpottedCard';
 import ProgressBar from './ProgressBar'
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
@@ -60,6 +61,7 @@ export default class Profile extends Component {
     this.state = {
       posts: [],
       postNotify: undefined,
+      postNotifyType: undefined,
       userNotifications: [],
       userphoto: '',
       username: '',
@@ -146,14 +148,26 @@ export default class Profile extends Component {
 
     if (visible) {
 
-      var type = itemType == 'spotted' ? 'spotted' : 'post';
 
-    
-      await fetch('https://api-spotted.herokuapp.com/api/' + type + '/id/' + itemId)
-        .then(res => res.json())
-        .then(data => {
-          this.setState({ postVisibleStatus: visible, postNotify: { item: data } });
-        });
+
+      type = itemType == 'spotted' ? 'spotted': 'post';
+
+      if (itemType == 'spotted') {
+        await fetch('https://api-spotted.herokuapp.com/api/spotted/' + itemId)
+          .then(res => res.json())
+          .then(data => {
+            this.setState({ postVisibleStatus: visible, postNotify: {item: data}, postNotifyType: type });
+          });
+      }
+
+      else {
+        await fetch('https://api-spotted.herokuapp.com/api/post/id/' + itemId)
+          .then(res => res.json())
+          .then(data => {
+            this.setState({ postVisibleStatus: visible, postNotify: { item: data }, postNotifyType: type });
+          });
+      }
+
     }
     else
       this.setState({ postVisibleStatus: visible });
@@ -236,18 +250,31 @@ export default class Profile extends Component {
           style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
           onBackButtonPress={() => { this.showPost(!this.state.postVisibleStatus) }} >
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: viewportWidth, height: viewportHeight, backgroundColor: '#fff' }}>
-        
-           
-            <PostCard
-              data={this.state.postNotify}
-              subcolor={'#cfd8dc'}
-              color={'#29434e'}
-              username={this.state.username}
-              userphoto={this.state.userphoto}
-              email={this.state.email}
-              renderWithComments={true}
-              deleted={this.postDeleted.bind(this)}
-            />
+
+            {this.state.postNotifyType == 'post' ?
+              <PostCard
+                data={this.state.postNotify}
+                subcolor={'#cfd8dc'}
+                color={'#29434e'}
+                username={this.state.username}
+                userphoto={this.state.userphoto}
+                email={this.state.email}
+                renderWithComments={true}
+                deleted={this.postDeleted.bind(this)}
+              />
+
+              :
+
+              <SpottedCard
+                data={this.state.postNotify}
+                color={'#EC5D73'}
+                subcolor={'#FAEAEA'}
+                renderWithComments={true}
+              />
+
+
+            }
+
           </View>
         </Modal>
         <FlatList

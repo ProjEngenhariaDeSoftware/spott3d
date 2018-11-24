@@ -26,6 +26,7 @@ export default class SpottedCard extends Component {
 		super(props);
 		this.data = props.data;
 		this.subcolor = props.subcolor;
+		 this.renderWithComments = props.renderWithComments;
 		this.color = props.color;
 		this.state = {
 			newComment: '',
@@ -316,6 +317,13 @@ export default class SpottedCard extends Component {
 
 	render() {
 		return (
+
+			this.renderWithComments ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+			<View>
+				{this.renderComments(this.data)}
+			</View>
+		</View> :
+		
 			<View style={{ flex: 1, backgroundColor: this.color }}>
 				<TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
 					<View>
