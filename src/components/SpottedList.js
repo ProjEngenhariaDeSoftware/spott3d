@@ -109,6 +109,7 @@ export default class SpottedList extends Component {
                 data={item}
                 color={this.state.color}
                 subcolor={this.state.subcolor}
+                renderWithComments={false}
               />
             )}
           }
