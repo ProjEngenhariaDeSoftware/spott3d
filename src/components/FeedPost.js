@@ -137,7 +137,7 @@ export default class FeedPost extends PureComponent {
           />}
         <FloatingAction
           color={this.color}
-          floatingIcon={<Icon type="MaterialCommunityIcons" style={{ color: '#fff' }} name="plus" />}
+          floatingIcon={<Icon type="MaterialCommunityIcons" style={{color: '#fff' }} name="plus" />}
           position="right"
           showBackground={false}
           onPressMain={() => this.addPost()}

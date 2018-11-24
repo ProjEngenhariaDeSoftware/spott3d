@@ -105,29 +105,29 @@ export default class AddPost extends Component {
         }
     };
 
-    // cameraImage = () => {
-    //     ImagePicker.launchCamera(options, (response) => {
-    //         if (response.error) {
-    //             alert('Algo de errado aconteceu');
-    //         } else if (!response.didCancel) {
-    //             const source = { uri: response.uri };
-    //             const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
-    //             this.setState({ image: source, sendImage: sourceData.uri });
-    //         }
-    //     });
-    // }
+    cameraImage = () => {
+        ImagePicker.launchCamera(options, (response) => {
+            if (response.error) {
+                alert('Algo de errado aconteceu');
+            } else if (!response.didCancel) {
+                const source = { uri: response.uri };
+                const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
+                this.setState({ image: source, sendImage: sourceData.uri });
+            }
+        });
+    }
 
-    // galleryImage = () => {
-    //     ImagePicker.launchImageLibrary(options, (response) => {
-    //         if (response.error) {
-    //             alert('Algo de errado aconteceu');
-    //         } else if (!response.didCancel) {
-    //             const source = { uri: response.uri };
-    //             const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
-    //             this.setState({ image: source, sendImage: sourceData.uri });
-    //         }
-    //     });
-    // }
+    galleryImage = () => {
+        ImagePicker.launchImageLibrary(options, (response) => {
+            if (response.error) {
+                alert('Algo de errado aconteceu');
+            } else if (!response.didCancel) {
+                const source = { uri: response.uri };
+                const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
+                this.setState({ image: source, sendImage: sourceData.uri });
+            }
+        });
+    }
 
     _showDateTimePicker = (define) => {
         define === 'start' ? this.setState({ isDateTimePickerVisible: true, start: true, end: false }) : this.setState({ isDateTimePickerVisible: true, start: false, end: true });
@@ -137,7 +137,7 @@ export default class AddPost extends Component {
 
     _handleDatePicked = (datetime) => {
         const date = moment(datetime).format('DD-MM-YYYY HH:mm:ss');
-        const dateExibition = moment(datetime).format('DD [de] MMM [de] YYYY [ás] HH:mm');
+        const dateExibition = moment(datetime).format('ddd[,] DD [de] MMM [de] YYYY [ás] HH:mm');
         if (this.state.start) {
             this.setState({ startDate: date, startDateExibition: dateExibition })
         } else if (this.state.end) {
@@ -158,14 +158,6 @@ export default class AddPost extends Component {
             }
         });
     }
-
-    // selectDateString(date) {
-    //     if (date !== 'Ínicio do evento' && date !== 'Fim do Evento') {
-    //         let newDate = moment(date, "DD-MM-YYYY HH:mm:ss");
-    //         console.log(newDate);
-    //         return newDate.format('DD [de] MMM [de] YYYY [ás] HH:mm');
-    //     }
-    // }
 
     render() {
         return (
@@ -248,12 +240,12 @@ export default class AddPost extends Component {
                     <View style={styles.imageArea}>
                         <View style={styles.badgeIconView}>
                             {(this.state.image !== null) ? <Text style={styles.badge} onPress={() => { this.removeImage() }}>X</Text> : <View style={styles.imagePreview} />}
-                            <Thumbnail square large style={{borderRadius: 15}} source={this.state.image != null ? this.state.image : null} />
+                            <Thumbnail square large style={{borderRadius: 10}} source={this.state.image != null ? this.state.image : null} />
                         </View>
                     </View>
                 </View>
                 {this.state.sendPost ? <Spinner style={{ alignSelf: 'center', position: 'absolute', bottom: 8, }} color={this.state.color} /> :
-                    <View style={{justifyContent: 'space-around', margin: 10, flexDirection: 'row', position: 'absolute', bottom: 0, width: viewportWidth }}>
+                    <View style={{alignSelf: 'center', justifyContent: 'space-around', margin: 10, flexDirection: 'row', position: 'absolute', bottom: 0}}>
                         <TouchableOpacity
                             style={[styles.submit, { backgroundColor: this.state.color }]}
                             onPress={this.selectPhoto}
@@ -364,9 +356,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderRadius: 15,
+        borderRadius: 10,
         elevation: 3,
-        padding: 5,
+        padding: 10,
         margin: 6,
         borderWidth: 2,
         borderColor: '#e7e7e7',
