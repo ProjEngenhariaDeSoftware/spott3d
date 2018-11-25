@@ -17,5 +17,5 @@
 </div>
 
 <h5>
-  Para mais informações, <a href="https://github.com/osuniversitarios/spotted-page">clique aqui</a>
+  Para mais informações, <a href="http://osuniversitarios.github.io/spotted-page">clique aqui</a>
 </h5>
