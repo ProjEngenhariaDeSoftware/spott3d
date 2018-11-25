@@ -111,7 +111,7 @@ export default class PostCard extends PureComponent {
                     <View style={{ backgroundColor: '#fff', borderRadius: 5, padding: 15, alignItems: 'flex-start' }}>
                         <TouchableOpacity activeOpacity={0.8} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} onPress={() => this.setState({ showModalOptions: false })} >
                             <Icon type="MaterialCommunityIcons" name="alert-box" style={{ fontSize: 18, color: this.color }} />
-                            <Text style={{ fontFamily: 'ProductSans', fontSize: 18, color: this.color }}> Denúnciar...</Text>
+                            <Text style={{ fontFamily: 'ProductSans', fontSize: 18, color: this.color }}> Denunciar</Text>
                         </TouchableOpacity>
                         {this.state.author.email === this.state.email &&
                             <TouchableOpacity activeOpacity={0.8} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, justifyContent: 'center' }} onPress={() => this.deletePost()} >

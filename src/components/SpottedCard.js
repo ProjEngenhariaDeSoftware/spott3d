@@ -9,7 +9,8 @@ import {
 	TextInput,
 	Modal,
 	AsyncStorage,
-	Image
+	Image,
+	Alert
 } from 'react-native';
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base';
 import { ListItem } from 'react-native-elements';
@@ -37,7 +38,8 @@ export default class SpottedCard extends Component {
 			sending: false,
 			edit: false,
 			openImage: false,
-			username: ''
+			username: '',
+			cardOptions: false
 		}
 	}
 
@@ -57,6 +59,43 @@ export default class SpottedCard extends Component {
 
 	validadeData(value) {
 		return (value != null && value.trim().length != 0);
+	}
+
+	renderCardOptions() {
+		return (
+			<Modal
+				transparent={true}
+        animationType={"fade"}
+        visible={this.state.cardOptions}
+        onRequestClose={() => { this.setState({ cardOptions: false }) }}
+       >
+				<TouchableOpacity
+				  activeOpacity={1}
+				  style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', alignItems: 'center', justifyContent: 'center' }}
+				  onPress={() => { this.setState({ cardOptions: false }) }}
+				>
+					<View
+						style={{ backgroundColor: '#fff', borderRadius: 5, padding: 15, alignItems: 'flex-start' }}
+					>
+						<TouchableOpacity 
+							activeOpacity={0.8} 
+							style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} 
+							onPress={this.report}
+						>
+            	<Icon type="MaterialCommunityIcons" name="alert-box" 
+            		style={{ fontSize: 18, color: this.color }} 
+         				onPress={this.report}
+            	/>
+            	<Text style={{ fontFamily: 'ProductSans', fontSize: 18, color: this.color }}
+								onPress={this.report}
+            	>
+	            	{ ' ' + 'Denunciar' }
+            	</Text>
+            </TouchableOpacity>
+					</View>
+				</TouchableOpacity>
+			</Modal>
+		);
 	}
 
 	renderCard() {
@@ -80,13 +119,13 @@ export default class SpottedCard extends Component {
 							<View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'ProductSans', fontSize: 16, color: this.color, margin: 1 }}>
 								<Icon style={styles.datetime} type="MaterialIcons" name="access-time" />
 								<Text style={styles.datetime}>
-									{' ' + this.data.item.datetime}
+									{'Postado ' + this.returnTimeString(this.data.item.datetime)}
 								</Text>
 							</View>
 						</Body>
 					</Left>
-					<Right onPress={this.report}>
-						<Icon style={{ flex: 1, fontSize: 22 }} type="MaterialCommunityIcons" name="alert-box" onPress={this.report} />
+					<Right onPress={() => this.setState({ cardOptions: true })}>
+						<Icon style={{ flex: 1, fontSize: 20, right: -10 }} type="SimpleLineIcons" name="options-vertical" onPress={() => this.setState({ cardOptions: true })} />
 					</Right>
 				</CardItem>
 				<Body>
@@ -140,7 +179,7 @@ export default class SpottedCard extends Component {
 											<Text style={styles.userComment}>{'@' + item.commenter.username + ' '}</Text>
 											<View style={{ alignItems: 'center', flexDirection: 'row' }}>
 												<Icon style={styles.timeComment} type="MaterialIcons" name="access-time" />
-												<Text style={styles.timeComment}>{' ' + item.datetime }</Text>
+												<Text style={styles.timeComment}>{' ' + this.returnTimeString(item.datetime)}</Text>
 											</View>
 											{item.delete ?
 												<Right onPress={() => this.deleteComment(item)}>
@@ -224,7 +263,7 @@ export default class SpottedCard extends Component {
 						delete: false,
 						usersMentioned: userMentioned,
 						comment: this.state.newComment,
-						datetime: time.toLocaleTimeString(),
+						datetime: time,
 						commenter: {
 							email: userEmail,
 							username: nickname,
@@ -253,7 +292,9 @@ export default class SpottedCard extends Component {
 					visible: false
 				})
 			}).then(a => {
-				alert('Reportado!');
+				const showAlert = () => {Alert.alert('Reportado!', 'Spotted redirecionado para os moderadores')};
+				showAlert();
+				this.setState({ cardOptions: false });
 			});
 		} catch (error) {
 			console.error(error);
@@ -359,6 +400,7 @@ export default class SpottedCard extends Component {
 					</View>
 				</TouchableOpacity>
 				{this.renderOpenImage()}
+				{this.renderCardOptions()}
 			</View>
 			
 		);

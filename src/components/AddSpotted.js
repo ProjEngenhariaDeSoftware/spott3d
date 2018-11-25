@@ -7,7 +7,7 @@ import {
   Image,
   TextInput,
   Picker,
-  Dimensions
+  Dimensions 
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import ImagePicker from 'react-native-image-picker';
@@ -118,6 +118,8 @@ export default class AddSpotted extends Component {
               <Text style={styles.label}>Mensagem</Text>
               <TextInput
                 placeholder='Abra seu coração'
+                keyboardType="default"
+                autoCorrect={true}
                 underlineColorAndroid="transparent"
                 numberOfLines={4}
                 multiline={true}

@@ -163,7 +163,7 @@ export default class AddPost extends Component {
         return (
             <View style={styles.container}>
                 <View style={[styles.header, { backgroundColor: this.state.color }]}>
-                    <Text style={styles.title}>Adicionar  {this.state.pageTitle}</Text>
+                    <Text style={styles.title}>Adicionar  {this.state.pageTitle.toLowerCase()}</Text>
                 </View>
                 <View style={styles.subContainer}>
                     <View style={styles.row}>
@@ -188,11 +188,11 @@ export default class AddPost extends Component {
                                     style={{ height: 40, width: '100%', color: 'gray' }}
                                     onValueChange={(itemValue, itemIndex) => this.setState({ flag: itemValue })}>
                                     <Picker.Item label="Selecione" color={this.state.color} value={null} />
-                                    <Picker.Item label="Outros" color={this.state.color} value="outros" />
                                     <Picker.Item label="Achado" color={this.state.color} value="achado" />
-                                    <Picker.Item label="Bolsa" color={this.state.color} value="bolsa" />
-                                    <Picker.Item label="Informação" color={this.state.color} value="informação" />
                                     <Picker.Item label="Perdido" color={this.state.color} value="perdido" />
+                                    <Picker.Item label="Bolsa de auxílio" color={this.state.color} value="bolsa de auxílio" />
+                                    <Picker.Item label="Informação" color={this.state.color} value="informação" />
+                                    <Picker.Item label="Outros" color={this.state.color} value="outros" />
                                 </Picker>
                             </View>
                         </View>
@@ -282,13 +282,12 @@ const styles = StyleSheet.create({
     header: {
         justifyContent: 'center',
         alignItems: 'center',
-        elevation: 2,
         height: 50,
 
     },
     title: {
         fontFamily: 'ProductSans',
-        fontSize: 24,
+        fontSize: 22,
         color: '#fff'
     },
     row: {
