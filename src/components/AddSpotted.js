@@ -7,8 +7,11 @@ import {
   Image,
   TextInput,
   Picker,
-  Dimensions 
+  Dimensions,
+  AsyncStorage,
+  Alert
 } from 'react-native';
+import { Spinner } from 'native-base';
 import { Actions } from 'react-native-router-flux';
 import ImagePicker from 'react-native-image-picker';
 import LZString from 'lz-string';
@@ -69,8 +72,15 @@ export default class AddSpotted extends Component {
             text: this.state.text,
             image: this.state.sendImage
           })
-        }).then(res => {
-          Actions.pop();
+        }).then(async res => {
+          if (res.status == 200) {
+            await AsyncStorage.setItem('newSpotted', 'true');
+            Actions.pop();
+          } else {
+            const showAlert = () => { Alert.alert('Não foi possível adicionar a nova postagem', 'Por favor, verifique sua conexão com a internet e tente novamente.')};
+            showAlert();
+            this.setState({ sending: false });
+          }
         });
       } else {
         this.setState({ textWarning: true });
@@ -135,6 +145,7 @@ export default class AddSpotted extends Component {
           </View>
         </View>
         <View style={{ flex: 1 }}>
+          {this.state.sending ? <Spinner style={{ alignSelf: 'center', position: 'absolute', bottom: 8, }} color={'#EC5D73'} /> :
           <View style={{ margin: 10, flexDirection: 'row', position: 'absolute', bottom: 0 }}>
             <View style={styles.row}>
               <View>
@@ -159,7 +170,7 @@ export default class AddSpotted extends Component {
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View>}
         </View>
       </View>
     );
