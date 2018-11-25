@@ -410,8 +410,8 @@ export default class Profile extends Component {
                   <Image source={{ uri: this.state.userphoto }} style={styles.profilepic} />
                 </View>
               </View>
-              <View style={{ margin: 8, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontFamily: 'ProductSans', fontSize: 25, color: '#fff' }}>@{this.state.username}</Text>
+              <View style={{ margin: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontFamily: 'ProductSans', fontSize: 20, color: '#fff' }}>@{this.state.username}</Text>
               </View>
             </View>
             <View style={{ flex: 1, alignItems: 'center' }}>
@@ -420,9 +420,8 @@ export default class Profile extends Component {
                   activeTabStyle={{ backgroundColor: '#2b4a69' }} activeTextStyle={{ color: '#fff', fontFamily: 'ProductSans' }} >
                   <View style={{ flex: 1, alignItems: 'center', paddingVertical: 12 }}>
                     <View style={styles.info}>
-                      <Icon type='MaterialCommunityIcons' name='email' color='#2b4a69' fontSize={14} />
-                      <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: '#2b4a69' }}> E-mail: </Text>
-                      <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray' }}>{this.state.email}</Text>
+                      <Icon type='MaterialCommunityIcons' name='email' color='#2b4a69' fontSize={10} />
+                      <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray' }}>{' ' + this.state.email}</Text>
                     </View>
                   </View>
                 </Tab>
@@ -563,7 +562,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   photoRow: {
-    marginTop: 12,
+    marginTop: 18,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -572,9 +571,10 @@ const styles = StyleSheet.create({
   },
 
   profilepicWrap: {
-    width: 170,
-    height: 170,
-    borderRadius: 170 / 2,
+    margin: 3,
+    width: 130,
+    height: 130,
+    borderRadius: 130 / 2,
     borderColor: '#fff',
     borderWidth: 4,
   },
