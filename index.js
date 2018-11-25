@@ -59,12 +59,6 @@ export default class Spotted extends Component {
               component={AddPost}
               hideNavBar={true}
             />
-            <Scene
-            key="otherprofile"
-            title="Perfil"
-            component={OtherProfile}
-            hideNavBar={true}
-            />
           </Scene>
         </Router>
       </View>

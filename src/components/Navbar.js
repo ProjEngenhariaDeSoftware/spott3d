@@ -49,7 +49,7 @@ export default class Navbar extends Component {
           key: 'profile',
           title: 'perfil',
           icon: 'person',
-          color: '#0086a7'
+          color: '#2b4a69'
         },
       ],
     };

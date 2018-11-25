@@ -5,28 +5,57 @@ import {
   FlatList,
   TouchableOpacity,
   Text,
+  Modal
 } from 'react-native';
 
-import { SearchBar, Icon } from 'react-native-elements'
+import { SearchBar } from 'react-native-elements'
 import { FloatingAction } from 'react-native-floating-action';
-import { View, Spinner, Thumbnail } from 'native-base'
+import { View, Spinner, Thumbnail, Icon } from 'native-base'
 
 import PostCard from '../components/PostCard';
+import OtherProfile from '../components/OtherProfile';
 import { Actions } from 'react-native-router-flux';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#DFDFE3',
+  },
+  iconsSearch: {
+    color: '#fff',
+    fontSize: 25
+  },
+  item: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    paddingTop: 8,
+    margin: 2,
+  },
+});
 
 const actions = [{
   text: 'Pesquisar pessoas',
-  icon: <Icon type="material-icons" size={23} color='#fff' name="person" />,
+  icon: <Icon type="MaterialIcons" style={styles.iconsSearch} name="person" />,
   name: 'bt_user',
   color: '#00B6D9',
   position: 2
 }, {
   text: 'Pesquisar postagens',
-  icon: <Icon type="entypo" size={23} color='#fff' name="news" />,
+  icon: <Icon type="Entypo" style={styles.iconsSearch} name="news" />,
   name: 'bt_post',
   color: '#5AD0BA',
   position: 1
-}];
+}, {
+  text: 'Pesquisar tags',
+  icon: <Icon type="MaterialCommunityIcons" style={styles.iconsSearch} name="tag-multiple" />,
+  name: 'bt_tags',
+  color: '#EC5D73',
+  position: 3
+}
+];
 
 export default class Search extends Component {
   constructor(props) {
@@ -40,10 +69,11 @@ export default class Search extends Component {
       email: '',
       otherProfile: '',
       searching: 'Pesquisar postagens',
+      type: 'post',
       showLoader: false,
       refreshing: false,
       search: false,
-      filterUser: false,
+      openProfile: false,
       changeEmpty: false,
     }
   };
@@ -53,35 +83,45 @@ export default class Search extends Component {
   };
 
   async componentDidMount() {
-    const photoURL = await AsyncStorage.getItem('photoURL');
-    const displayName = await AsyncStorage.getItem('displayName');
-    const mail = await AsyncStorage.getItem('email');
-    this.setState({ username: displayName, userPhoto: photoURL, email: mail });
+    const [photoURL, displayName, email] = await Promise.all([
+      AsyncStorage.getItem('photoURL'),
+      AsyncStorage.getItem('displayName'),
+      AsyncStorage.getItem('email'),
+    ]);
+    this.setState({ username: displayName, userPhoto: photoURL, email: email });
   };
 
   filterType = (item) => {
-    if (this.state.filterUser) {
-      return item.username.toLowerCase().includes(this.state.searchText.toLowerCase()) || item.email.toLowerCase().includes(this.state.searchText.toLowerCase());
-    } else {
-      return item.title.toLowerCase().includes(this.state.searchText.toLowerCase());
+    switch (this.state.type) {
+      case 'user':
+        return item.username.toLowerCase().includes(this.state.searchText.toLowerCase()) || item.email.toLowerCase().includes(this.state.searchText.toLowerCase());
+      case 'post':
+        return item.title.toLowerCase().includes(this.state.searchText.toLowerCase());
+      case 'tag':
+        return item.postFlag !== null ? item.postFlag.toLowerCase().includes(this.state.searchText.toLowerCase()) : false;
     }
   }
 
   searchType() {
     if (this.state.searchText.trim() !== '') {
       this.setState({ search: false, dataFilter: [], changeEmpty: false });
-      if (this.state.filterUser) {
-        this.filterUser()
-
-      } else {
-        this.filterPost();
+      switch (this.state.type) {
+        case 'user':
+          this.filterUser();
+          break;
+        case 'post':
+          this.filterPost();
+          break;
+        case 'tag':
+          this.filterTag();
+          break;
       }
     }
   }
 
   async searchData() {
     const newData = this.state.dataSource.filter(item => this.filterType(item));
-    this.setState({ dataFilter: newData, search: true, refreshing: false, changeEmpty: true});
+    this.setState({ dataFilter: newData, search: true, refreshing: false, changeEmpty: true });
   }
 
   renderHeader = () => {
@@ -115,8 +155,18 @@ export default class Search extends Component {
     this.handleRefresh();
   }
 
-  handleRefresh = async () => {
-    this.state.filterUser ? this.filterUser() : this.filterPost();
+  handleRefresh = () => {
+    switch (this.state.type) {
+      case 'post':
+        this.filterPost();
+        break;
+      case 'user':
+        this.filterUser();
+        break;
+      case 'tag':
+        this.filterTag();
+        break;
+    }
   };
 
   filterUser = async () => {
@@ -142,11 +192,27 @@ export default class Search extends Component {
       this.searchData();
     } catch (error) {
     }
-
   }
 
-  changeOtherProfile(email) {
-    Actions.push('otherprofile', {email: email});
+  filterTag = async () => {
+    this.setState({ refreshing: true });
+    try {
+      await fetch('https://api-spotted.herokuapp.com/api/post/type/NOTICE')
+        .then(res => res.json())
+        .then(data => {
+          this.setState({ dataSource: data });
+        });
+      this.searchData();
+    } catch (error) {
+    }
+  }
+
+  showOtherProfile(visible) {
+    this.setState({ openProfile: visible });
+  }
+
+  changeOtherProfile(profileEmail) {
+    this.setState({ otherProfile: profileEmail, openProfile: true })
   }
 
   selectSubColorType(type) {
@@ -183,7 +249,7 @@ export default class Search extends Component {
           extraData={this.state.search}
           renderItem={(item) => {
             return (
-              this.state.filterUser ?
+              this.state.type === 'user' ?
                 <TouchableOpacity style={styles.item} activeOpacity={0.3} onPress={() => this.changeOtherProfile(item.item.email)}>
                   <View style={{ marginRight: '3%', marginLeft: '3%', marginBottom: '3%' }} >
                     <Thumbnail small source={{ uri: item.item.image }} />
@@ -213,19 +279,34 @@ export default class Search extends Component {
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderLoader}
         />
+
+        <Modal
+          visible={this.state.openProfile}
+          animationType={"slide"}
+          onRequestClose={() => { this.showOtherProfile(!this.state.openProfile) }} >
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#2b4a69' }}>
+            <OtherProfile
+              emailPerfil={this.state.otherProfile}
+              emailLogged={this.state.email}
+              usernameLogged={this.state.username}
+              userphotoLogged={this.state.userPhoto} />
+          </View>
+        </Modal>
         <FloatingAction
           actions={actions}
           color={'#29434e'}
-          floatingIcon={<Icon type="material-community" size={25} color='#fff' name="filter" />}
+          floatingIcon={<Icon type="Foundation" style={styles.iconsSearch} name="filter" />}
           position="right"
           onPressItem={
             (name) => {
               if (name === 'bt_post') {
-                this.setState({ filterUser: false, dataFilter: [], searching: 'Pesquisar postagens', changeEmpty: false});
+                this.setState({ type: 'post', dataFilter: [], searching: 'Pesquisar postagens', changeEmpty: false });
               }
-              if (name === 'bt_user') {
-                this.setState({ filterUser: true, dataFilter: [], searching: 'Pesquisar pessoas', changeEmpty: false});
-
+              else if (name === 'bt_user') {
+                this.setState({ type: 'user', dataFilter: [], searching: 'Pesquisar pessoas', changeEmpty: false });
+              }
+              else if (name === 'bt_tags') {
+                this.setState({ type: 'tag', dataFilter: [], searching: 'Pesquisar tag', changeEmpty: false });
               }
             }
           }
@@ -234,28 +315,7 @@ export default class Search extends Component {
           visible={this.state.isActionButtonVisible}
           distanceToEdge={16}
         />
-      </View>
+      </View >
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#DFDFE3',
-  },
-  item: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    paddingTop: 8,
-    margin: 2,
-  },
-  welcome: {
-    fontSize: 40,
-    textAlign: 'center',
-    margin: 10,
-  },
-});
