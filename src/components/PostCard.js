@@ -56,7 +56,8 @@ export default class PostCard extends PureComponent {
                 <TouchableOpacity activeOpacity={0.9} onLongPress={() => this.setState({ openImage: true })} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)} onPressOut={() => this.setState({ openImage: false })}>
                     <ImageScale source={{ uri: this.data.item.image }}
                         resizeMode='contain'
-                        width={(viewportWidth - 6)}
+                        width={(viewportWidth - 10)}
+                        style={{ borderRadius: 15 }}
                     />
                 </TouchableOpacity>
             </CardItem>
@@ -73,6 +74,10 @@ export default class PostCard extends PureComponent {
         let startDate = moment(start, "DD-MM-YYYY HH:mm:ss");
         let endDate = moment(end, "DD-MM-YYYY HH:mm:ss");
         return ' De ' + startDate.format('DD[/]MM[/]YY ') + 'até ' + endDate.format('DD[/]MM[/]YY');
+    }
+
+    validadeData(value) {
+        return (value != null && value.trim().length != 0);
     }
 
     tagStyle() {
@@ -162,7 +167,7 @@ export default class PostCard extends PureComponent {
                 </CardItem>
                 <Body>
                     <Body style={{ flex: 1, alignItems: 'flex-start' }}>
-                        {this.renderText()}
+                        {this.validadeData(this.data.item.text) ? this.renderText() : null }
                         {this.renderImage()}
                     </Body>
                 </Body>
@@ -400,7 +405,8 @@ export default class PostCard extends PureComponent {
                     <DialogContent>
                         <ImageScale source={{ uri: this.data.item.image }}
                             resizeMode='contain'
-                            width={viewportWidth}
+                            width={viewportWidth-50}
+                            style={{ borderRadius: 15 }}
                         />
                     </DialogContent>
                 </Dialog>
