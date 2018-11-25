@@ -19,11 +19,22 @@ import { Actions } from 'react-native-router-flux';
 import { ListItem } from 'react-native-elements';
 import PostCard from './PostCard';
 import SpottedCard from './SpottedCard';
-import ProgressBar from './ProgressBar'
+import ProgressBar from './ProgressBar';
+import AdmView from './AdmView';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
-const actions = [{
+const actions = [
+  
+  {
+    text: 'Visualizar Denúncias',
+    icon: <Icon type="material-icons" size={23} color='#fff' name="report" />,
+    name: 'bt_report',
+    color: '#738A98',
+    position: 3
+  },
+  
+  {
   text: 'Editar nome de usuário',
   icon: <Icon type="material-icons" size={23} color='#fff' name="edit" />,
   name: 'bt_user',
@@ -73,6 +84,7 @@ export default class Profile extends Component {
       notificationVisibleStatus: false,
       postVisibleStatus: false,
       modalVisibleStatus: false,
+      adminPanelVisibleStatus: false,
       refreshing: false,
       color: '#0086a7',
       transparent: false,
@@ -136,6 +148,10 @@ export default class Profile extends Component {
 
   showEdit(visible) {
     this.setState({ editVisibleStatus: visible, isInvalid: false, isValid: false, newUserName: false, validationColor: 'gray' })
+  }
+
+  showAdminPanel(visible) {
+    this.setState({adminPanelVisibleStatus : visible});
   }
 
   showModal(visible) {
@@ -396,6 +412,11 @@ export default class Profile extends Component {
               else if (name === 'bt_user') {
                 this.showEdit(!this.state.editVisibleStatus);
               }
+
+              else if (name === 'bt_report') {
+
+                 this.showAdminPanel(!this.state.adminPanelVisibleStatus);
+              }
             }
           }
           actionsPaddingTopBottom={0}
@@ -418,6 +439,21 @@ export default class Profile extends Component {
             </View>
           </View>
         </Modal>
+
+
+        <Modal
+          animationIn='slideInRight'
+          animationInTiming={700}
+          animationOut="slideOutRight"
+          animationOutTiming={700}
+          backdropTransitionOutTiming={700}
+          isVisible={this.state.adminPanelVisibleStatus}
+          avoidKeyboard={true}
+          style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
+          onBackButtonPress={() => { this.showAdminPanel(!this.state.adminPanelVisibleStatus) }} >
+        <AdmView/> 
+        </Modal>      
+
         <Modal
           animationIn='slideInRight'
           animationInTiming={700}
