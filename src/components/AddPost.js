@@ -91,7 +91,7 @@ export default class AddPost extends Component {
             }).then(async res => {
                 if (res.status == 200) {
                     await AsyncStorage.setItem('refreshing', 'true');
-                    Actions.pop()
+                    Actions.pop();
                 }
 
                 else {
@@ -105,29 +105,29 @@ export default class AddPost extends Component {
         }
     };
 
-    cameraImage = () => {
-        ImagePicker.launchCamera(options, (response) => {
-            if (response.error) {
-                alert('Algo de errado aconteceu');
-            } else if (!response.didCancel) {
-                const source = { uri: response.uri };
-                const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
-                this.setState({ image: source, sendImage: sourceData.uri });
-            }
-        });
-    }
+    // cameraImage = () => {
+    //     ImagePicker.launchCamera(options, (response) => {
+    //         if (response.error) {
+    //             alert('Algo de errado aconteceu');
+    //         } else if (!response.didCancel) {
+    //             const source = { uri: response.uri };
+    //             const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
+    //             this.setState({ image: source, sendImage: sourceData.uri });
+    //         }
+    //     });
+    // }
 
-    galleryImage = () => {
-        ImagePicker.launchImageLibrary(options, (response) => {
-            if (response.error) {
-                alert('Algo de errado aconteceu');
-            } else if (!response.didCancel) {
-                const source = { uri: response.uri };
-                const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
-                this.setState({ image: source, sendImage: sourceData.uri });
-            }
-        });
-    }
+    // galleryImage = () => {
+    //     ImagePicker.launchImageLibrary(options, (response) => {
+    //         if (response.error) {
+    //             alert('Algo de errado aconteceu');
+    //         } else if (!response.didCancel) {
+    //             const source = { uri: response.uri };
+    //             const sourceData = { uri: 'data:image/jpeg;base64,' + response.data };
+    //             this.setState({ image: source, sendImage: sourceData.uri });
+    //         }
+    //     });
+    // }
 
     _showDateTimePicker = (define) => {
         define === 'start' ? this.setState({ isDateTimePickerVisible: true, start: true, end: false }) : this.setState({ isDateTimePickerVisible: true, start: false, end: true });
@@ -185,7 +185,7 @@ export default class AddPost extends Component {
                             <View style={styles.picker}>
                                 <Picker
                                     selectedValue={this.state.flag}
-                                    style={{ height: 40, width: 330, color: 'gray' }}
+                                    style={{ height: 40, width: '100%', color: 'gray' }}
                                     onValueChange={(itemValue, itemIndex) => this.setState({ flag: itemValue })}>
                                     <Picker.Item label="Selecione" color={this.state.color} value={null} />
                                     <Picker.Item label="Outros" color={this.state.color} value="outros" />
@@ -240,12 +240,12 @@ export default class AddPost extends Component {
                     <View style={styles.imageArea}>
                         <View style={styles.badgeIconView}>
                             {(this.state.image !== null) ? <Text style={styles.badge} onPress={() => { this.removeImage() }}>X</Text> : <View style={styles.imagePreview} />}
-                            <Thumbnail square large style={{borderRadius: 10}} source={this.state.image != null ? this.state.image : null} />
+                            <Thumbnail square large style={{ borderRadius: 10 }} source={this.state.image != null ? this.state.image : null} />
                         </View>
                     </View>
                 </View>
                 {this.state.sendPost ? <Spinner style={{ alignSelf: 'center', position: 'absolute', bottom: 8, }} color={this.state.color} /> :
-                    <View style={{alignSelf: 'center', justifyContent: 'space-around', margin: 10, flexDirection: 'row', position: 'absolute', bottom: 0}}>
+                    <View style={styles.footerArea}>
                         <TouchableOpacity
                             style={[styles.submit, { backgroundColor: this.state.color }]}
                             onPress={this.selectPhoto}
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
         margin: 3
     },
     dateArea: {
-        width: 330,
+        width: (viewportWidth * 0.95),
         flexDirection: 'row',
         alignItems: 'center',
         alignContent: 'center',
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         padding: 10,
         margin: 5,
-        width: 330,
+        width: (viewportWidth * 0.95),
         height: 40,
     },
     textArea: {
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         padding: 10,
         margin: 5,
-        width: 330,
+        width: (viewportWidth * 0.95),
         height: 120,
         textAlignVertical: 'top'
 
@@ -363,12 +363,12 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#e7e7e7',
         backgroundColor: '#fff',
-        width: 330,
+        width: (viewportWidth * 0.95),
         height: 40,
     },
     picker: {
         height: 40,
-        width: 330,
+        width: (viewportWidth * 0.95),
         borderRadius: 10,
         backgroundColor: 'white',
         color: 'gray',
@@ -427,4 +427,13 @@ const styles = StyleSheet.create({
         height: 40,
         margin: 3
     },
+    footerArea: {
+        justifyContent: 'space-between',
+        padding: 13,
+        flexDirection: 'row',
+        position: 'absolute',
+        alignItems: 'center',
+        bottom: 0,
+        width: viewportWidth
+    }
 });

@@ -6,9 +6,10 @@ import {
     RefreshControl,
     TouchableOpacity,
     TextInput,
+    Modal,
 } from "react-native";
 import { Card, CardItem, Left, Body, Thumbnail, Right, Text, Icon, View } from 'native-base';
-import Modal from 'react-native-modal';
+// import Modal from 'react-native-modal';
 import OtherProfile from './OtherProfile';
 import moment from 'moment';
 import ImageScale from 'react-native-scalable-image';
@@ -99,27 +100,26 @@ export default class PostCard extends PureComponent {
     modalOptions() {
         return (
             <Modal
-                animationIn='zoomInUp'
-                animationInTiming={300}
-                animationOut="slideOutRight"
-                animationOutTiming={300}
-                backdropTransitionOutTiming={300}
-                style={{ alignSelf: 'center', alignItems: 'center', width: '50%' }}
-                isVisible={this.state.showModalOptions}
-                onBackButtonPress={() => { this.setState({ showModalOptions: false }) }}
-                onBackdropPress={() => this.setState({ showModalOptions: false })}>
-
-                <View style={{ backgroundColor: '#fff', borderRadius: 5, padding: 15, alignItems: 'flex-start' }}>
-                    <TouchableOpacity activeOpacity={0.8} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} onPress={() => this.setState({ showModalOptions: false })} >
-                        <Icon type="MaterialCommunityIcons" name="alert-box" style={{ fontSize: 18, color: this.color }} />
-                        <Text style={{ fontFamily: 'ProductSans', fontSize: 18, color: this.color }}> Denúnciar...</Text>
-                    </TouchableOpacity>
-                    {this.state.author.email === this.state.email &&
-                        <TouchableOpacity activeOpacity={0.8} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, justifyContent: 'center' }} onPress={() => this.deletePost()} >
-                            <Icon type="MaterialCommunityIcons" name="delete" style={{ fontSize: 18, color: this.color }} />
-                            <Text style={{ fontFamily: 'ProductSans', fontSize: 18, color: this.color }}> Excluir</Text>
-                        </TouchableOpacity>}
-                </View>
+                transparent={true}
+                animationType={"fade"}
+                visible={this.state.showModalOptions}
+                onRequestClose={() => { this.setState({ showModalOptions: false }) }}>
+                <TouchableOpacity
+                activeOpacity={1}
+                style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', alignItems: 'center', justifyContent: 'center' }}
+                onPress={() => { this.setState({ showModalOptions: false }) }}>
+                    <View style={{ backgroundColor: '#fff', borderRadius: 5, padding: 15, alignItems: 'flex-start' }}>
+                        <TouchableOpacity activeOpacity={0.8} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} onPress={() => this.setState({ showModalOptions: false })} >
+                            <Icon type="MaterialCommunityIcons" name="alert-box" style={{ fontSize: 18, color: this.color }} />
+                            <Text style={{ fontFamily: 'ProductSans', fontSize: 18, color: this.color }}> Denúnciar...</Text>
+                        </TouchableOpacity>
+                        {this.state.author.email === this.state.email &&
+                            <TouchableOpacity activeOpacity={0.8} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, justifyContent: 'center' }} onPress={() => this.deletePost()} >
+                                <Icon type="MaterialCommunityIcons" name="delete" style={{ fontSize: 18, color: this.color }} />
+                                <Text style={{ fontFamily: 'ProductSans', fontSize: 18, color: this.color }}> Excluir</Text>
+                            </TouchableOpacity>}
+                    </View>
+                </TouchableOpacity>
             </Modal>
         );
     }
@@ -235,7 +235,7 @@ export default class PostCard extends PureComponent {
 
     renderComments() {
         return (
-            <View style={{ flex: 1}}>
+            <View style={{ flex: 1 }}>
                 < FlatList
                     ref={ref => this.commentsFlatList = ref}
                     data={this.state.data.item.comments}
@@ -314,7 +314,6 @@ export default class PostCard extends PureComponent {
                     }
                 })
             }).then(res => {
-                console.log(res.status);
                 let time = new Date();
                 this.data.item.comments.push({
                     id: res.id,
@@ -347,7 +346,7 @@ export default class PostCard extends PureComponent {
 
     renderFooter() {
         return (
-            <View style={{ flexDirection: 'row', padding: 8, alignItems: 'flex-end', justifyContent: 'center', backgroundColor: '#fff', elevation: 4}}>
+            <View style={{ flexDirection: 'row', padding: 8, alignItems: 'flex-end', justifyContent: 'center', backgroundColor: '#fff', elevation: 4 }}>
                 <Thumbnail small source={{ uri: this.state.userPhoto }} />
                 <TextInput
                     keyboardType="default"
@@ -427,7 +426,7 @@ export default class PostCard extends PureComponent {
     render() {
 
         return (
-            this.renderWithComments ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
+            this.renderWithComments ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
                 <View>
                     {this.renderComments()}
                 </View>
@@ -439,32 +438,23 @@ export default class PostCard extends PureComponent {
                     {this.renderOpenImage()}
                     {this.modalOptions()}
                     <Modal
-                        animationIn='slideInUp'
-                        animationInTiming={300}
-                        animationOut="slideOutDown"
-                        animationOutTiming={300}
-                        backdropTransitionOutTiming={200}
-                        isVisible={this.state.modalVisibleStatus}
-                        avoidKeyboard={true}
-                        scrollOffset={1}
-                        style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
-                        onBackButtonPress={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
+                        visible={this.state.modalVisibleStatus}
+                        animationType={"slide"}
+                        onRequestClose={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
                             {this.renderComments()}
                         </View>
                     </Modal>
                     <Modal
-                        animationIn='slideInUp'
-                        animationInTiming={300}
-                        animationOut="slideOutDown"
-                        animationOutTiming={300}
-                        backdropTransitionOutTiming={300}
-                        isVisible={this.state.openProfile}
-                        avoidKeyboard={true}
-                        style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
-                        onBackButtonPress={() => { this.showOtherProfile(!this.state.openProfile) }} >
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-                            <OtherProfile email={this.state.otherProfile} />
+                        visible={this.state.openProfile}
+                        animationType={"slide"}
+                        onRequestClose={() => { this.showOtherProfile(!this.state.openProfile) }} >
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#2b4a69' }}>
+                            <OtherProfile
+                                emailPerfil={this.state.otherProfile}
+                                emailLogged={this.state.email}
+                                usernameLogged={this.state.username}
+                                userphotoLogged={this.state.userPhoto} />
                         </View>
                     </Modal>
                 </View>

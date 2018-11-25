@@ -12,11 +12,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { FloatingAction } from 'react-native-floating-action';
-import { Icon } from 'react-native-elements';
-import { Item } from 'native-base';
+import { Icon, ListItem } from 'react-native-elements';
+import { Item, Tab, Tabs } from 'native-base';
 import Modal from 'react-native-modal';
 import { Actions } from 'react-native-router-flux';
-import { ListItem } from 'react-native-elements';
 import PostCard from './PostCard';
 import SpottedCard from './SpottedCard';
 import ProgressBar from './ProgressBar'
@@ -55,11 +54,9 @@ const actions = [{
 export default class Profile extends Component {
 
   constructor(props) {
-
-
     super();
     this.state = {
-      posts: [],
+      data: [],
       postNotify: undefined,
       postNotifyType: undefined,
       userNotifications: [],
@@ -74,13 +71,14 @@ export default class Profile extends Component {
       postVisibleStatus: false,
       modalVisibleStatus: false,
       refreshing: false,
-      color: '#0086a7',
+      color: '#2b4a69',
       transparent: false,
       showLoader: false,
       isLoading: true,
       isInvalid: false,
       isValid: false,
       editVisibleStatus: false,
+      postsLoading: true
     };
   }
 
@@ -103,9 +101,20 @@ export default class Profile extends Component {
           this.setState({ username: user, notificationSize: size, userphoto: photoURL, email: email, userNotifications: newData, isLoading: false, notification: notification });
         });
 
-
     } catch (error) { }
 
+  }
+
+  getPosts = async () => {
+    if (this.state.postsLoading) {
+      try {
+        await fetch('https://api-spotted.herokuapp.com/api/post/user/' + this.state.email)
+          .then(res => res.json())
+          .then(data => {
+            this.setState({ data: data, postsLoading: false });
+          });
+      } catch (error) { }
+    }
   }
 
   googleLogout = async () => {
@@ -119,10 +128,10 @@ export default class Profile extends Component {
 
   iconNotification = () => {
     return (
-      <View style={styles.badgeIconView}>
+      <TouchableOpacity activeOpacity={0.9} style={styles.badgeIconView} onPress={() => this.buttonNotification(!this.state.notificationVisibleStatus)} >
         {this.state.notification ? <Text style={styles.badge}>{this.state.notificationSize}</Text> : null}
-        <Icon size={26} color='#fff' type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} button onPress={() => this.buttonNotification(!this.state.notificationVisibleStatus)} />
-      </View>
+        <Icon size={26} color='#fff' type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} />
+      </TouchableOpacity>
     );
   }
 
@@ -150,13 +159,13 @@ export default class Profile extends Component {
 
 
 
-      type = itemType == 'spotted' ? 'spotted': 'post';
+      type = itemType == 'spotted' ? 'spotted' : 'post';
 
       if (itemType == 'spotted') {
         await fetch('https://api-spotted.herokuapp.com/api/spotted/' + itemId)
           .then(res => res.json())
           .then(data => {
-            this.setState({ postVisibleStatus: visible, postNotify: {item: data}, postNotifyType: type });
+            this.setState({ postVisibleStatus: visible, postNotify: { item: data }, postNotifyType: type });
           });
       }
 
@@ -175,10 +184,9 @@ export default class Profile extends Component {
 
 
   headerNotifications() {
-
     return (
       <View>
-        <Text style={{ color: '#0086a7', textAlign: 'center', fontFamily: 'ProductSans', fontSize: 24, fontWeight: 'bold', marginTop: 10 }}>Notificações</Text>
+        <Text style={{ color: '#2b4a69', textAlign: 'center', fontFamily: 'ProductSans Bold', fontSize: 24, marginTop: 10 }}>Notificações</Text>
       </View>
     );
   }
@@ -231,8 +239,32 @@ export default class Profile extends Component {
       });
     } catch (error) {
     }
+  }
 
+  selectSubColorType(type) {
+    switch (type) {
+      case 'NEWS':
+        return '#dee7ed';
+      case 'NOTICE':
+        return '#dee7ed';
+      case 'EVENT_ACADEMIC':
+        return '#ebf9f7';
+      case 'ENTERTAINMENT':
+        return '#e6fbff';
+    }
+  }
 
+  selectColorType(type) {
+    switch (type) {
+      case 'NEWS':
+        return '#738A98';
+      case 'NOTICE':
+        return '#738A98';
+      case 'EVENT_ACADEMIC':
+        return '#5AD0BA';
+      case 'ENTERTAINMENT':
+        return '#00B6D9';
+    }
   }
 
   renderNotifications() {
@@ -241,21 +273,21 @@ export default class Profile extends Component {
       <View style={{ flex: 1 }}>
         <Modal
           animationIn='slideInUp'
-          animationInTiming={700}
+          animationInTiming={300}
           animationOut="slideOutDown"
-          animationOutTiming={700}
-          backdropTransitionOutTiming={700}
+          animationOutTiming={300}
+          backdropTransitionOutTiming={300}
           isVisible={this.state.postVisibleStatus}
           avoidKeyboard={true}
-          style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
+          style={{ flex: 1, margin: 0 }}
           onBackButtonPress={() => { this.showPost(!this.state.postVisibleStatus) }} >
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: viewportWidth, height: viewportHeight, backgroundColor: '#fff' }}>
 
             {this.state.postNotifyType == 'post' ?
               <PostCard
                 data={this.state.postNotify}
-                subcolor={'#cfd8dc'}
-                color={'#29434e'}
+                subcolor={this.selectSubColorType(item.item.type)}
+                color={this.selectColorType(item.item.type)}
                 username={this.state.username}
                 userphoto={this.state.userphoto}
                 email={this.state.email}
@@ -314,7 +346,7 @@ export default class Profile extends Component {
             <RefreshControl
               refreshing={this.state.refreshing}
               onRefresh={this.handleRefresh}
-              colors={["#0086a7"]}
+              colors={["#2b4a69"]}
             />
           }
           onEndReached={(event) => this.hideLoader(event)}
@@ -358,12 +390,18 @@ export default class Profile extends Component {
     }
   }
 
+  emptyData = () => {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#fff' }}><Text style={{ fontFamily: 'ProductSans', fontSize: 16 }}>{'\nVocê ainda não postou nada :('}</Text></View>
+    );
+  }
+
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         {this.state.isLoading ? <ProgressBar color={this.state.color} /> :
-          <View style={{ flex: 1 }}>
-            <View style={{ flex: 1.1, backgroundColor: this.state.color }}>
+          <View style={{ flex: 1, }}>
+            <View style={{ backgroundColor: this.state.color, height: 230 }}>
               <View style={styles.topView}>
                 {this.iconNotification()}
               </View >
@@ -372,17 +410,52 @@ export default class Profile extends Component {
                   <Image source={{ uri: this.state.userphoto }} style={styles.profilepic} />
                 </View>
               </View>
+              <View style={{ margin: 8, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontFamily: 'ProductSans', fontSize: 25, color: '#fff' }}>@{this.state.username}</Text>
+              </View>
             </View>
-            <View style={{ flex: 1, paddingTop: '1%', alignItems: 'center' }}>
-              <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray' }}>Nome de usuário </Text>
-              <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: this.state.color }}>@{this.state.username}</Text>
-              <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray', paddingTop: 10 }}>E-mail </Text>
-              <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: this.state.color }}>{this.state.email}</Text>
+            <View style={{ flex: 1, alignItems: 'center' }}>
+              <Tabs initialPage={0} onChangeTab={() => this.getPosts()} tabContainerStyle={{ height: 40 }}>
+                <Tab heading="Dados Pessoais" tabStyle={{ backgroundColor: '#2b4a69' }} textStyle={{ color: 'white', fontFamily: 'ProductSans' }}
+                  activeTabStyle={{ backgroundColor: '#2b4a69' }} activeTextStyle={{ color: '#fff', fontFamily: 'ProductSans' }} >
+                  <View style={{ flex: 1, alignItems: 'center', paddingVertical: 12 }}>
+                    <View style={styles.info}>
+                      <Icon type='MaterialCommunityIcons' name='email' color='#2b4a69' fontSize={14} />
+                      <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: '#2b4a69' }}> E-mail: </Text>
+                      <Text style={{ fontFamily: 'ProductSans', fontSize: 16, color: 'gray' }}>{this.state.email}</Text>
+                    </View>
+                  </View>
+                </Tab>
+                <Tab heading="Postagens" tabStyle={{ backgroundColor: '#2b4a69' }} textStyle={{ color: 'white', fontFamily: 'ProductSans' }}
+                  activeTabStyle={{ backgroundColor: '#2b4a69' }} activeTextStyle={{ color: '#fff', fontFamily: 'ProductSans' }}>
+                  {this.state.postsLoading ? <ProgressBar color={this.state.color} /> :
+                    <FlatList
+                      data={this.state.data}
+                      renderItem={(item) => {
+                        return (
+                          <PostCard
+                            data={item}
+                            subcolor={this.selectSubColorType(item.item.type)}
+                            color={this.selectColorType(item.item.type)}
+                            username={this.state.username}
+                            userphoto={this.state.userphoto}
+                            email={this.state.email}
+                          />
+                        )
+                      }}
+                      keyExtractor={(item, index) => index + ''}
+                      onEndReachedThreshold={1}
+                      onEndReached={(event) => this.hideLoader(event)}
+                      ListEmptyComponent={this.emptyData}
+                    />
+                  }
+                </Tab>
+              </Tabs>
             </View>
           </View>}
         <FloatingAction
           actions={actions}
-          color={'#0086a7'}
+          color={'#2b4a69'}
           floatingIcon={<Icon type="material-community" size={25} color='#fff' name="settings-outline" />}
           position="right"
           onPressItem={
@@ -404,13 +477,13 @@ export default class Profile extends Component {
         />
         <Modal
           animationIn='slideInUp'
-          animationInTiming={700}
+          animationInTiming={300}
           animationOut="slideOutDown"
-          animationOutTiming={700}
-          backdropTransitionOutTiming={700}
+          animationOutTiming={300}
+          backdropTransitionOutTiming={200}
           isVisible={this.state.modalVisibleStatus}
           avoidKeyboard={true}
-          style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
+          style={{ flex: 1, margin: 0 }}
           onBackButtonPress={() => { this.showModal(!this.state.modalVisibleStatus) }} >
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
             <View>
@@ -420,7 +493,7 @@ export default class Profile extends Component {
         </Modal>
         <Modal
           animationIn='slideInRight'
-          animationInTiming={700}
+          animationInTiming={500}
           animationOut="slideOutRight"
           animationOutTiming={500}
           backdropTransitionOutTiming={400}
@@ -464,13 +537,6 @@ const styles = StyleSheet.create({
     height: 22,
     color: 'white',
   },
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    backgroundColor: '#fff',
-  },
   badgeIconView: {
     position: 'relative',
     padding: 5
@@ -490,84 +556,42 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     borderRadius: 15 / 2,
   },
-  configurations: {
-    flex: 0.3,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: '#00B6D9',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    width: viewportWidth,
-  },
   topView: {
-    width: viewportWidth,
-    padding: '3%',
-    flexDirection: 'row',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    margin: 5,
   },
   photoRow: {
-    flex: 0.4,
+    marginTop: 12,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-start',
     width: viewportWidth,
-    height: (viewportWidth * 0.45),
+    height: 170,
   },
 
   profilepicWrap: {
-    width: (viewportWidth * 0.45),
-    height: (viewportWidth * 0.45),
-    borderRadius: (viewportWidth * 0.45) / 2,
+    width: 170,
+    height: 170,
+    borderRadius: 170 / 2,
     borderColor: '#fff',
-    borderWidth: 8,
+    borderWidth: 4,
   },
   profilepic: {
     flex: 1,
     width: null,
     alignSelf: 'stretch',
     borderRadius: 120,
-    // borderColor: '#fff',
-    // borderWidth: 2
   },
-  descriptionContainer: {
-    flex: 0.3,
-    width: viewportWidth,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    backgroundColor: '#5bd7ed',
-    elevation: 2,
-    borderRadius: 10
-  },
-  textDescription: {
-    fontSize: 16,
-    color: '#fff',
-    fontFamily: 'ProductSans Bold',
-    textAlign: 'center',
-
-  },
-  googleButton: {
+  info: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 30,
     padding: 10,
-    marginBottom: 20,
-    elevation: 2,
-    backgroundColor: 'white',
-    borderColor: '#e7e7e7',
-    borderWidth: 0.5,
-  },
-  googleLogo: {
-    width: 26,
-    height: 26,
-    marginRight: 5,
-  },
-  googleText: {
-    color: 'gray',
-    fontFamily: 'ProductSans',
-    fontSize: 20,
-    textAlign: 'center',
-    marginLeft: 10,
-    marginRight: 10,
+    margin: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: (viewportWidth * 0.95),
+    height: 40,
   },
   subtitleView: {
     flexDirection: 'row',

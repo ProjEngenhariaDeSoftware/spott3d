@@ -97,7 +97,8 @@ export default class FeedPost extends PureComponent {
     });
 
     const sendSucess = await AsyncStorage.getItem('refreshing');
-    sendSucess === 'true' ? this._handleRefresh : console.log('nada adicionado');
+    sendSucess === 'true' ? this._handleRefresh() : null;
+    await AsyncStorage.setItem('refreshing', 'false');
 
   }
 
@@ -107,6 +108,7 @@ export default class FeedPost extends PureComponent {
         {this.state.isLoading ? <ProgressBar color={this.color} /> :
           <FlatList
             data={this.state.dataSource}
+            extraData={this.state.refreshing}
             initialNumToRender={10}
             keyExtractor={(item, index) => item.id.toString()}
             renderItem={(item) => {
