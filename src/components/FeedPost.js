@@ -58,14 +58,7 @@ export default class FeedPost extends PureComponent {
   hideLoader = (e) => {
     e.distanceFromEnd === 0 ? this.setState({ showLoader: true }) : this.setState({ showLoader: false });
   };
-
-  // _onRefresh = () => {
-  //   this.setState({refreshing: true});
-  //   fetchData().then(() => {
-  //     this.setState({refreshing: false});
-  //   });
-  // }
-
+  
   _handleRefresh = () => {
     this.setState({ refreshing: true });
     this.refreshingData().then(() => {
@@ -144,7 +137,7 @@ export default class FeedPost extends PureComponent {
           />}
         <FloatingAction
           color={this.color}
-          floatingIcon={<Icon type="MaterialCommunityIcons" style={{ color: '#fff' }} name="plus" />}
+          floatingIcon={<Icon type="MaterialCommunityIcons" style={{color: '#fff' }} name="plus" />}
           position="right"
           showBackground={false}
           onPressMain={() => this.addPost()}

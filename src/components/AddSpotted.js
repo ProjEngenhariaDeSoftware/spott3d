@@ -37,11 +37,11 @@ export default class AddSpotted extends Component {
       sendImage: null,
       sending: false,
       textWarning: false
-    };    
+    };
   }
 
   selectPhoto = () => {
-     ImagePicker.showImagePicker(options, (response) => {
+    ImagePicker.showImagePicker(options, (response) => {
       if (response.error) {
         alert('Algo de errado aconteceu');
       } else {
@@ -49,7 +49,7 @@ export default class AddSpotted extends Component {
         let sourceData = 'data:image/jpeg;base64,' + response.data;
         //sourceData = LZString.compress(sourceData);
         this.setState({ image: source, sendImage: sourceData });
-      } 
+      }
     });
   }
 
@@ -75,7 +75,7 @@ export default class AddSpotted extends Component {
       } else {
         this.setState({ textWarning: true });
       }
-    } catch(error) {
+    } catch (error) {
       this.setState({ sending: false, textWarning: true });
     }
   }
@@ -103,7 +103,7 @@ export default class AddSpotted extends Component {
               <Text style={styles.label}>Curso</Text>
               <TouchableOpacity style={styles.course} activeOpacity={0.8}>
                 <Picker
-                selectedValue={this.state.course}
+                  selectedValue={this.state.course}
                   style={{ height: 40, width: 320, color: 'gray' }}
                   onValueChange={(itemValue, itemIndex) => this.setState({ course: itemValue })}>
                   <Picker.Item label="Desconhecido" value="Desconhecido" />
@@ -125,9 +125,9 @@ export default class AddSpotted extends Component {
                 onChangeText={(text) => this.setState({ text })}
                 value={this.state.text}
               />
-              <Text style={styles.label}>{ this.state.textWarning ? 'Esse campo não pode ser vazio': null }</Text>
+              <Text style={styles.label}>{this.state.textWarning ? 'Esse campo não pode ser vazio' : null}</Text>
               <View style={{ alignItems: 'center', justifyContent: 'center', margin: 5 }}>
-                <Image style={styles.imagePreview} source={this.state.image != null ? this.state.image : null } />
+                <Image style={styles.imagePreview} source={this.state.image != null ? this.state.image : null} />
               </View>
             </View>
           </View>
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 1,
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'flex-start'
   },
   label: {
     color: '#EC5D73',

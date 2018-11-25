@@ -7,14 +7,13 @@ import {
     TouchableOpacity,
     TextInput,
 } from "react-native";
-import { Card, CardItem, Left, Body, Thumbnail, Text, Icon, View } from 'native-base';
+import { Card, CardItem, Left, Body, Thumbnail, Right, Text, Icon, View } from 'native-base';
 import Modal from 'react-native-modal';
 import OtherProfile from './OtherProfile';
 import moment from 'moment';
 import ImageScale from 'react-native-scalable-image';
 import 'moment/locale/pt-br'
 import Dialog, { ScaleAnimation, DialogContent } from 'react-native-popup-dialog';
-//import ProgressiveImage from '../components/ProgressiveImage';
 
 const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
@@ -34,7 +33,6 @@ export default class PostCard extends PureComponent {
             otherProfile: '',
             email: props.email,
             newComment: "",
-            infoEvent: false,
             modalVisibleStatus: false,
             showModalOptions: false,
             openProfile: false,
@@ -42,9 +40,8 @@ export default class PostCard extends PureComponent {
             openImage: false,
             send: false,
             heightInput: 40,
-            heightImage: 100,
-            widthImage: 100,
             tagColor: this.color,
+            delete: true
         }
     }
 
@@ -68,12 +65,12 @@ export default class PostCard extends PureComponent {
     returnTimeString(date) {
         let newDate = moment(date, "DD-MM-YYYY HH:mm:ss");
         newDate.locale('pt-br');
-        return newDate.calendar().toLowerCase();
+        return newDate.fromNow().toLowerCase();
     }
+
     returnDateEventString(start, end) {
         let startDate = moment(start, "DD-MM-YYYY HH:mm:ss");
         let endDate = moment(end, "DD-MM-YYYY HH:mm:ss");
-        startDate.isBetween()
         return ' De ' + startDate.format('DD[/]MM[/]YY ') + 'até ' + endDate.format('DD[/]MM[/]YY');
     }
 
@@ -211,16 +208,42 @@ export default class PostCard extends PureComponent {
         this.setState({ otherProfile: profileEmail, openProfile: true })
     }
 
+    verifyComment(value) {
+        if (this.state.username != null && value.commenter.username === this.state.username) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    deleteComment(value) {
+        try {
+            this.setState({ delete: false });
+            this.data.item.comments.splice(this.data.item.comments.findIndex(item => item.id == value.id), 1);
+            this.renderComments(this.data);
+            fetch('https://api-spotted.herokuapp.com/api/comment/' + value.id, {
+                method: 'DELETE',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            }).then(res => {
+                this.setState({ delete: true });
+            });
+        } catch (error) { }
+    }
+
     renderComments() {
         return (
-            <View>
+            <View style={{ flex: 1}}>
                 < FlatList
-                    ref={(list) => this.commentsFlatList = list
-                    }
+                    ref={ref => this.commentsFlatList = ref}
                     data={this.state.data.item.comments}
                     extraData={this.state.send}
                     keyExtractor={item => item.id + ''}
-                    contentContainerStyle={{ paddingLeft: 1, paddingRight: 1 }}
+                    contentContainerStyle={{ paddingLeft: 1, paddingRight: 1, backgroundColor: '#fff' }}
+                    onContentSizeChange={() => this.commentsFlatList.scrollToEnd({ animated: true })}
+                    onLayout={() => this.commentsFlatList.scrollToEnd({ animated: true })}
                     refreshControl={
                         < RefreshControl
                             refreshing={this.state.refreshing}
@@ -232,7 +255,7 @@ export default class PostCard extends PureComponent {
                     renderItem={({ item }) => {
                         return (
                             < View style={styles.item} >
-                                <TouchableOpacity style={{ marginLeft: '3%', marginRight: '3%', marginBottom: '3%' }} activeOpacity={0.9} onPress={() => this.changeOtherProfile(item.commenter.email)}>
+                                <TouchableOpacity style={{ marginRight: '3%', marginBottom: '3%' }} activeOpacity={0.9} onPress={() => this.changeOtherProfile(item.commenter.email)}>
                                     <Thumbnail small source={{ uri: item.commenter.image }} />
                                 </TouchableOpacity>
                                 <View style={{ flex: 1, flexWrap: 'wrap', }}>
@@ -240,16 +263,22 @@ export default class PostCard extends PureComponent {
                                         <Text style={{ fontFamily: 'ProductSans', color: 'black', fontSize: 14 }}>{'@' + item.commenter.username + ' '}</Text>
                                         <Icon style={{ fontSize: 9, color: 'gray' }} type="MaterialIcons" name="access-time" />
                                         <Text style={{ fontFamily: 'ProductSans', fontSize: 9, color: 'gray', margin: 1 }}>{' ' + this.returnTimeString(item.datetime)}</Text>
+                                        {this.verifyComment(item) && this.state.delete ?
+                                            <Right onPress={() => this.deleteComment(item)}>
+                                                <Icon onPress={() => this.deleteComment(item)} style={{ fontSize: 17, color: '#ef5350' }} type="MaterialCommunityIcons" name="comment-remove-outline" />
+                                            </Right>
+                                            : null}
                                     </TouchableOpacity>
                                     <Text style={{ fontFamily: 'ProductSans', color: 'gray', fontSize: 14 }}>{item.comment}</Text>
                                 </View>
                             </ View>
                         );
-                    }}
+                    }
+                    }
                     ListHeaderComponent={this.renderCard()}
-                    ListFooterComponent={this.renderFooter()}
                 />
-            </View>
+                {this.renderFooter()}
+            </View >
 
         );
     }
@@ -285,13 +314,13 @@ export default class PostCard extends PureComponent {
                     }
                 })
             }).then(res => {
-                const date = new Date();
-                const dateTime = this.returnTimeString(moment(date).format('DD-MM-YYYY HH:mm:ss'));
+                console.log(res.status);
+                let time = new Date();
                 this.data.item.comments.push({
                     id: res.id,
                     userMentioned: usersMentioned,
                     comment: newComment,
-                    datetime: dateTime,
+                    datetime: time,
                     commenter: {
                         email: email,
                         username: username,
@@ -300,7 +329,7 @@ export default class PostCard extends PureComponent {
                 });
                 this.setState({ newComment: '', send: true });
             });
-            this.commentsFlatList.scrollToEnd();
+            // this.commentsFlatList.scrollToEnd();
             this.setState({ send: false });
         } catch (error) {
         }
@@ -318,7 +347,7 @@ export default class PostCard extends PureComponent {
 
     renderFooter() {
         return (
-            <View style={{ flexDirection: 'row', width: viewportWidth, margin: 2, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ flexDirection: 'row', padding: 8, alignItems: 'flex-end', justifyContent: 'center', backgroundColor: '#fff', elevation: 4}}>
                 <Thumbnail small source={{ uri: this.state.userPhoto }} />
                 <TextInput
                     keyboardType="default"
@@ -331,10 +360,10 @@ export default class PostCard extends PureComponent {
                         borderColor: '#e0e0e0',
                         borderWidth: 1,
                         borderRadius: 10,
-                        margin: 4,
+                        marginHorizontal: 4,
                         width: '75%',
                         fontFamily: 'ProductSans',
-                        textAlign: 'justify'
+                        textAlign: 'justify',
 
                     }}
                     value={this.state.newComment}
@@ -344,7 +373,7 @@ export default class PostCard extends PureComponent {
                     onContentSizeChange={(e) => this.updateSize(e.nativeEvent.contentSize.height)}
                 />
                 <TouchableOpacity
-                    style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "13%", height: 40, marginRight: 4 }}
+                    style={{ justifyContent: 'center', alignItems: 'center', color: 'white', fontSize: 19, fontFamily: 'ProductSans', backgroundColor: this.color, borderColor: '#e7e7e7', borderWidth: 0.5, borderRadius: 10, width: "13%", height: 35, }}
                     onPress={() => this.sendComment()}
                     activeOpacity={0.8}>
                     <Text style={styles.inputText}>
@@ -398,7 +427,7 @@ export default class PostCard extends PureComponent {
     render() {
 
         return (
-            this.renderWithComments ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            this.renderWithComments ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
                 <View>
                     {this.renderComments()}
                 </View>
@@ -421,9 +450,7 @@ export default class PostCard extends PureComponent {
                         style={{ flex: 1, marginLeft: 0, marginTop: 0, marginBottom: 0, marginRight: 0 }}
                         onBackButtonPress={() => { this.showModalFunction(!this.state.modalVisibleStatus) }} >
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-                            <View>
-                                {this.renderComments()}
-                            </View>
+                            {this.renderComments()}
                         </View>
                     </Modal>
                     <Modal
@@ -449,7 +476,10 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         backgroundColor: '#fff',
-        margin: 6,
+        margin: 3,
+        paddingVertical: 5,
+        paddingHorizontal: 8
+
     },
     datetime: {
         fontFamily: 'ProductSans',
