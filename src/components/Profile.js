@@ -268,6 +268,7 @@ export default class Profile extends Component {
   }
 
   renderNotifications() {
+
     return (
 
       <View style={{ flex: 1 }}>
@@ -286,8 +287,8 @@ export default class Profile extends Component {
             {this.state.postNotifyType == 'post' ?
               <PostCard
                 data={this.state.postNotify}
-                subcolor={this.selectSubColorType(item.item.type)}
-                color={this.selectColorType(item.item.type)}
+                subcolor={this.selectSubColorType(this.state.postNotify.item.type)}
+                color={this.selectColorType(this.state.postNotify.item.type)}
                 username={this.state.username}
                 userphoto={this.state.userphoto}
                 email={this.state.email}
