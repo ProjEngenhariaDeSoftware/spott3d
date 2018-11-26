@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Card, CardItem, Left, Right, Body, Thumbnail, Icon, Button, View } from 'native-base';
 import { ListItem } from 'react-native-elements';
+import ImageScale from 'react-native-scalable-image';
 import Dialog, { DialogButton, SlideAnimation, ScaleAnimation, DialogContent } from 'react-native-popup-dialog';
 import moment from 'moment';
 import 'moment/locale/pt-br';
@@ -151,9 +152,11 @@ export default class SpottedCard extends Component {
 			<CardItem cardBody>
 				<TouchableHighlight style={{ borderRadius: 15 }} onLongPress={() => this.setState({ openImage: true })} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)} onPressOut={() => this.setState({ openImage: false })}>
 					<View style={{ alignItems: 'center' }}>
-						<Image source={{ uri: this.data.item.image }}
-							style={{ width: imageWidth - 10, height: imageHeight - 10, borderRadius: 15 }}
-						/>
+						<ImageScale source={{ uri: this.data.item.image }}
+              resizeMode='contain'
+              width={(imageWidth-10)}
+              style={{ borderRadius: 15 }}
+            />
 					</View>
 				</TouchableHighlight>
 			</CardItem>
@@ -374,13 +377,12 @@ export default class SpottedCard extends Component {
 
 	render() {
 		return (
-
-			this.renderWithComments ? <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-			<View>
-				{this.renderComments(this.data)}
-			</View>
-		</View> :
-		
+			this.renderWithComments ? 
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<View>
+					{this.renderComments(this.data)}
+				</View>
+			</View> :
 			<View style={{ flex: 1, backgroundColor: this.color }}>
 				<TouchableOpacity activeOpacity={0.9} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)}>
 					<View>

@@ -61,7 +61,8 @@ export default class PostCard extends PureComponent {
                 <TouchableOpacity activeOpacity={0.9} onLongPress={() => this.setState({ openImage: true })} onPress={() => this.showModalFunction(!this.state.modalVisibleStatus)} onPressOut={() => this.setState({ openImage: false })}>
                     <ImageScale source={{ uri: this.data.item.image }}
                         resizeMode='contain'
-                        width={(viewportWidth - 6)}
+                        width={(viewportWidth - 10)}
+                        style={{ borderRadius: 15 }}
                     />
                 </TouchableOpacity>
             </CardItem>
@@ -83,6 +84,10 @@ export default class PostCard extends PureComponent {
         else {
             return ' De ' + startDate.format('DD[/]MM[/]YY ') + 'até ' + endDate.format('DD[/]MM[/]YY');
         }
+    }
+
+    validadeData(value) {
+        return (value != null && value.trim().length != 0);
     }
 
     tagStyle() {
@@ -172,8 +177,8 @@ export default class PostCard extends PureComponent {
                 </CardItem>
                 <Body>
                     <Body style={{ flex: 1, alignItems: 'flex-start' }}>
-                        {this.data.item.text !== "" && this.renderText()}
-                        {this.data.item.image !== null && this.renderImage()}
+                        {this.validadeData(this.data.item.text) ? this.renderText() : null }
+                        {this.renderImage()}
                     </Body>
                 </Body>
                 <CardItem>
@@ -401,8 +406,8 @@ export default class PostCard extends PureComponent {
                     <DialogContent>
                         <ImageScale source={{ uri: this.data.item.image }}
                             resizeMode='contain'
+                            width={viewportWidth-50}
                             style={{ borderRadius: 15 }}
-                            width={(viewportWidth * 0.95)}
                         />
                     </DialogContent>
                 </Dialog>
