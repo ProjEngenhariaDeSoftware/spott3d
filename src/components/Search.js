@@ -60,6 +60,7 @@ const actions = [{
 export default class Search extends Component {
   constructor(props) {
     super();
+    this._listViewOffset = 0
     this.state = {
       dataSource: [],
       dataFilter: [],
@@ -241,12 +242,26 @@ export default class Search extends Component {
     }
   }
 
+
+  _onScroll = (event) => {
+    const currentOffset = event.nativeEvent.contentOffset.y
+    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
+      ? 'down'
+      : 'up'
+    const isActionButtonVisible = direction === 'up'
+    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
+      this.setState({ isActionButtonVisible: isActionButtonVisible })
+    }
+    this._listViewOffset = currentOffset
+  }
+
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <FlatList
-          data={this.state.dataFilter}
+          data={this.state.dataFilter.sort((a, b) => b.id - a.id)}
           extraData={this.state.search}
+          onScroll={this._onScroll}
           renderItem={(item) => {
             return (
               this.state.type === 'user' ?
@@ -295,6 +310,7 @@ export default class Search extends Component {
         <FloatingAction
           actions={actions}
           color={'#29434e'}
+          visible={this.state.isActionButtonVisible}
           floatingIcon={<Icon type="Foundation" style={styles.iconsSearch} name="filter" />}
           position="right"
           onPressItem={

@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import {
-  Dimensions,
   FlatList,
   RefreshControl,
   AsyncStorage,
@@ -16,6 +15,7 @@ export default class FeedPost extends PureComponent {
 
   constructor(props) {
     super();
+    this._listViewOffset = 0
     this.color = props.color;
     this.subcolor = props.subcolor;
     this.type = props.type;
@@ -29,6 +29,7 @@ export default class FeedPost extends PureComponent {
       username: '',
       dataSource: [],
       email: "",
+      isActionButtonVisible: true,
     }
 
   }
@@ -58,11 +59,11 @@ export default class FeedPost extends PureComponent {
   hideLoader = (e) => {
     e.distanceFromEnd === 0 ? this.setState({ showLoader: true }) : this.setState({ showLoader: false });
   };
-  
+
   _handleRefresh = () => {
     this.setState({ refreshing: true });
     this.refreshingData().then(() => {
-      this.setState({refreshing: false});
+      this.setState({ refreshing: false });
     });
   }
 
@@ -71,7 +72,7 @@ export default class FeedPost extends PureComponent {
       await fetch('https://api-spotted.herokuapp.com/api/post/type/' + this.type)
         .then(res => res.json())
         .then(data => {
-          this.setState({dataSource: data });
+          this.setState({ dataSource: data });
         });
     } catch (error) { }
   }
@@ -87,29 +88,40 @@ export default class FeedPost extends PureComponent {
   postDeleted() {
     this._handleRefresh();
   }
-
+  postAdd() {
+    this._handleRefresh();
+  }
   addPost = async () => {
-    Actions.push('addpost',{
+    Actions.push('addpost', {
       color: this.color,
       type: this.type,
       pageTitle: this.pageTitle,
-      email: this.state.email
+      email: this.state.email,
+      add: this.postAdd.bind(this)
     });
-
-    const sendSucess = await AsyncStorage.getItem('refreshing');
-    sendSucess === 'true' ? this._handleRefresh() : null;
-    await AsyncStorage.setItem('refreshing', 'false');
-
   }
+
+  _onScroll = (event) => {
+    const currentOffset = event.nativeEvent.contentOffset.y
+    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
+      ? 'down'
+      : 'up'
+    const isActionButtonVisible = direction === 'up'
+    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
+      this.setState({ isActionButtonVisible: isActionButtonVisible })
+    }
+    this._listViewOffset = currentOffset
+  }
+
 
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         {this.state.isLoading ? <ProgressBar color={this.color} /> :
           <FlatList
-            data={this.state.dataSource}
-            extraData={this.state.refreshing}
+            data={this.state.dataSource.sort((a, b) => b.id - a.id)}
             initialNumToRender={10}
+            onScroll={this._onScroll}
             keyExtractor={(item, index) => item.id.toString()}
             renderItem={(item) => {
               return (
@@ -139,8 +151,9 @@ export default class FeedPost extends PureComponent {
           />}
         <FloatingAction
           color={this.color}
-          floatingIcon={<Icon type="MaterialCommunityIcons" style={{color: '#fff' }} name="plus" />}
+          floatingIcon={<Icon type="MaterialCommunityIcons" style={{ color: '#fff' }} name="plus" />}
           position="right"
+          visible={this.state.isActionButtonVisible}
           showBackground={false}
           onPressMain={() => this.addPost()}
           overlayColor="#F2F2F2"
