@@ -98,9 +98,7 @@ export default class OtherProfile extends PureComponent {
             <View style={{ flex: 1 }}>
                 {this.state.isLoading ? <ProgressBar color='#fff' /> :
                     <View style={{ flex: 1 }}>
-                        <View style={{ height: 230 }}>
-                            <View style={styles.topView}>
-                            </View >
+                        <View style={{ height: 195 }}>
                             <View style={styles.photoRow}>
                                 <View style={styles.profilepicWrap}>
                                     <Image source={{ uri: this.state.userphoto }} style={styles.profilepic} />
@@ -164,12 +162,12 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     photoRow: {
-        marginTop: 12,
+        marginTop: 18,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'flex-start',
         width: viewportWidth,
-        height: 170,
+        height: 140,
     },
     info: {
         flexDirection: 'row',
@@ -182,9 +180,9 @@ const styles = StyleSheet.create({
         height: 40,
     },
     profilepicWrap: {
-        width: 170,
-        height: 170,
-        borderRadius: 170 / 2,
+        width: 130,
+        height: 130,
+        borderRadius: 130 / 2,
         borderColor: '#fff',
         borderWidth: 4,
     },

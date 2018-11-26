@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import {
     StyleSheet,
     TextInput,
-    Image,
     Dimensions,
     Picker,
-    AsyncStorage,
     Text,
     Alert,
     View,
@@ -50,8 +48,9 @@ export default class AddPost extends Component {
             endDateExibition: 'Fim do evento',
             title: '',
             flag: null,
-
-
+            warningTitle: false,
+            warningDate: false,
+            warningTag: false,
         };
     };
 
@@ -60,7 +59,7 @@ export default class AddPost extends Component {
     }
 
     sendPost = async () => {
-        this.setState({ sendPost: true });
+
         const email = this.state.email;
         const type = this.state.type;
         const text = this.state.description;
@@ -69,6 +68,8 @@ export default class AddPost extends Component {
         const flag = this.state.flag;
         const startEvent = this.state.startDate;
         const endEvent = this.state.endDate;
+
+        this.setState({ sendPost: true });
         try {
             await fetch('https://api-spotted.herokuapp.com/api/post', {
                 headers: {
@@ -90,7 +91,7 @@ export default class AddPost extends Component {
                 })
             }).then(async res => {
                 if (res.status == 200) {
-                    await AsyncStorage.setItem('refreshing', 'true');
+                    this.props.add();
                     Actions.pop();
                 }
 

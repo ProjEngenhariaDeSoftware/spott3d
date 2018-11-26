@@ -130,7 +130,7 @@ export default class Profile extends Component {
     return (
       <TouchableOpacity activeOpacity={0.9} style={styles.badgeIconView} onPress={() => this.buttonNotification(!this.state.notificationVisibleStatus)} >
         {this.state.notification ? <Text style={styles.badge}>{this.state.notificationSize}</Text> : null}
-        <Icon size={26} color='#fff' type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} />
+        <Icon size={20} color='#fff' type="MaterialIcons" name={this.state.notification ? "notifications-active" : "notifications-none"} />
       </TouchableOpacity>
     );
   }
@@ -401,7 +401,7 @@ export default class Profile extends Component {
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         {this.state.isLoading ? <ProgressBar color={this.state.color} /> :
           <View style={{ flex: 1, }}>
-            <View style={{ backgroundColor: this.state.color, height: 230 }}>
+            <View style={{ backgroundColor: this.state.color, height: 185 }}>
               <View style={styles.topView}>
                 {this.iconNotification()}
               </View >
@@ -531,11 +531,6 @@ export default class Profile extends Component {
 }
 
 const styles = StyleSheet.create({
-  actionButtonIcon: {
-    fontSize: 20,
-    height: 22,
-    color: 'white',
-  },
   badgeIconView: {
     position: 'relative',
     padding: 5
@@ -567,7 +562,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     width: viewportWidth,
-    height: 170,
+    height: 140,
   },
 
   profilepicWrap: {
