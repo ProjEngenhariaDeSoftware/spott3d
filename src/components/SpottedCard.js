@@ -261,9 +261,10 @@ export default class SpottedCard extends Component {
 					})
 				}).then(a => {
 					let time = new Date();
+					const body = JSON.parse(a._bodyInit);
 					this.data.item.comments.push({
-						id: a.id,
-						delete: false,
+						id: body.id,
+						delete: true,
 						usersMentioned: userMentioned,
 						comment: this.state.newComment,
 						datetime: time,

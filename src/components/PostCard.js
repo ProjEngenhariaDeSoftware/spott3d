@@ -284,7 +284,7 @@ export default class PostCard extends PureComponent {
                                             </Right>
                                             : null}
                                     </TouchableOpacity>
-                                    <Autolink text={item.comment} style={{ fontFamily: 'ProductSans', color: 'gray', fontSize: 14 }} mention='instagram' />
+                                    <Autolink text={item.comment} style={{ fontFamily: 'ProductSans', color: 'gray', fontSize: 14 }} />
                                 </View>
                             </ View>
                         );
