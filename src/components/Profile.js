@@ -15,6 +15,7 @@ import { FloatingAction } from 'react-native-floating-action';
 import { Icon, ListItem } from 'react-native-elements';
 import { Item, Tab, Tabs } from 'native-base';
 import Modal from 'react-native-modal';
+import { GoogleSignin } from 'react-native-google-signin';
 import { Actions } from 'react-native-router-flux';
 import PostCard from './PostCard';
 import SpottedCard from './SpottedCard';
