@@ -11,7 +11,6 @@ import Register from './src/components/Register';
 import AddSpotted from './src/components/AddSpotted';
 import AddPost from './src/components/AddPost';
 import AdmView from './src/components/AdmView';
-import OtherProfile from './src/components/OtherProfile';
 
 export default class Spotted extends Component {
   render() {
